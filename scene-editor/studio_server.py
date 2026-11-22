@@ -370,5 +370,12 @@ def arguments():
     return parser.parse_args()
 
 
+def utf8_console():
+    # Data paths are often Chinese; a piped or cp1252 console must not stop the server on a print.
+    for stream in (sys.stdout,sys.stderr):
+        try:stream.reconfigure(encoding="utf-8",errors="replace")
+        except (AttributeError,ValueError):pass
+
 if __name__=="__main__":
+    utf8_console()
     start(arguments())

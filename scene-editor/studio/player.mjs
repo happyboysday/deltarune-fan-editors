@@ -31,10 +31,10 @@ export function mountPlayer(canvas,project,art,{controls,manual=false,onFrame,on
     void dialogueAudio.preload(Object.values(UI_VOICES));
   }
   const onDialogueSound=name=>dialogueAudio?.play(name,{restart:true});
-  if(!art.ui&&art.loadUiKit)art.loadUiKit().then(kit=>{
+  const uiReady=!art.ui&&art.loadUiKit?art.loadUiKit().then(kit=>{
     art.ui=kit;preloadDialogueAudio();prepareMinigameAudio();
     if(!removed&&world)paint();
-  }).catch(error=>console.warn('UI kit unavailable',error));
+  }).catch(error=>console.warn('UI kit unavailable',error)):Promise.resolve();
   let minigameAudio;
   function prepareMinigameAudio(){
     if(minigameAudio||!sound||!art.ui)return;
@@ -290,7 +290,12 @@ export function mountPlayer(canvas,project,art,{controls,manual=false,onFrame,on
       pause();advance(input,ticks);return trailerStatus();
     }
   }:null;
-  if(debug)window.__ch6Trailer=debug;
+  // Frame-stepped recordings start as soon as the hook appears, so in manual mode it waits for the UI kit:
+  // otherwise the first frames draw fallback HUD art instead of the UI sprites.
+  if(debug){
+    if(manual)uiReady.then(()=>{if(!removed)window.__ch6Trailer=debug;});
+    else window.__ch6Trailer=debug;
+  }
   resume();
   return {get world(){return world;},get battle(){return session?.player?.encounter??null;},
     get battleReady(){return session?.ready;},get save(){return saveUi.save;},loadSave:()=>saveUi.restore(),
