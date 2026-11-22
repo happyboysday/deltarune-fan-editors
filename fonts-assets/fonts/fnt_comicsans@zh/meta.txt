@@ -1,0 +1,13 @@
+name=fnt_comicsans@zh
+source_font=fnt_comicsans
+source_chapter=chapter5
+source_csv=glyphs_fnt_comicsans.csv
+display_name=Comic Sans MS
+em_size=10.0
+bold=True
+italic=False
+png_w=942
+png_h=949
+glyphs=3580
+format=dr-battle-font/1
+note=字形只存在於 alpha 通道；RGB 已統一為白色。座標為 PNG 左上角像素，scale=1。

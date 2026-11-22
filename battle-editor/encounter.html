@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DR 遭遇編輯器</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="editor/styles.css">
+<link rel="stylesheet" href="editor/encounter/layout.css">
+<!-- ED2 / ED3 的樣式；檔案尚未建立時 404 不影響頁面運作 -->
+<link rel="stylesheet" href="editor/panels.css">
+<link rel="stylesheet" href="editor/encounter/cue-editor.css">
+<link rel="stylesheet" href="editor/encounter/v2.css">
+</head>
+<body>
+<!-- ED2/ED3 樣式若尚未建立，補上最小樣式避免版面破損 -->
+<script>
+  (function () {
+    var links = [
+      { href: 'editor/panels.css', css: '#enc-tree-body,#enc-inspector-body,#enc-actor-body{height:100%}' },
+      { href: 'editor/encounter/cue-editor.css', css: '#enc-cues-body{height:100%;overflow:auto}' }
+    ];
+    window.addEventListener('load', function () {
+      for (var i = 0; i < links.length; i++) {
+        var link = document.querySelector('link[href="' + links[i].href + '"]');
+        if (!link || !link.sheet) {
+          var style = document.createElement('style');
+          style.setAttribute('data-fallback', links[i].href);
+          style.textContent = links[i].css;
+          document.head.appendChild(style);
+        }
+      }
+    });
+  })();
+</script>
+
+<div id="enc-app">
+
+  <!-- ======================= 工具列 ======================= -->
+  <header id="enc-toolbar" class="toolbar">
+    <div class="brand" data-i18n-title="encapp.brandTitle">
+      <span class="brand-mark">◆</span><span class="brand-text" data-i18n="encapp.brand">DR 遭遇編輯器</span>
+    </div>
+
+    <a id="link-attack-editor" class="tb-link" href="index.html" data-i18n="encapp.openAttack" data-i18n-title="encapp.openAttackTip" title="切換到攻擊編輯器（編輯彈幕攻擊，index.html）">攻擊編輯器</a>
+
+    <span class="tb-sep" aria-hidden="true"></span>
+
+    <div class="tb-group" role="group" data-i18n-aria-label="enctoolbar.group.file" aria-label="檔案">
+      <button type="button" id="enc-btn-new" class="tb-btn" data-i18n="enctoolbar.new" data-i18n-title="enctoolbar.tip.new" title="新建遭遇（會清空復原紀錄）">新建</button>
+      <button type="button" id="enc-btn-open" class="tb-btn" data-i18n="enctoolbar.open" data-i18n-title="enctoolbar.tip.open" title="從伺服器開啟遭遇檔（/api/encounters）">開啟…</button>
+      <button type="button" id="enc-btn-save" class="tb-btn" data-i18n="enctoolbar.save" data-i18n-title="enctoolbar.tip.save" title="儲存遭遇檔 (Ctrl+S)">儲存</button>
+      <button type="button" id="enc-btn-save-as" class="tb-btn" data-i18n="enctoolbar.saveAs" data-i18n-title="enctoolbar.tip.saveAs" title="另存新檔到伺服器">另存為…</button>
+    </div>
+
+    <span class="tb-sep" aria-hidden="true"></span>
+
+    <div class="tb-group" role="group" data-i18n-aria-label="enctoolbar.group.exchange" aria-label="交換">
+      <button type="button" id="enc-btn-import" class="tb-btn" data-i18n="enctoolbar.import" data-i18n-title="enctoolbar.tip.import" title="從本機匯入遭遇 JSON">匯入…</button>
+      <button type="button" id="enc-btn-export" class="tb-btn" data-i18n="enctoolbar.export" data-i18n-title="enctoolbar.tip.export" title="匯出遭遇 JSON 到本機">匯出…</button>
+      <button type="button" id="enc-btn-samples" class="tb-btn has-menu" data-i18n-title="enctoolbar.tip.samples" title="開啟 samples/encounters/ 內的範例" aria-haspopup="true" aria-expanded="false"><span data-i18n="enctoolbar.samples">範例</span> <span class="caret">▾</span></button>
+    </div>
+
+    <span class="tb-sep" aria-hidden="true"></span>
+
+    <div class="tb-group" role="group" data-i18n-aria-label="enctoolbar.group.edit" aria-label="編輯">
+      <button type="button" id="enc-btn-undo" class="tb-btn" data-i18n="enctoolbar.undo" data-i18n-title="enctoolbar.tip.undo" title="復原 (Ctrl+Z)" disabled>↶ 復原</button>
+      <button type="button" id="enc-btn-redo" class="tb-btn" data-i18n="enctoolbar.redo" data-i18n-title="enctoolbar.tip.redo" title="重做 (Ctrl+Y / Ctrl+Shift+Z)" disabled>↷ 重做</button>
+    </div>
+
+    <span class="tb-sep" aria-hidden="true"></span>
+
+    <div class="tb-group" role="group" data-i18n-aria-label="enctoolbar.group.play" aria-label="播放">
+      <button type="button" id="enc-btn-play" class="tb-btn" data-i18n="enctoolbar.play" data-i18n-title="enctoolbar.tip.play" title="播放／暫停預覽 (空白鍵)">▶ 播放</button>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <div class="tb-status">
+      <span id="enc-toolbar-msg" class="tb-msg" aria-live="polite"></span>
+      <span id="enc-error-count" class="err-chip" data-i18n-title="enctoolbar.errorChipTitle" title="驗證錯誤數（點擊看詳細清單）" hidden>0 個錯誤</span>
+      <span id="enc-sync-chip" class="sync-chip" data-state="idle" hidden></span>
+      <span id="enc-agent-note" class="agent-note" aria-live="polite" hidden></span>
+      <span class="doc-meta">
+        <span id="enc-doc-name" data-i18n-title="enctoolbar.fileName" title="目前檔名">未命名</span><span id="enc-doc-dirty" class="dirty-dot" data-i18n-title="enctoolbar.dirtyTitle" title="尚未儲存" hidden>●</span>
+      </span>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <label class="tb-locale" data-i18n-title="encapp.localeTitle" title="介面語言">
+        <span class="tb-locale-label" data-i18n="encapp.localeLabel">語言</span>
+        <select id="enc-opt-locale" class="tb-select" data-i18n-aria-label="encapp.localeLabel" aria-label="介面語言"></select>
+      </label>
+    </div>
+  </header>
+
+  <!-- ======================= 結構樹（左） ======================= -->
+  <aside id="enc-tree" class="panel panel-tree">
+    <div class="panel-head">
+      <span class="panel-title" data-i18n="encapp.panel.tree">結構樹</span>
+      <div class="panel-head-actions"><span id="enc-tree-note" class="mini-note" data-i18n-title="encapp.assets.stateTip" title="素材載入狀態"></span><span id="enc-assets-state" class="mini-note" data-i18n-title="encapp.assets.stateTip" title="素材載入狀態"></span></div>
+    </div>
+    <div class="panel-body" id="enc-tree-body"></div>
+  </aside>
+
+  <div id="enc-split-tree" class="splitter splitter-v" role="separator" aria-orientation="vertical" data-split="tree" data-i18n-title="encapp.splitterTip" title="拖曳調整寬度，雙擊回復預設"></div>
+
+  <!-- ======================= 預覽（中） ======================= -->
+  <main id="enc-preview" class="panel panel-preview">
+    <div class="panel-head">
+      <span class="panel-title" data-i18n="encapp.panel.preview">預覽</span>
+      <div class="panel-head-actions">
+        <span id="enc-turn-chip" class="mini-note"></span>
+        <span id="enc-phase-chip" class="mode-chip" data-i18n-title="encpreview.modeTitle" title="目前階段">—</span>
+      </div>
+    </div>
+
+    <div id="enc-stage" class="preview-stage">
+      <div id="enc-viewport" class="stage-viewport">
+        <canvas id="enc-canvas" width="640" height="480" data-i18n-aria-label="encapp.canvasAria" aria-label="遭遇戰預覽畫面"></canvas>
+        <div id="enc-actor-layer" class="enc-actor-layer" hidden></div>
+        <div id="enc-debug" class="enc-debug" hidden></div>
+      </div>
+      <div id="enc-banner" class="engine-banner" hidden></div>
+    </div>
+
+    <div id="enc-transport" class="transport" data-i18n-aria-label="encpreview.transport" aria-label="預覽控制列">
+      <button type="button" id="enc-btn-goto-start" class="tp-btn" data-i18n-title="encpreview.gotoStart" title="回到開頭 (Home)">⏮</button>
+      <button type="button" id="enc-btn-restart" class="tp-btn" data-i18n-title="enctoolbar.tip.reset" title="重來：回到遭遇開頭 (Home)">⟲</button>
+      <button type="button" id="enc-btn-step-back" class="tp-btn" data-i18n-title="encpreview.stepBack" title="上一幀 (←)">◀</button>
+      <button type="button" id="enc-btn-play-pause" class="tp-btn tp-btn-play" data-i18n-title="encpreview.play" title="播放／暫停 (空白鍵)">▶</button>
+      <button type="button" id="enc-btn-step-fwd" class="tp-btn" data-i18n-title="encpreview.stepFwd" title="下一幀 (→)">▶|</button>
+      <span id="enc-timecode" class="timecode" data-i18n-title="encpreview.timecode" title="目前時間 / 總長度（秒:幀）">00:00</span>
+
+      <span class="tp-sep" aria-hidden="true"></span>
+      <button type="button" id="enc-btn-jump" class="tp-btn tp-btn-wide" data-i18n-title="encpreview.jump" title="跳到第 N 回合">↧ <span data-i18n="encpreview.jump">跳到回合</span></button>
+      <button type="button" id="enc-btn-run-cues" class="tp-btn tp-btn-wide" data-i18n-title="encpreview.runCuesTip" title="執行目前選取的指令清單（除錯用）">⚡ <span data-i18n="encpreview.runCues">執行指令</span></button>
+      <button type="button" id="enc-btn-debug" class="tp-btn" data-i18n-title="encpreview.debugTip" title="顯示／隱藏變數與狀態除錯浮窗" aria-pressed="false">{}</button>
+
+      <span class="tp-sep" aria-hidden="true"></span>
+      <label class="chk" data-i18n-title="encpreview.gridTip" title="顯示程序化格線背景"><input type="checkbox" id="enc-opt-grid"> <span data-i18n="encpreview.grid">格線</span></label>
+      <label class="chk" data-i18n-title="encpreview.hitboxTip" title="顯示子彈與靈魂碰撞框"><input type="checkbox" id="enc-opt-hitbox"> <span data-i18n="encpreview.hitbox">碰撞框</span></label>
+      <label class="chk" data-i18n-title="encpreview.muteTip" title="靜音 / 取消靜音"><input type="checkbox" id="enc-opt-mute"> <span data-i18n="encpreview.mute">靜音</span></label>
+      <span class="tp-sep" aria-hidden="true"></span>
+      <button type="button" id="enc-btn-battle-lang" class="tp-btn tp-btn-lang" data-i18n-title="encpreview.battleLang" data-i18n-aria-label="encpreview.battleLang" title="切換戰鬥畫面語言（中／EN）" aria-label="切換戰鬥畫面語言">中</button>
+      <span class="tp-sep" aria-hidden="true"></span>
+      <span id="enc-mode-chip" class="mode-chip" data-i18n-title="encpreview.modeTitle" title="目前預覽模式">編輯模式</span>
+      <span id="enc-preview-meta" class="preview-meta"></span>
+    </div>
+  </main>
+
+  <div id="enc-split-inspector" class="splitter splitter-v" role="separator" aria-orientation="vertical" data-split="inspector" data-i18n-title="encapp.splitterTip" title="拖曳調整寬度，雙擊回復預設"></div>
+
+  <!-- ======================= 檢查器（右） ======================= -->
+  <aside id="enc-inspector" class="panel panel-inspector">
+    <div class="panel-head">
+      <div class="panel-tabs" role="tablist" aria-label="檢查器分頁">
+        <button type="button" class="panel-tab is-active" role="tab" data-tab="pane-inspector" data-i18n="encapp.tabInspector" aria-selected="true">檢查器</button>
+        <button type="button" class="panel-tab" role="tab" data-tab="pane-actor" data-i18n="encapp.tabActor" aria-selected="false">演員</button>
+      </div>
+      <div class="panel-head-actions"><span id="enc-selection-label" class="mini-note"></span></div>
+    </div>
+    <div class="panel-body panel-panes">
+      <div id="enc-inspector-body" class="pane" data-pane="pane-inspector" role="tabpanel"></div>
+      <div id="enc-actor-body" class="pane" data-pane="pane-actor" role="tabpanel" hidden></div>
+    </div>
+  </aside>
+
+  <div id="enc-split-cues" class="splitter splitter-h" role="separator" aria-orientation="horizontal" data-split="cues" data-i18n-title="encapp.splitterTip" title="拖曳調整高度，雙擊回復預設"></div>
+
+  <!-- ======================= 指令清單（下） ======================= -->
+  <section id="enc-cues" class="panel panel-timeline">
+    <div class="panel-head">
+      <span class="panel-title" data-i18n="encapp.panel.cues">指令清單</span>
+      <div class="panel-head-actions"><span id="enc-cue-path" class="mini-note"></span></div>
+    </div>
+    <div class="panel-body" id="enc-cues-body"></div>
+  </section>
+
+</div><!-- /#enc-app -->
+
+<!-- 啟動／錯誤遮罩 -->
+<div id="enc-boot-overlay" class="boot-overlay">
+  <div class="boot-card">
+    <div class="boot-title"><span class="brand-mark">◆</span> <span data-i18n="encapp.brand">DR 遭遇編輯器</span></div>
+    <div class="boot-status" id="enc-boot-status" data-i18n="encapp.boot.loading">載入中…</div>
+    <pre class="boot-detail" id="enc-boot-detail" hidden></pre>
+    <div class="boot-hint" data-i18n="encapp.boot.hint">若一直停在這裡，請確認已透過 <code>serve.py</code> 從 http://127.0.0.1:18900/encounter.html 開啟本頁，而不是直接雙擊檔案。</div>
+  </div>
+</div>
+
+<!-- 通用對話框 / 下拉選單 / 提示 -->
+<div id="modal-root" class="modal-root" hidden></div>
+<div id="menu-root" class="menu-root" hidden></div>
+<div id="toast-root" class="toast-root" aria-live="polite"></div>
+
+<script>
+  // 模組載入前的錯誤也要看得到，否則只會白屏。
+  (function () {
+    function showError(text, detail) {
+      try {
+        var overlay = document.getElementById('enc-boot-overlay');
+        var status = document.getElementById('enc-boot-status');
+        var box = document.getElementById('enc-boot-detail');
+        if (!overlay || !status) return;
+        overlay.hidden = false;
+        overlay.dataset.error = '1';
+        status.textContent = text || '載入失敗';
+        if (detail && box) { box.hidden = false; box.textContent = String(detail); }
+      } catch (e) { /* 忽略 */ }
+    }
+    window.__encBootError = showError;
+    window.addEventListener('error', function (e) {
+      var t = e && e.target;
+      if (t && t.tagName && t !== window && t.nodeType === 1) {
+        var tag = String(t.tagName).toUpperCase();
+        if (tag === 'SCRIPT' && !t.dataset.optional) {
+          showError('資源載入失敗：' + (t.src || ''));
+        } else {
+          console.warn('[encounter] 資源載入失敗（已忽略）：<' + tag.toLowerCase() + '> ' + (t.src || t.href || ''));
+        }
+        return;
+      }
+      if (!e || !e.message) return;
+      showError('執行時錯誤', e.message + (e.filename ? '\\n' + e.filename + ':' + e.lineno : ''));
+    }, true);
+    window.addEventListener('unhandledrejection', function (e) {
+      var r = e && e.reason;
+      showError('未處理的非同步錯誤', r && r.stack ? r.stack : String(r));
+    });
+  })();
+</script>
+<script type="module" src="editor/encounter/main.js"></script>
+</body>
+</html>

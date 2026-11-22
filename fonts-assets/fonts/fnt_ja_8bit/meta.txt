@@ -1,0 +1,8 @@
+name=fnt_ja_8bit
+source_font=fnt_ja_8bit
+chapter=ch5
+png_w=1024
+png_h=512
+glyphs=1819
+em_size=16
+line_height=15

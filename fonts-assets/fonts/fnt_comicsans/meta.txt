@@ -1,0 +1,8 @@
+name=fnt_comicsans
+source_font=fnt_comicsans
+chapter=ch5
+png_w=256
+png_h=128
+glyphs=96
+em_size=10
+line_height=20

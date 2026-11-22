@@ -1,0 +1,663 @@
+/* editor/encounter/panels.css  (ED3, Phase 2)
+ *
+ * 遭遇編輯器的資料面板樣式：結構樹（.enc-tree / .enc-t*）、
+ * 檢查器（.enc-inspector-* / .enc-field / .enc-form …）、
+ * 演員動畫編輯器（.enc-actor-* / .enc-anim*）。
+ *
+ * 全部以 `.enc-` 為前綴，避免和 ED1 的 layout.css、ED2 的 cue-editor.css 撞名。
+ * 顏色沿用 Phase 1 panels.css 的深色系（以 CSS 變數為主，缺少時退回硬編碼）。
+ */
+
+/* =========================================================== 共用變數 */
+
+.enc-tree,
+.enc-inspector-pane,
+.enc-actor-pane {
+  --enc-fg: #e8e8ee;
+  --enc-fg-dim: #a8a8b8;
+  --enc-fg-faint: #74748a;
+  --enc-bg: #14141c;
+  --enc-bg-alt: #1b1b26;
+  --enc-bg-soft: #22222f;
+  --enc-line: #33334a;
+  --enc-accent: #4fd1ff;
+  --enc-accent-dim: #2b8fb3;
+  --enc-danger: #ff5f7a;
+  --enc-warn: #ffc14d;
+  --enc-error-bg: rgba(255, 95, 122, 0.14);
+  --enc-ok: #6ee7a0;
+  --enc-radius: 4px;
+  color: var(--enc-fg);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* =============================================================== 結構樹 */
+
+.enc-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: auto;
+  min-height: 0;
+  padding: 4px 6px 8px;
+  box-sizing: border-box;
+}
+
+.enc-tree-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 2px 4px;
+  border-bottom: 1px solid var(--enc-line);
+  margin-bottom: 2px;
+}
+
+.enc-tree-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.enc-tnode-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.enc-tnode {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 22px;
+  padding: 2px 4px 2px 0;
+  border-radius: var(--enc-radius);
+  cursor: default;
+  user-select: none;
+  position: relative;
+  outline: none;
+}
+
+.enc-tnode[tabindex]:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--enc-accent);
+}
+
+.enc-tnode:hover {
+  background: var(--enc-bg-soft);
+}
+
+.enc-tnode.is-selected,
+.enc-tnode-wrap.is-selected > .enc-tnode {
+  background: rgba(79, 209, 255, 0.16);
+  box-shadow: inset 2px 0 0 var(--enc-accent);
+}
+
+.enc-tnode.is-cue-active {
+  box-shadow: inset -2px 0 0 var(--enc-ok);
+}
+
+.enc-tnode.has-error {
+  color: var(--enc-danger);
+}
+
+.enc-tnode.has-error .enc-tlabel {
+  text-decoration: underline dotted rgba(255, 95, 122, 0.7);
+  text-underline-offset: 2px;
+}
+
+.enc-tnode-group {
+  color: var(--enc-fg-dim);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.enc-kind-group > .enc-tlabel {
+  text-transform: none;
+}
+
+.enc-twisty {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--enc-fg-dim);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.enc-twisty:hover {
+  color: var(--enc-accent);
+}
+
+.enc-twisty-empty {
+  cursor: default;
+  opacity: 0;
+}
+
+.enc-ticon {
+  flex: 0 0 auto;
+  width: 14px;
+  text-align: center;
+  color: var(--enc-fg-faint);
+  font-size: 11px;
+}
+
+.enc-kind-actor > .enc-ticon { color: #8ab4ff; }
+.enc-kind-party > .enc-ticon { color: #6ee7a0; }
+.enc-kind-enemy > .enc-ticon { color: var(--enc-danger); }
+.enc-kind-act > .enc-ticon { color: var(--enc-warn); }
+.enc-kind-spell > .enc-ticon { color: #c084fc; }
+.enc-kind-item > .enc-ticon { color: #facc15; }
+.enc-kind-turn > .enc-ticon { color: var(--enc-accent); }
+.enc-kind-talk > .enc-ticon { color: #7dd3fc; }
+.enc-kind-cues > .enc-ticon { color: #a5b4fc; }
+.enc-kind-var > .enc-ticon { color: #94a3b8; }
+
+.enc-tlabel {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.enc-tbadge {
+  flex: 0 0 auto;
+  min-width: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--enc-bg-soft);
+  color: var(--enc-fg-dim);
+  font-size: 10px;
+  text-align: center;
+}
+
+.enc-tbadge-cue {
+  background: rgba(110, 231, 160, 0.16);
+  color: var(--enc-ok);
+}
+
+.enc-tdot {
+  flex: 0 0 auto;
+  color: var(--enc-fg-faint);
+  font-size: 10px;
+  padding-right: 2px;
+}
+
+/* 操作按鈕：浮在列尾（絕對定位）。
+ * 不參與 flex 佈局 → hover 時 label 寬度不變、列中央永遠是「選取」區。
+ * 寬度刻意壓縮，讓按鈕只佔列右側 ~40%，列左側 60%（label 區）保持可點選取。
+ * 列本身已有 position:relative。 */
+.enc-tops {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  transform: translateY(-50%);
+  display: none;
+  align-items: center;
+  gap: 0;
+  padding: 1px 2px;
+  border-radius: 3px;
+  background: rgba(20, 20, 28, 0.88);
+  box-shadow: -6px 0 8px rgba(20, 20, 28, 0.75);
+  z-index: 2;
+}
+
+.enc-tnode:hover > .enc-tops,
+.enc-tnode.is-selected > .enc-tops,
+.enc-tnode-wrap.is-selected > .enc-tnode > .enc-tops,
+.enc-tnode:focus-within > .enc-tops {
+  display: flex;
+}
+
+.enc-op {
+  width: 14px;
+  height: 17px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: var(--enc-bg-alt);
+  color: var(--enc-fg-dim);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.enc-op:hover {
+  border-color: var(--enc-accent-dim);
+  color: var(--enc-fg);
+}
+
+.enc-op-danger:hover {
+  border-color: var(--enc-danger);
+  color: var(--enc-danger);
+}
+
+.enc-tchildren {
+  margin-left: 8px;
+  border-left: 1px solid var(--enc-line);
+  padding-left: 2px;
+}
+
+/* ============================================================== 檢查器 */
+
+.enc-inspector-pane,
+.enc-actor-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: auto;
+  min-height: 0;
+  padding: 4px 8px 12px;
+  box-sizing: border-box;
+}
+
+.enc-insp-header {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 0 5px;
+  border-bottom: 1px solid var(--enc-line);
+}
+
+.enc-insp-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--enc-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.enc-insp-sub {
+  font-size: 10px;
+  color: var(--enc-fg-faint);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.enc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 欄位外框（含錯誤訊息） */
+.enc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.enc-field.has-error > .pan-input,
+.enc-field.has-error > .pan-numfield,
+.enc-field.has-error > .pan-spritefield,
+.enc-field.has-error > .pan-select,
+.enc-field.has-error > .enc-textfield {
+  box-shadow: inset 0 0 0 1px var(--enc-danger);
+  border-color: var(--enc-danger);
+}
+
+.enc-field.has-error .pan-numlabel {
+  color: var(--enc-danger);
+}
+
+.enc-field .pan-field-error {
+  font-size: 10px;
+  color: var(--enc-danger);
+  display: none;
+  word-break: break-word;
+}
+
+.enc-field .pan-field-error.show {
+  display: block;
+}
+
+/* 唯讀值 */
+.enc-ro {
+  color: var(--enc-fg-dim);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.enc-input-num {
+  width: 100%;
+  min-width: 0;
+}
+
+/* 文字欄位（單一 / 中英） */
+.enc-textfield {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.enc-textmode {
+  display: flex;
+  gap: 2px;
+}
+
+.enc-modebtn {
+  padding: 1px 6px;
+  border: 1px solid var(--enc-line);
+  border-radius: 3px;
+  background: var(--enc-bg-alt);
+  color: var(--enc-fg-faint);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.enc-modebtn:hover {
+  color: var(--enc-fg);
+  border-color: var(--enc-accent-dim);
+}
+
+.enc-modebtn.active {
+  background: rgba(79, 209, 255, 0.16);
+  border-color: var(--enc-accent-dim);
+  color: var(--enc-accent);
+}
+
+.enc-textbody {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.enc-textbody > .pan-input,
+.enc-textbody > textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.enc-textarea {
+  min-height: 48px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.enc-subrow {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.enc-subrow > .pan-row-label {
+  flex: 0 0 auto;
+  min-width: 34px;
+  max-width: 60px;
+  white-space: nowrap;
+  color: var(--enc-fg-faint);
+  font-size: 10px;
+  padding-top: 3px;
+}
+
+.enc-subrow > .pan-row-control {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* 清單 / 子卡片 */
+.enc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.enc-list-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  border: 1px solid var(--enc-line);
+  border-radius: var(--enc-radius);
+  background: var(--enc-bg-alt);
+}
+
+.enc-list-main {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.enc-list-tools {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 2px;
+}
+
+.enc-list-note {
+  color: var(--enc-fg-faint);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.enc-subcard {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 5px;
+  border: 1px solid var(--enc-line);
+  border-left: 2px solid var(--enc-accent-dim);
+  border-radius: var(--enc-radius);
+  background: var(--enc-bg-alt);
+  margin-bottom: 5px;
+}
+
+.enc-subcard-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: space-between;
+}
+
+.enc-commands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 8px;
+}
+
+.enc-multiselect {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 8px;
+  align-items: center;
+}
+
+.enc-cuerow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.enc-cuelist {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.enc-cueitem {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  color: var(--enc-fg-dim);
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--enc-bg-alt);
+}
+
+.enc-varrow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 3px;
+}
+
+.enc-varname {
+  flex: 0 0 auto;
+  min-width: 70px;
+  max-width: 120px;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  color: var(--enc-fg-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.enc-varrow > .enc-input-num,
+.enc-varrow > .pan-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* 錯誤區塊 */
+.enc-errors .pan-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.enc-errrow {
+  font-size: 10px;
+  color: var(--enc-danger);
+  background: var(--enc-error-bg);
+  border-radius: 3px;
+  padding: 2px 4px;
+  word-break: break-word;
+}
+
+/* 標籤 */
+.enc-tag {
+  flex: 0 0 auto;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--enc-bg-soft);
+  color: var(--enc-fg-faint);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+/* ====================================================== 演員動畫編輯器 */
+
+.enc-animrow {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px;
+  border: 1px solid var(--enc-line);
+  border-radius: var(--enc-radius);
+  background: var(--enc-bg-alt);
+  margin-bottom: 6px;
+}
+
+.enc-animrow-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.enc-animname {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-weight: 600;
+}
+
+.enc-animpreview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.enc-animcanvas {
+  flex: 0 0 auto;
+  width: 72px;
+  height: 72px;
+  image-rendering: pixelated;
+  background:
+    repeating-conic-gradient(#1e1e2a 0% 25%, #171722 0% 50%) 50% / 12px 12px;
+  border: 1px solid var(--enc-line);
+  border-radius: 3px;
+}
+
+.enc-animmeta {
+  font-size: 10px;
+  color: var(--enc-fg-faint);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.enc-presetrow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.enc-presetrow > .pan-select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ==================================================== 小螢幕 / 窄面板 */
+
+@media (max-width: 1100px) {
+  .enc-tree,
+  .enc-inspector-pane,
+  .enc-actor-pane {
+    font-size: 11px;
+  }
+
+  .enc-tnode {
+    min-height: 20px;
+  }
+
+  .enc-op {
+    width: 16px;
+    height: 16px;
+  }
+
+  .enc-animcanvas {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* 分頁切換時（#enc-actor-body[hidden]）不佔高度 */
+.enc-actor-pane[hidden] {
+  display: none;
+}
+
+/* 「在預覽中拖曳」按鈕：閃一下替代模式圖層上的目標演員 */
+.fb-actor.enc-actor-flash {
+  outline: 2px solid #ffd23f;
+  outline-offset: 2px;
+  animation: enc-actor-flash 0.6s ease-in-out 2;
+}
+
+@keyframes enc-actor-flash {
+  0%,
+  100% {
+    outline-color: #ffd23f;
+  }
+  50% {
+    outline-color: transparent;
+  }
+}

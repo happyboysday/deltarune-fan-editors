@@ -1,0 +1,93 @@
+{
+  "_comment": "字體擷取規則（extract_fonts.py 讀取）。chapter=來源章節（同名字體在不同章節的字集/尺寸不同）；out=輸出目錄名（預設同名）。同名字體以本清單為準，不自動覆蓋。",
+  "format": "dr-battle-font-rules/1",
+  "fonts": [
+    {
+      "name": "fnt_main",
+      "chapter": 5,
+      "out": "fnt_main",
+      "role": "battle UI 主文字（英文/數字，12px em）",
+      "note": "最新章版本，96 glyph（ASCII 32-127），DELTARUNE 現行外觀"
+    },
+    {
+      "name": "fnt_mainbig",
+      "chapter": 5,
+      "out": "fnt_mainbig",
+      "role": "battle UI 大字（24px em，用於敵人名/選單大字）"
+    },
+    {
+      "name": "fnt_small",
+      "chapter": 5,
+      "out": "fnt_small",
+      "role": "小字（6px em，用於標籤/提示）"
+    },
+    {
+      "name": "fnt_tinynoelle",
+      "chapter": 5,
+      "out": "fnt_tinynoelle",
+      "role": "極小字（Noelle 風格細字，7px em）"
+    },
+    {
+      "name": "fnt_8bit",
+      "chapter": 5,
+      "out": "fnt_8bit",
+      "role": "8bit 風像素字（12px em，用於復古/機台風 UI）"
+    },
+    {
+      "name": "fnt_dotumche",
+      "chapter": 5,
+      "out": "fnt_dotumche",
+      "role": "DotumChe 風韓系像素字（12px em）"
+    },
+    {
+      "name": "fnt_comicsans",
+      "chapter": 5,
+      "out": "fnt_comicsans",
+      "role": "Comic Sans 風格字（10px em，對話用）"
+    },
+    {
+      "name": "fnt_ja_8bit",
+      "chapter": 5,
+      "out": "fnt_ja_8bit",
+      "role": "8bit 日文寬字集（16px em，CJK 覆蓋率最高 64.4%）",
+      "note": "官方字體中對繁體中文覆蓋率最高者，但仍不完整"
+    },
+    {
+      "name": "fnt_legend",
+      "chapter": 4,
+      "out": "fnt_legend",
+      "role": "Legend 風字（ch4 專有，16px，可用於章節標題）"
+    },
+    {
+      "name": "fnt_main",
+      "chapter": 1,
+      "out": "fnt_main_wide",
+      "role": "ch1 寬字集版 fnt_main（2532 glyph，含大量 CJK，覆蓋 SPEC 中文 57.3%）",
+      "note": "ch1 把日文全字集塞進主字體；與 ch5 版同名但字集大 26 倍"
+    },
+    {
+      "name": "fnt_mainbig",
+      "chapter": 1,
+      "out": "fnt_mainbig_wide",
+      "role": "ch1 寬字集版 fnt_mainbig（2532 glyph，24px em）"
+    },
+    {
+      "name": "fnt_comicsans",
+      "chapter": 1,
+      "out": "fnt_comicsans_wide",
+      "role": "ch1 寬字集版 fnt_comicsans（2532 glyph）"
+    },
+    {
+      "name": "fnt_tinynoelle",
+      "chapter": 1,
+      "out": "fnt_tinynoelle_wide",
+      "role": "ch1 寬字集版 fnt_tinynoelle（2518 glyph）"
+    },
+    {
+      "name": "fnt_dotumche",
+      "chapter": 1,
+      "out": "fnt_dotumche_wide",
+      "role": "ch1 寬字集版 fnt_dotumche（2533 glyph）"
+    }
+  ]
+}

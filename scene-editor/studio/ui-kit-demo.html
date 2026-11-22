@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>试玩 UI 套件演示</title>
+<style>
+  body { color: #fff; background: #15151a; font: 15px system-ui, sans-serif; max-width: 760px; margin: 24px auto; padding: 0 12px; }
+  canvas { display: block; width: 100%; image-rendering: pixelated; background: #243032; }
+  button { margin-top: 12px; margin-right: 8px; padding: 6px 12px; }
+</style>
+<canvas width="640" height="480" aria-label="中文和英文字形、像素边框及红心"></canvas>
+<button id="replay" disabled>重放打字</button>
+<button id="save" disabled>试听保存音效</button>
+<p id="status" role="status">正在加载位图素材…</p>
+<script type="module">
+  import {createTypewriter, drawPanel, loadUiKit, UI_COLORS, UI_SOUNDS, UI_VOICES, withUiViewport} from './ui-kit.mjs';
+
+  const ctx = document.querySelector('canvas').getContext('2d');
+  const replay = document.querySelector('#replay'), save = document.querySelector('#save');
+  const status = document.querySelector('#status');
+  try {
+    const kit = await loadUiKit();
+    const audio = kit.createAudio();
+    const text = '* 这里测试不同字形的间距。\n  暗世界对白采用三行布局。';
+    const voice = UI_VOICES.susie;
+    const writerOpts = {font:'fnt_mainbig', advance:'writer', lineHeight:36};
+    let animation, writer;
+
+    function paint(visible) {
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      withUiViewport(ctx, ui => {
+        kit.drawDarkBox(ui, 24, 2, 593, 167);
+        kit.drawText(ui, visible, 58, 30, writerOpts);
+        kit.drawText(ui, '* English: mixed-case text.', 58, 102, {...writerOpts,lang:'en'});
+
+        drawPanel(ui, 32, 192, 578, 160);
+        kit.drawText(ui, '光世界位图主字体', 58, 213, {font:'fnt_main', scale:2});
+        kit.drawText(ui, 'HP  32 / 40', 58, 253, {font:'fnt_main', lang:'en', scale:2});
+        kit.drawHeart(ui, 58, 298, {sprite:'spr_heartsmall', scale:2});
+        kit.drawText(ui, '选中文字', 86, 292, {font:'fnt_main', scale:2, color:UI_COLORS.yellow});
+
+        kit.drawText(ui, '等宽字体  ABC 123', 58, 375, {font:'fnt_dotumche', scale:2});
+        kit.drawText(ui, '字库外字符  龘', 58, 418);
+      });
+    }
+    paint(text);
+    replay.onclick = async () => {
+      replay.disabled = true;
+      await audio.unlock();
+      const [ready] = await audio.preload([voice]);
+      status.textContent = ready ? '正在逐字播放。' : '文字音效不可用。';
+      writer = createTypewriter(text, {ticksPerGlyph:1, voice, onVoice:({name}) => audio.play(name, {restart:true})});
+      let last = performance.now();
+      function tick(now) {
+        paint(writer.advance((now - last) * 30 / 1000));
+        last = now;
+        if (!writer.done) animation = requestAnimationFrame(tick);
+        else replay.disabled = false;
+      }
+      paint(writer.visible);
+      animation = requestAnimationFrame(tick);
+    };
+    save.onclick = async () => {
+      await audio.unlock();
+      const [ready] = await audio.preload([UI_SOUNDS.save]);
+      status.textContent = ready && audio.play(UI_SOUNDS.save) ? '已播放保存音效。' : '保存音效不可用。';
+    };
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(animation); audio.dispose(); }, {once:true});
+    replay.disabled = save.disabled = false;
+    status.textContent = kit.missing.length ? '缺少素材：' + kit.missing.join('、') : '位图素材加载完毕。';
+    document.body.dataset.ready = 'true';
+  } catch (error) {
+    status.textContent = error.message;
+  }
+</script>
+</html>

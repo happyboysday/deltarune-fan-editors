@@ -1,0 +1,8 @@
+name=fnt_8bit
+source_font=fnt_8bit
+chapter=ch5
+png_w=256
+png_h=128
+glyphs=96
+em_size=12
+line_height=16

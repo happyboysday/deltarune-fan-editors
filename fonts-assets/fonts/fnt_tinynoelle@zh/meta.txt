@@ -1,0 +1,13 @@
+name=fnt_tinynoelle@zh
+source_font=fnt_tinynoelle
+source_chapter=chapter5
+source_csv=glyphs_fnt_tinynoelle.csv
+display_name=DotumChe
+em_size=7.0
+bold=False
+italic=False
+png_w=592
+png_h=590
+glyphs=3580
+format=dr-battle-font/1
+note=字形只存在於 alpha 通道；RGB 已統一為白色。座標為 PNG 左上角像素，scale=1。

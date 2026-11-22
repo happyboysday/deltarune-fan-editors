@@ -1,0 +1,16 @@
+{
+  "id": "fireflies",
+  "name": "萤火收集",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "description": "在限时内碰触萤火，收集完毕后点亮出口。",
+  "author": "Scene Studio",
+  "runtime": "runtime.mjs",
+  "editor": "editor.mjs",
+  "provides": {
+    "modes": ["fireflies.collect"],
+    "entities": ["fireflies.light"],
+    "actions": ["fireflies.finish"]
+  },
+  "dependencies": []
+}

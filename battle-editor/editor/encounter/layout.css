@@ -1,0 +1,514 @@
+/**
+ * editor/encounter/layout.css — 遭遇編輯器版面（ED1 擁有）
+ *
+ * 沿用 editor/styles.css 的深色主題變數與 .toolbar / .panel / .splitter /
+ * .transport / .boot-* / .modal-* / .menu-* / .toast-* 樣式；
+ * 本檔只補「遭遇編輯器」特有的版面與少量元件。
+ */
+
+/* =========================================================================
+ * 主版面（CSS Grid，五區 + 三條可拖曳分隔線）
+ * ========================================================================= */
+
+#enc-app {
+  display: grid;
+  grid-template-columns: var(--col-tree) var(--splitter) minmax(0, 1fr) var(--splitter) var(--col-inspector);
+  grid-template-rows: var(--toolbar-h) minmax(0, 1fr) var(--splitter) var(--row-cues);
+  grid-template-areas:
+    "toolbar  toolbar  toolbar  toolbar  toolbar"
+    "tree     sp-tree  preview  sp-insp  inspector"
+    "sp-cues  sp-cues  sp-cues  sp-cues  sp-cues"
+    "cues     cues     cues     cues     cues";
+  height: 100vh;
+  width: 100vw;
+  background: var(--bg-deep);
+  gap: 0;
+}
+
+:root {
+  --col-tree: 258px;
+  --row-cues: 300px;
+}
+
+#enc-toolbar {
+  grid-area: toolbar;
+}
+#enc-tree {
+  grid-area: tree;
+}
+#enc-preview {
+  grid-area: preview;
+}
+#enc-inspector {
+  grid-area: inspector;
+}
+#enc-cues {
+  grid-area: cues;
+}
+
+#enc-split-tree {
+  grid-area: sp-tree;
+}
+#enc-split-inspector {
+  grid-area: sp-insp;
+}
+#enc-split-cues {
+  grid-area: sp-cues;
+}
+
+/* 面板外框沿用 .panel；這裡只調細節 */
+#enc-tree.panel,
+#enc-inspector.panel {
+  border-top: none;
+}
+#enc-cues.panel {
+  border-bottom: none;
+}
+#enc-preview.panel {
+  border-top: none;
+}
+
+/* =========================================================================
+ * 工具列補充
+ * ========================================================================= */
+
+/* 回到攻擊編輯器的連結：外觀像工具列按鈕 */
+.tb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  color: var(--text-dim);
+  font-size: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.tb-link::before {
+  content: "◀";
+  font-size: 9px;
+  opacity: 0.8;
+}
+.tb-link:hover {
+  background: var(--panel-hi);
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+.tb-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* 傳輸列較寬的按鈕（跳到回合 / 執行指令 / 除錯） */
+.tp-btn-wide {
+  width: auto;
+  min-width: 30px;
+  padding: 0 8px;
+  gap: 4px;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+#enc-btn-debug[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 預覽階段的晶片 */
+#enc-phase-chip {
+  font-variant-numeric: tabular-nums;
+  min-width: 62px;
+  text-align: center;
+}
+#enc-phase-chip.is-active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* =========================================================================
+ * 除錯浮窗（變數 / 狀態）
+ * ========================================================================= */
+
+.enc-debug {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 5;
+  min-width: 186px;
+  max-width: 46%;
+  max-height: calc(100% - 16px);
+  overflow: auto;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-strong);
+  background: rgba(8, 8, 12, 0.88);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-dim);
+  user-select: text;
+  pointer-events: auto;
+}
+.enc-debug h4 {
+  margin: 0 0 4px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.enc-debug h4 + h4 {
+  margin-top: 8px;
+}
+.enc-debug .dbg-row {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+.enc-debug .dbg-row > span:first-child {
+  color: var(--text-faint);
+}
+.enc-debug .dbg-row > span:last-child {
+  color: var(--text);
+  text-align: right;
+  word-break: break-all;
+}
+.enc-debug .dbg-empty {
+  color: var(--text-faint);
+  font-style: italic;
+}
+.enc-debug .dbg-hp {
+  color: var(--ok);
+}
+.enc-debug .dbg-hp.is-low {
+  color: var(--danger);
+}
+.enc-debug .dbg-mercy {
+  color: var(--accent);
+}
+
+/* 引擎缺失時，替代預覽的畫布要看得出來是替代品 */
+#enc-canvas.is-fallback {
+  opacity: 0.9;
+}
+
+/* 演員拖曳已啟動、等待在畫面上按下（ED3 演員編輯器的「在預覽中拖曳」） */
+.stage-viewport.is-actor-drag-armed,
+.stage-viewport.is-actor-drag-armed #enc-canvas {
+  cursor: grab;
+}
+.stage-viewport.is-actor-drag-armed #enc-canvas {
+  outline: 2px dashed rgba(255, 216, 74, 0.55);
+  outline-offset: -2px;
+}
+
+/* 替代預覽的演員圖層（引擎缺席時才顯示；放 svg 佔位方塊） */
+.enc-actor-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+/* 畫布鋪滿 viewport：縮放時 #enc-viewport 會改寬高，畫布與演員圖層必須同一個座標系，
+   否則拖曳把手（百分比定位）會跟畫面內容錯位。 */
+#enc-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+/* SPEC-LAYOUT §3：演員以「腳底」為錨點（與 engine/render-encounter.js 一致）
+   → node 底邊＝actors.<id>.y，body 往上長；名字與座標提示掛在腳底線下方 */
+.enc-actor-layer .fb-actor {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  cursor: grab;
+}
+.enc-actor-layer .fb-actor:active {
+  cursor: grabbing;
+}
+.enc-actor-layer .fb-body {
+  width: 34px;
+  height: 46px;
+  border-radius: 6px 6px 4px 4px;
+  border: 2px solid rgba(0, 0, 0, 0.55);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
+  position: relative;
+}
+/* 腳底基準線：拖曳把手對齊腳底一目了然 */
+.enc-actor-layer .fb-actor::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 46px;
+  height: 2px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 1px;
+  pointer-events: none;
+}
+.enc-actor-layer .fb-actor[data-kind="enemy"] .fb-body::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  width: 12px;
+  height: 8px;
+  transform: translateX(-50%);
+  border-radius: 3px 3px 0 0;
+  background: inherit;
+  border: 2px solid rgba(0, 0, 0, 0.55);
+  border-bottom: none;
+}
+.enc-actor-layer .fb-name {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 3px;
+  width: max-content;
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* .stage-viewport 為了 canvas 設了 line-height: 0，圖層內要還原回來才看得到字 */
+  line-height: 1.35;
+  font-size: 10px;
+  color: var(--text-dim);
+  text-shadow: 0 1px 2px #000;
+}
+/* 位置提示（x / 腳底 y）：方便確認拖曳後寫回的值 */
+.enc-actor-layer .fb-pos {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 19px;
+  width: max-content;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  text-shadow: 0 1px 2px #000;
+  pointer-events: none;
+}
+.enc-actor-layer .fb-actor.is-selected .fb-body {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.enc-actor-layer .fb-actor.is-selected .fb-name {
+  color: var(--accent);
+}
+.enc-actor-layer .fb-actor.is-selected::after {
+  background: var(--accent);
+}
+.enc-actor-layer .fb-hint {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(8, 8, 12, 0.8);
+  border: 1px solid var(--line-strong);
+  color: var(--text-dim);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* =========================================================================
+ * 面板內容容器
+ * ========================================================================= */
+
+#enc-tree-body,
+#enc-inspector-body,
+#enc-actor-body,
+#enc-cues-body {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+#enc-cues-body {
+  overflow: auto;
+}
+#enc-tree-body,
+#enc-inspector-body,
+#enc-actor-body {
+  overflow: auto;
+}
+
+/* 面板標題旁的小字（回合數、路徑、選取名稱） */
+#enc-turn-chip,
+#enc-cue-path,
+#enc-selection-label,
+#enc-tree-note {
+  max-width: 40vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}
+
+/* =========================================================================
+ * 結構樹／檢查器的「模組尚未完成」占位（ED2/ED3 缺席時）
+ * 沿用 .panel-placeholder，這裡只確保高度正確
+ * ========================================================================= */
+
+#enc-tree-body > .panel-placeholder,
+#enc-inspector-body > .panel-placeholder,
+#enc-actor-body > .panel-placeholder,
+#enc-cues-body > .panel-placeholder {
+  height: 100%;
+  margin: 8px;
+}
+
+/* =========================================================================
+ * 錯誤清單（工具列的「N 個錯誤」點開）
+ * ========================================================================= */
+
+.err-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 52vh;
+  overflow: auto;
+}
+.err-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(0, 2fr) 24px;
+  gap: 8px;
+  align-items: start;
+  padding: 5px 8px;
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  font-size: 11.5px;
+}
+.err-row code {
+  font-family: var(--font-mono);
+  color: var(--danger);
+  word-break: break-all;
+}
+.err-row span {
+  color: var(--text-dim);
+  word-break: break-word;
+}
+.err-jump {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-3);
+  color: var(--accent);
+  cursor: pointer;
+  line-height: 1;
+}
+.err-jump:hover {
+  background: var(--panel-hi);
+  border-color: var(--accent);
+}
+
+/* 引擎橫幅的技術細節行 */
+.engine-banner .banner-detail {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  word-break: break-word;
+}
+.engine-banner[data-kind="warn"] {
+  border-color: rgba(255, 216, 74, 0.5);
+}
+
+/* =========================================================================
+ * 窄視窗退化（不強求行動版，只避免版面爆掉）
+ * ========================================================================= */
+
+@media (max-width: 1180px) {
+  :root {
+    --col-tree: 214px;
+    --col-inspector: 274px;
+  }
+  .tp-btn-wide > span {
+    display: none;
+  }
+}
+
+@media (max-width: 960px) {
+  #enc-app {
+    grid-template-columns: 190px var(--splitter) minmax(0, 1fr) var(--splitter) 230px;
+    --row-cues: 240px;
+  }
+  #enc-turn-chip,
+  #enc-preview-meta {
+    display: none;
+  }
+}
+
+/* 減少動態（系統設定） */
+@media (prefers-reduced-motion: reduce) {
+  .tb-link,
+  .tp-btn,
+  .mode-chip {
+    transition: none;
+  }
+}
+
+/* =========================================================================
+ * 範例／下拉選單（B17：描述過長把選單撐到 ~1332px）
+ * 選單是 position:fixed 掛在 body，樣式放這裡（只在 encounter 頁載入）。
+ * ========================================================================= */
+
+#enc-app ~ .menu-root,
+.menu-root {
+  max-width: 520px;
+}
+
+/* 描述單行截斷；完整內容放在 title（fileops.openMenu 會設） */
+.menu-root .menu-item .mi-sub {
+  min-width: 0;
+  max-width: 340px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.menu-root .menu-item {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* 範例名稱本身也不要撐開 */
+.menu-root .menu-item > span:first-child {
+  flex: 0 0 auto;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* B2：另存對話框的「將存成：xxx」即時提示 */
+.modal .enc-save-preview {
+  color: var(--enc-accent, #4fd1ff);
+}
+
+.modal .enc-save-preview[hidden] {
+  display: none !important;
+}

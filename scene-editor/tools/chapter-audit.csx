@@ -1,0 +1,14 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Security.Cryptography;
+using UndertaleModLib.Models;
+using UndertaleModLib.Util;
+EnsureDataLoaded();
+string H(string text)=>Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text)));
+var scripts=Data.Code.Where(c=>c.ParentEntry==null).ToDictionary(c=>c.Name.Content,c=>H(c.Disassemble(Data.Variables,Data.CodeLocals?.For(c))));
+var bindings=Data.GameObjects.ToDictionary(o=>o.Name.Content,o=>o.Events.Select((list,index)=>list.SelectMany(e=>e.Actions.Select(a=>new {type=index,sub=e.EventSubtype,code=a.CodeId?.Name?.Content}))).SelectMany(x=>x).ToArray());
+var initializers=Data.GlobalInitScripts.Select(i=>i.Code.Name.Content).ToArray();
+File.WriteAllText(Environment.GetEnvironmentVariable("DIRECTOR_AUDIT"),JsonSerializer.Serialize(new{scripts,bindings,initializers,project=Data.GeneralInfo.Name.Content}));

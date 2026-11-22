@@ -1,0 +1,140 @@
+{
+  "format": "dr-battle-attack/1",
+  "meta": { "name": "環形彈幕", "author": "DR Battle Editor" },
+  "settings": {
+    "duration": 9.0,
+    "seed": 7,
+    "damage": 8,
+    "invincibleFrames": 30,
+    "grazeTP": 1.0,
+    "background": "spr_battlebg_0",
+    "bgm": null
+  },
+  "box": { "x": 320, "y": 190, "w": 150, "h": 165, "rotation": 0, "border": 3, "color": "#00c000" },
+  "soul": { "x": null, "y": null, "speed": 4, "slowSpeed": 2, "mode": "red", "color": "#ff0000" },
+  "demo": {
+    "mode": "path",
+    "fallback": "stay",
+    "path": [
+      { "t": 0, "x": 320, "y": 190 },
+      { "t": 0.5, "x": 310, "y": 268 },
+      { "t": 4.6, "x": 310, "y": 268, "slow": true },
+      { "t": 5.6, "x": 260, "y": 246 },
+      { "t": 6.8, "x": 370, "y": 246 },
+      { "t": 8.2, "x": 330, "y": 256 }
+    ]
+  },
+  "party": [
+    { "name": "Kris", "hp": 90, "maxHp": 90, "color": "#00ffff", "icon": null },
+    { "name": "Susie", "hp": 110, "maxHp": 110, "color": "#ff00ff", "icon": null },
+    { "name": "Ralsei", "hp": 70, "maxHp": 70, "color": "#00ff00", "icon": null }
+  ],
+  "enemies": [{ "sprite": "spr_ponman_idle", "x": 505, "y": 200, "scale": 2, "frameRate": 4 }],
+  "bulletTypes": {
+    "ring": {
+      "sprite": "spr_smallbullet",
+      "frameRate": 0,
+      "scale": 1,
+      "color": null,
+      "hitbox": { "shape": "circle", "r": 5 },
+      "damage": null,
+      "grazeable": true,
+      "destroyOnHit": true,
+      "faceVelocity": false,
+      "offscreen": "destroy",
+      "maskToBox": false
+    },
+    "ringcore": {
+      "sprite": "spr_heartbullet",
+      "frameRate": 0,
+      "scale": 1,
+      "color": null,
+      "hitbox": { "shape": "rect", "w": 10, "h": 10 },
+      "damage": 14,
+      "grazeable": true,
+      "destroyOnHit": true,
+      "faceVelocity": false,
+      "offscreen": "destroy",
+      "maskToBox": false
+    }
+  },
+  "timeline": [
+    {
+      "id": "ev_ring_0",
+      "at": 0.3,
+      "type": "spawn",
+      "label": "第一環（16 發）",
+      "bullet": "ring",
+      "count": 16,
+      "x": "(box.left + box.right) / 2",
+      "y": "(box.top + box.bottom) / 2",
+      "speed": 2.1,
+      "angle": "i * (360 / n)",
+      "rotation": 0,
+      "scale": 1.1
+    },
+    {
+      "id": "ev_ring_1",
+      "at": 2.0,
+      "type": "spawn",
+      "label": "第二環（24 發，隨時間旋轉）",
+      "bullet": "ring",
+      "count": 24,
+      "x": "(box.left + box.right) / 2",
+      "y": "(box.top + box.bottom) / 2",
+      "speed": 1.9,
+      "angle": "i * (360 / n) + t * 45",
+      "rotation": 0,
+      "scale": 1.0
+    },
+    {
+      "id": "ev_ring_2",
+      "at": 3.6,
+      "type": "spawn",
+      "label": "螺旋環",
+      "bullet": "ring",
+      "count": 20,
+      "x": "(box.left + box.right) / 2",
+      "y": "(box.top + box.bottom) / 2",
+      "speed": 2.4,
+      "angle": "i * (360 / n) + 180",
+      "rotation": 0,
+      "scale": 0.9
+    },
+    {
+      "id": "ev_box_suck",
+      "at": 4.8,
+      "type": "box",
+      "label": "框縮小",
+      "duration": 1.0,
+      "ease": "quadInOut",
+      "to": { "x": 320, "y": 190, "w": 120, "h": 120 }
+    },
+    {
+      "id": "ev_ring_3",
+      "at": 5.0,
+      "type": "spawn",
+      "label": "核心彈",
+      "bullet": "ringcore",
+      "count": 8,
+      "x": "(box.left + box.right) / 2",
+      "y": "(box.top + box.bottom) / 2",
+      "speed": 2.8,
+      "angle": "i * (360 / n) + 22.5",
+      "rotation": 0,
+      "scale": 1.2
+    },
+    { "id": "ev_shake", "at": 6.2, "type": "shake", "label": "震動", "duration": 0.6, "amount": 5 },
+    { "id": "ev_clear", "at": 7.4, "type": "clear", "label": "清場", "fade": 0.5 },
+    {
+      "id": "ev_box_back",
+      "at": 7.6,
+      "type": "box",
+      "label": "框復原",
+      "duration": 0.8,
+      "ease": "sineInOut",
+      "to": { "x": 320, "y": 190, "w": 150, "h": 165 }
+    },
+    { "id": "ev_end", "at": 8.9, "type": "end", "label": "回合結束" }
+  ]
+}

@@ -1,0 +1,524 @@
+{
+ "format": "dr-battle-music-manifest/1",
+ "source": "DELTARUNE/mus",
+ "rules": "music_rules.json",
+ "count": 60,
+ "tracks": {
+  "battle": {
+   "file": "audio/mus/battle.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "battle"
+   ],
+   "bytes": 1835051
+  },
+  "battle_preview": {
+   "file": "audio/mus/battle_preview.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "battle",
+    "alt"
+   ],
+   "bytes": 810154
+  },
+  "battle_preview_crisp": {
+   "file": "audio/mus/battle_preview_crisp.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "battle",
+    "alt"
+   ],
+   "bytes": 830983
+  },
+  "battle_vapor": {
+   "file": "audio/mus/battle_vapor.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "battle",
+    "alt"
+   ],
+   "bytes": 1871203
+  },
+  "ch4_battle": {
+   "file": "audio/mus/ch4_battle.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "battle"
+   ],
+   "bytes": 2205886
+  },
+  "ch4_extra_boss": {
+   "file": "audio/mus/ch4_extra_boss.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "alt"
+   ],
+   "bytes": 3241909
+  },
+  "lancerfight": {
+   "file": "audio/mus/lancerfight.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "battle"
+   ],
+   "bytes": 508153
+  },
+  "kingboss": {
+   "file": "audio/mus/kingboss.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 2880251
+  },
+  "queen_boss": {
+   "file": "audio/mus/queen_boss.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 979888
+  },
+  "spamton_battle": {
+   "file": "audio/mus/spamton_battle.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 800168
+  },
+  "rouxls_battle": {
+   "file": "audio/mus/rouxls_battle.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 718995
+  },
+  "rudebuster_boss": {
+   "file": "audio/mus/rudebuster_boss.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 1473727
+  },
+  "tenna_battle": {
+   "file": "audio/mus/tenna_battle.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 2355092
+  },
+  "tenna_battle_guitar": {
+   "file": "audio/mus/tenna_battle_guitar.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss",
+    "alt"
+   ],
+   "bytes": 2353273
+  },
+  "titan_battle": {
+   "file": "audio/mus/titan_battle.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 5509107
+  },
+  "vs_susie": {
+   "file": "audio/mus/vs_susie.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 1643248
+  },
+  "boxing_boss": {
+   "file": "audio/mus/boxing_boss.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 1447802
+  },
+  "pumpkin_boss": {
+   "file": "audio/mus/pumpkin_boss.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 3349206
+  },
+  "nightmare_boss_heavy": {
+   "file": "audio/mus/nightmare_boss_heavy.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 798683
+  },
+  "jitterbug": {
+   "file": "audio/mus/jitterbug.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 184784
+  },
+  "berdly_theme": {
+   "file": "audio/mus/berdly_theme.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 822325
+  },
+  "berdly_battle_heartbeat_true": {
+   "file": "audio/mus/berdly_battle_heartbeat_true.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "battle"
+   ],
+   "bytes": 180749
+  },
+  "field_of_hopes": {
+   "file": "audio/mus/field_of_hopes.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 2626672
+  },
+  "field_of_hopes_preview": {
+   "file": "audio/mus/field_of_hopes_preview.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "alt"
+   ],
+   "bytes": 807937
+  },
+  "4rd_sanctuary": {
+   "file": "audio/mus/4rd_sanctuary.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 1277118
+  },
+  "rhythm_3rd_sanctuary_noguit": {
+   "file": "audio/mus/rhythm_3rd_sanctuary_noguit.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "alt"
+   ],
+   "bytes": 2156439
+  },
+  "knight": {
+   "file": "audio/mus/knight.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 2220177
+  },
+  "prejoker": {
+   "file": "audio/mus/prejoker.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 1252422
+  },
+  "s_neo": {
+   "file": "audio/mus/s_neo.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 669566
+  },
+  "spamton_dance": {
+   "file": "audio/mus/spamton_dance.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 1926038
+  },
+  "thrashmachine": {
+   "file": "audio/mus/thrashmachine.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "tense"
+   ],
+   "bytes": 1335798
+  },
+  "sound_battle_bg": {
+   "file": "audio/mus/sound_battle_bg.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "battle"
+   ],
+   "bytes": 93647
+  },
+  "checkers": {
+   "file": "audio/mus/checkers.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 1496742
+  },
+  "castle_funk_long": {
+   "file": "audio/mus/castle_funk_long.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 1439371
+  },
+  "mus_date_fight": {
+   "file": "audio/mus/mus_date_fight.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 389822
+  },
+  "mus_race": {
+   "file": "audio/mus/mus_race.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 497216
+  },
+  "the_dark_truth": {
+   "file": "audio/mus/the_dark_truth.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "tense"
+   ],
+   "bytes": 481038
+  },
+  "dontforget": {
+   "file": "audio/mus/dontforget.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "defeat"
+   ],
+   "bytes": 1668222
+  },
+  "AUDIO_DEFEAT": {
+   "file": "audio/mus/AUDIO_DEFEAT.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "defeat"
+   ],
+   "bytes": 361145
+  },
+  "gameover_short": {
+   "file": "audio/mus/gameover_short.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "defeat"
+   ],
+   "bytes": 97567
+  },
+  "fanfare": {
+   "file": "audio/mus/fanfare.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "defeat"
+   ],
+   "bytes": 317705
+  },
+  "heartbeat": {
+   "file": "audio/mus/heartbeat.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "tense"
+   ],
+   "bytes": 18685
+  },
+  "sinedrone_danger": {
+   "file": "audio/mus/sinedrone_danger.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "tense"
+   ],
+   "bytes": 16465
+  },
+  "ominous_stab_harsh": {
+   "file": "audio/mus/ominous_stab_harsh.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "tense"
+   ],
+   "bytes": 56078
+  },
+  "tense": {
+   "file": "audio/mus/tense.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "tense"
+   ],
+   "bytes": 489573
+  },
+  "lancer": {
+   "file": "audio/mus/lancer.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 1155941
+  },
+  "board_sword_music": {
+   "file": "audio/mus/board_sword_music.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 1069618
+  },
+  "TV_GAME": {
+   "file": "audio/mus/TV_GAME.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 1097353
+  },
+  "thrash_rating": {
+   "file": "audio/mus/thrash_rating.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "tense"
+   ],
+   "bytes": 155938
+  },
+  "honksong": {
+   "file": "audio/mus/honksong.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 464704
+  },
+  "GALLERY": {
+   "file": "audio/mus/GALLERY.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 418561
+  },
+  "man": {
+   "file": "audio/mus/man.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [],
+   "bytes": 140530
+  },
+  "joker": {
+   "file": "audio/mus/joker.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 2457357
+  },
+  "giant_queen_appears": {
+   "file": "audio/mus/giant_queen_appears.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 1826658
+  },
+  "gigaqueen_pre": {
+   "file": "audio/mus/gigaqueen_pre.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 137652
+  },
+  "titan_pre": {
+   "file": "audio/mus/titan_pre.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 471170
+  },
+  "titan_spawn": {
+   "file": "audio/mus/titan_spawn.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "boss"
+   ],
+   "bytes": 1732449
+  },
+  "cyber_battle": {
+   "file": "audio/mus/cyber_battle.ogg",
+   "kind": "music",
+   "loop": true,
+   "tags": [
+    "battle"
+   ],
+   "bytes": 247149
+  },
+  "cyber_battle_prelude": {
+   "file": "audio/mus/cyber_battle_prelude.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "alt"
+   ],
+   "bytes": 206375
+  },
+  "cyber_battle_end": {
+   "file": "audio/mus/cyber_battle_end.ogg",
+   "kind": "music",
+   "loop": false,
+   "tags": [
+    "alt"
+   ],
+   "bytes": 198362
+  }
+ }
+}

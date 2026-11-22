@@ -1,0 +1,58 @@
+{
+  "format": "dr-battle-attack/1",
+  "meta": { "name": "异形房间：棱镜窗", "author": "DR Battle Editor" },
+  "settings": { "duration": 8, "seed": 8, "damage": 5 },
+  "box": { "x": 320, "y": 180, "w": 140, "h": 144, "appearance": "hidden", "border": 2, "color": "#56e8cb" },
+  "arena": {
+    "kind": "polygon",
+    "outline": true,
+    "points": [
+      { "x": 110, "y": 48 }, { "x": 542, "y": 48 }, { "x": 542, "y": 152 },
+      { "x": 338, "y": 152 }, { "x": 338, "y": 320 }, { "x": 110, "y": 320 }
+    ]
+  },
+  "clipRegion": {
+    "points": [
+      { "x": 180, "y": 62 }, { "x": 488, "y": 62 }, { "x": 400, "y": 126 },
+      { "x": 298, "y": 266 }, { "x": 180, "y": 230 }
+    ]
+  },
+  "soul": { "x": 470, "y": 104, "speed": 4, "slowSpeed": 2 },
+  "demo": {
+    "mode": "path",
+    "fallback": "stay",
+    "path": [
+      { "t": 0, "x": 470, "y": 104 },
+      { "t": 0.6, "x": 470, "y": 55 },
+      { "t": 3.5, "x": 145, "y": 55 },
+      { "t": 5.9, "x": 145, "y": 305 },
+      { "t": 7.6, "x": 296, "y": 305 }
+    ]
+  },
+  "bulletTypes": {
+    "prism": {
+      "sprite": "spr_starbullet_test",
+      "scale": 0.8,
+      "color": "#ffb867",
+      "hitbox": { "shape": "circle", "r": 6 },
+      "clipTo": "custom"
+    },
+    "sweep": {
+      "sprite": "spr_starbullet_test",
+      "scale": 0.72,
+      "color": "#6ce8ff",
+      "hitbox": { "shape": "circle", "r": 5 },
+      "clipTo": "arena"
+    }
+  },
+  "timeline": [
+    {
+      "id": "prism-light", "at": 0.2, "type": "emitter", "duration": 7.4, "interval": 0.22, "count": 11,
+      "spawn": { "bullet": "prism", "x": "132 + i*40", "y": 8, "speed": 4.5, "angle": 90, "life": 3 }
+    },
+    {
+      "id": "wall-sweep", "at": 1.1, "type": "emitter", "duration": 6.4, "interval": 0.8, "count": 4,
+      "spawn": { "bullet": "sweep", "x": 170, "y": "114 + i*55 + 9*sin(k*75)", "speed": 3.8, "angle": 0, "life": 4 }
+    }
+  ]
+}

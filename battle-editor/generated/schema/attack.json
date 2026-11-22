@@ -1,0 +1,3932 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://deltaruneworks.local/schema/attack.json",
+  "title": "DR Battle Editor — 攻擊檔",
+  "description": "攻擊檔（dr-battle-attack/1）：一段時間軸上的彈幕演出。人與 Agent 用同一個 JSON。",
+  "x-format": "dr-battle-attack/1",
+  "x-schema-version": "dr-battle-schema/1",
+  "x-engine-fps": 30,
+  "type": "object",
+  "required": [],
+  "properties": {
+    "format": {
+      "const": "dr-battle-attack/1",
+      "description": "格式代號（固定值）。"
+    },
+    "meta": {
+      "title": "中繼資料",
+      "type": "object",
+      "description": "給人看的資訊；不影響模擬。",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "攻擊名稱（中文可）。",
+          "examples": [
+            "黑桃雨"
+          ]
+        },
+        "author": {
+          "type": "string",
+          "description": "作者。",
+          "examples": [
+            "DR Battle Editor"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "settings": {
+      "title": "回合設定",
+      "type": "object",
+      "description": "長度、亂數種子、傷害等。",
+      "properties": {
+        "duration": {
+          "description": "回合長度（秒）。省略時由時間軸自動推算（最大事件結束 + 0.5 秒，上限 600）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 600
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "default": 8
+        },
+        "seed": {
+          "type": "number",
+          "description": "亂數種子（決定性；同 seed + 同輸入 = 同結果）。",
+          "default": 1
+        },
+        "damage": {
+          "type": "number",
+          "description": "子彈預設傷害。",
+          "minimum": 0,
+          "default": 10
+        },
+        "invincibleFrames": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "受傷後無敵幀數（30 = 1 秒）。",
+          "default": 30
+        },
+        "grazeTP": {
+          "type": "number",
+          "description": "每擦到一發子彈增加的 TP。",
+          "minimum": 0,
+          "default": 1
+        },
+        "background": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "背景 sprite 名（例如 spr_battlebg_0）；null = 黑底。",
+          "examples": [
+            "spr_battlebg_0",
+            null
+          ]
+        },
+        "bgm": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "背景音樂名（assets/index.json 的 audio 且 kind=music）；null = 不播。",
+          "examples": [
+            "battle",
+            null
+          ]
+        },
+        "bpm": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "每分鐘拍數（SPEC-EXPR-V2 §1）。設定後時間欄位才可以用拍點字串（\"2b\"）與表達式常數 bpm / beat；null = 沒拍點。",
+          "exclusiveMinimum": 0,
+          "default": null,
+          "examples": [
+            120,
+            null
+          ]
+        },
+        "beatOffset": {
+          "type": "number",
+          "description": "拍點位移（秒）。只加在「時間點」欄位（at、demo.path[].t），長度類欄位不加；可為負（換算後夾到 ≥ 0）。",
+          "default": 0,
+          "examples": [
+            0,
+            0.25
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "box": {
+      "title": "戰鬥框",
+      "type": "object",
+      "description": "可移動的原戰鬥框（x/y 為中心）。arena 為 box 或省略時也是玩家活動區。",
+      "properties": {
+        "x": {
+          "type": "number",
+          "description": "中心 x。",
+          "default": 320
+        },
+        "y": {
+          "type": "number",
+          "description": "中心 y。",
+          "default": 190
+        },
+        "w": {
+          "type": "number",
+          "description": "寬。",
+          "exclusiveMinimum": 0,
+          "default": 144
+        },
+        "h": {
+          "type": "number",
+          "description": "高。",
+          "exclusiveMinimum": 0,
+          "default": 158
+        },
+        "rotation": {
+          "type": "number",
+          "description": "旋轉角度。",
+          "default": 0
+        },
+        "border": {
+          "type": "number",
+          "description": "邊框粗細。",
+          "minimum": 0,
+          "default": 3
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{3,8}$",
+          "description": "邊框顏色。",
+          "examples": [
+            "#00c000",
+            "#ff0000",
+            "#ffffff"
+          ],
+          "default": "#00c000"
+        },
+        "appearance": {
+          "enum": [
+            "classic",
+            "outline",
+            "hidden"
+          ],
+          "default": "classic",
+          "description": "傳統黑底綠框、只畫框線、或隱藏。只影響畫面。"
+        }
+      },
+      "additionalProperties": true
+    },
+    "arena": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "description": "玩家活動區。省略時跟隨原戰鬥框。",
+      "properties": {
+        "kind": {
+          "enum": [
+            "box",
+            "stage",
+            "polygon"
+          ],
+          "default": "box"
+        },
+        "outline": {
+          "type": "boolean",
+          "default": false,
+          "description": "額外繪製活動區邊界。"
+        },
+        "points": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 64,
+          "description": "按邊界順序排列的舞台座標，可內凹但不可自交；末點會自動接回首點。",
+          "items": {
+            "type": "object",
+            "required": [
+              "x",
+              "y"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "description": "舞台 X。",
+                "minimum": 0,
+                "maximum": 640
+              },
+              "y": {
+                "type": "number",
+                "description": "舞台 Y。",
+                "minimum": 0,
+                "maximum": 362
+              }
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "polygon"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "points"
+        ]
+      }
+    },
+    "clipRegion": {
+      "type": "object",
+      "required": [
+        "points"
+      ],
+      "description": "供 clipTo: custom 使用的獨立裁剪區，不限制靈魂移動。",
+      "properties": {
+        "points": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 64,
+          "description": "按邊界順序排列的舞台座標，可內凹但不可自交；末點會自動接回首點。",
+          "items": {
+            "type": "object",
+            "required": [
+              "x",
+              "y"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "description": "舞台 X。",
+                "minimum": 0,
+                "maximum": 640
+              },
+              "y": {
+                "type": "number",
+                "description": "舞台 Y。",
+                "minimum": 0,
+                "maximum": 362
+              }
+            }
+          }
+        }
+      }
+    },
+    "soulProfiles": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9_-]{1,40}$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "movement"
+        ],
+        "properties": {
+          "appearance": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "color": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$"
+              },
+              "sprite": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "examples": [
+                  "builtin:soul-car"
+                ]
+              },
+              "rotate": {
+                "type": "boolean"
+              },
+              "anchorX": {
+                "type": "number",
+                "minimum": -128,
+                "maximum": 128
+              },
+              "anchorY": {
+                "type": "number",
+                "minimum": -128,
+                "maximum": 128
+              }
+            }
+          },
+          "movement": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": [
+                  "id",
+                  "version"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "free"
+                  },
+                  "version": {
+                    "const": 1
+                  },
+                  "params": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "speed": {
+                        "type": "number",
+                        "description": "速度",
+                        "default": 4,
+                        "minimum": 0,
+                        "maximum": 32
+                      },
+                      "slowSpeed": {
+                        "type": "number",
+                        "description": "低速",
+                        "default": 2,
+                        "minimum": 0,
+                        "maximum": 32
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "required": [
+                  "id",
+                  "version"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "inertia"
+                  },
+                  "version": {
+                    "const": 1
+                  },
+                  "params": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "acceleration": {
+                        "type": "number",
+                        "description": "加速度",
+                        "default": 0.65,
+                        "minimum": 0.05,
+                        "maximum": 8
+                      },
+                      "brake": {
+                        "type": "number",
+                        "description": "制動力",
+                        "default": 1.2,
+                        "minimum": 0.05,
+                        "maximum": 16
+                      },
+                      "drag": {
+                        "type": "number",
+                        "description": "鬆油門減速",
+                        "default": 0.15,
+                        "minimum": 0,
+                        "maximum": 4
+                      },
+                      "maxSpeed": {
+                        "type": "number",
+                        "description": "最高速度",
+                        "default": 9,
+                        "minimum": 0.1,
+                        "maximum": 32
+                      },
+                      "turn": {
+                        "type": "number",
+                        "description": "轉向速度",
+                        "default": 7,
+                        "minimum": 0,
+                        "maximum": 45
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "required": [
+                  "id",
+                  "version"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "slide"
+                  },
+                  "version": {
+                    "const": 1
+                  },
+                  "params": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "acceleration": {
+                        "type": "number",
+                        "description": "加速度",
+                        "default": 0.45,
+                        "minimum": 0.05,
+                        "maximum": 8
+                      },
+                      "maxSpeed": {
+                        "type": "number",
+                        "description": "最高速度",
+                        "default": 5,
+                        "minimum": 0.1,
+                        "maximum": 32
+                      },
+                      "friction": {
+                        "type": "number",
+                        "description": "摩擦（每幀減速比例）",
+                        "default": 0.06,
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "required": [
+                  "id",
+                  "version"
+                ],
+                "properties": {
+                  "id": {
+                    "const": "gravity"
+                  },
+                  "version": {
+                    "const": 1
+                  },
+                  "params": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "speed": {
+                        "type": "number",
+                        "description": "橫向速度",
+                        "default": 4,
+                        "minimum": 0,
+                        "maximum": 32
+                      },
+                      "gravity": {
+                        "type": "number",
+                        "description": "重力",
+                        "default": 0.5,
+                        "minimum": 0.05,
+                        "maximum": 4
+                      },
+                      "jump": {
+                        "type": "number",
+                        "description": "起跳速度",
+                        "default": 7,
+                        "minimum": 0,
+                        "maximum": 32
+                      },
+                      "maxFall": {
+                        "type": "number",
+                        "description": "最大下落速度",
+                        "default": 8,
+                        "minimum": 0.5,
+                        "maximum": 32
+                      },
+                      "airJumps": {
+                        "type": "integer",
+                        "description": "空中跳躍次數",
+                        "default": 0,
+                        "minimum": 0,
+                        "maximum": 3
+                      },
+                      "direction": {
+                        "type": "integer",
+                        "description": "重力方向（0下 1上 2左 3右）",
+                        "default": 0,
+                        "minimum": 0,
+                        "maximum": 3
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "abilities": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "const": "dash"
+                    },
+                    "version": {
+                      "const": 1
+                    },
+                    "params": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "speed": {
+                          "type": "number",
+                          "description": "衝刺速度",
+                          "default": 11,
+                          "minimum": 1,
+                          "maximum": 40
+                        },
+                        "durationFrames": {
+                          "type": "integer",
+                          "description": "衝刺影格數",
+                          "default": 6,
+                          "minimum": 1,
+                          "maximum": 30
+                        },
+                        "cooldownFrames": {
+                          "type": "integer",
+                          "description": "冷卻影格數",
+                          "default": 21,
+                          "minimum": 1,
+                          "maximum": 300
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "const": "shoot"
+                    },
+                    "version": {
+                      "const": 1
+                    },
+                    "params": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "speed": {
+                          "type": "number",
+                          "description": "玩家彈速度",
+                          "default": 16,
+                          "minimum": 1,
+                          "maximum": 64
+                        },
+                        "cooldownFrames": {
+                          "type": "integer",
+                          "description": "連發間隔",
+                          "default": 8,
+                          "minimum": 1,
+                          "maximum": 120
+                        },
+                        "lifeFrames": {
+                          "type": "integer",
+                          "description": "玩家彈壽命",
+                          "default": 32,
+                          "minimum": 1,
+                          "maximum": 120
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "soul": {
+      "title": "靈魂",
+      "type": "object",
+      "description": "紅心（16×16 sprite，碰撞半徑 4px）。",
+      "properties": {
+        "profile": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{1,40}$"
+        },
+        "x": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "初始 x；null = 框中心。",
+          "default": null
+        },
+        "y": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "初始 y；null = 框中心。",
+          "default": null
+        },
+        "speed": {
+          "type": "number",
+          "description": "移動速度（像素/幀）。",
+          "minimum": 0,
+          "default": 4
+        },
+        "slowSpeed": {
+          "type": "number",
+          "description": "低速（按住 X/Shift）移動速度。",
+          "minimum": 0,
+          "default": 2
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "red"
+          ],
+          "description": "靈魂模式（目前只支援 red）。",
+          "default": "red"
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{3,8}$",
+          "description": "靈魂顏色。",
+          "examples": [
+            "#00c000",
+            "#ff0000",
+            "#ffffff"
+          ],
+          "default": "#ff0000"
+        }
+      },
+      "additionalProperties": true
+    },
+    "party": {
+      "title": "隊伍",
+      "type": "array",
+      "description": "戰鬥中顯示的隊員（HP 條）。省略時為單一 Kris（90 HP）。",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "隊員名。",
+            "examples": [
+              "Kris"
+            ]
+          },
+          "hp": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "目前 HP。"
+          },
+          "maxHp": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "最大 HP。"
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{3,8}$",
+            "description": "HP 條 / 名字顏色。",
+            "examples": [
+              "#00c000",
+              "#ff0000",
+              "#ffffff"
+            ]
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "頭像 sprite 名。"
+          }
+        },
+        "additionalProperties": true
+      },
+      "examples": [
+        [
+          {
+            "name": "Kris",
+            "hp": 90,
+            "maxHp": 90,
+            "color": "#00ffff",
+            "icon": null
+          }
+        ]
+      ]
+    },
+    "enemies": {
+      "title": "敵人",
+      "type": "array",
+      "description": "畫在右側的敵人（會輕輕上下浮動）。",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sprite": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "sprite 名。",
+            "examples": [
+              "spr_hathyx_idle"
+            ]
+          },
+          "x": {
+            "type": "number",
+            "description": "x 座標。",
+            "default": 520
+          },
+          "y": {
+            "type": "number",
+            "description": "y 座標。",
+            "default": 200
+          },
+          "scale": {
+            "type": "number",
+            "description": "縮放。",
+            "default": 1
+          },
+          "frameRate": {
+            "type": "number",
+            "description": "動畫每秒幀數。",
+            "minimum": 0,
+            "default": 4
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "bulletTypes": {
+      "title": "子彈類型",
+      "type": "object",
+      "description": "子彈類型表：key 是名稱，timeline 用 bullet 參照。",
+      "additionalProperties": {
+        "title": "子彈類型",
+        "description": "定義一種子彈的外觀與碰撞。timeline 的 spawn/emitter 用 bullet 名稱參照。",
+        "type": "object",
+        "properties": {
+          "sprite": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "sprite 名（assets/index.json 的 key）。null = 用純色方塊（洋紅佔位）。",
+            "examples": [
+              "spr_spadebullet",
+              null
+            ]
+          },
+          "frameRate": {
+            "type": "number",
+            "description": "動畫每秒幀數（0 = 靜止單幀）。",
+            "minimum": 0,
+            "default": 0
+          },
+          "scale": {
+            "type": "number",
+            "description": "繪製縮放。",
+            "default": 1
+          },
+          "color": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "染色（null = 原色）。",
+            "examples": [
+              "#ff00ff",
+              null
+            ]
+          },
+          "hitbox": {
+            "title": "碰撞盒",
+            "description": "碰撞判定形狀。子彈的判定是與靈魂（紅心半徑 4px）的距離。",
+            "oneOf": [
+              {
+                "type": "object",
+                "required": [
+                  "shape",
+                  "r"
+                ],
+                "properties": {
+                  "shape": {
+                    "const": "circle",
+                    "description": "圓形判定。"
+                  },
+                  "r": {
+                    "type": "number",
+                    "description": "半徑（像素）。",
+                    "minimum": 0,
+                    "default": 6
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "required": [
+                  "shape",
+                  "w",
+                  "h"
+                ],
+                "properties": {
+                  "shape": {
+                    "const": "rect",
+                    "description": "矩形判定（會隨子彈 rotation 旋轉）。"
+                  },
+                  "w": {
+                    "type": "number",
+                    "description": "寬（像素）。",
+                    "minimum": 0,
+                    "default": 8
+                  },
+                  "h": {
+                    "type": "number",
+                    "description": "高（像素）。",
+                    "minimum": 0,
+                    "default": 8
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "damage": {
+            "type": "number",
+            "description": "這一種子彈的傷害；null = 用 settings.damage。",
+            "minimum": 0
+          },
+          "decor": {
+            "type": "boolean",
+            "default": false,
+            "description": "純裝飾子彈，不命中、不擦彈，不納入 AI 或難度密度。"
+          },
+          "grazeable": {
+            "type": "boolean",
+            "description": "是否可擦彈（擦到 +grazeTP TP）。false 用於純裝飾或無法擦的危險彈。",
+            "default": true
+          },
+          "destroyOnHit": {
+            "type": "boolean",
+            "description": "命中後是否消失。",
+            "default": true
+          },
+          "faceVelocity": {
+            "type": "boolean",
+            "description": "true = sprite 朝向速度方向（rotation 自動跟隨）。",
+            "default": true
+          },
+          "offscreen": {
+            "enum": [
+              "destroy",
+              "keep"
+            ],
+            "description": "離開畫面（含 200px 邊界）後的行為：destroy = 回收，keep = 保留。",
+            "default": "destroy"
+          },
+          "shootable": {
+            "type": "boolean",
+            "default": false,
+            "description": "可被玩家彈擊破。"
+          },
+          "maskToBox": {
+            "type": "boolean",
+            "description": "舊版裁剪設定：未指定 clipTo 時，true 相當於 box。",
+            "default": false
+          },
+          "clipTo": {
+            "enum": [
+              "none",
+              "box",
+              "arena",
+              "custom"
+            ],
+            "description": "子彈的裁剪與碰撞範圍：none 不裁剪、box 戰鬥框、arena 玩家活動區、custom 獨立多邊形。"
+          }
+        },
+        "additionalProperties": true,
+        "examples": [
+          {
+            "sprite": "spr_spadebullet",
+            "frameRate": 0,
+            "scale": 0.55,
+            "hitbox": {
+              "shape": "circle",
+              "r": 6
+            },
+            "damage": null,
+            "grazeable": true,
+            "destroyOnHit": true,
+            "faceVelocity": true,
+            "offscreen": "destroy",
+            "maskToBox": false
+          }
+        ]
+      },
+      "examples": [
+        {
+          "spade": {
+            "sprite": "spr_spadebullet",
+            "hitbox": {
+              "shape": "circle",
+              "r": 6
+            },
+            "scale": 0.55
+          }
+        }
+      ]
+    },
+    "timeline": {
+      "title": "時間軸",
+      "type": "array",
+      "description": "依 at 秒排序的事件。同一時間的事件依陣列順序執行。事件型別：spawn / emitter / box / soul / soulProfile / soulAppearance / soulTeleport / soulDrift / clear / shake / sfx / anim / end。",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/event_spawn"
+          },
+          {
+            "$ref": "#/$defs/event_emitter"
+          },
+          {
+            "$ref": "#/$defs/event_box"
+          },
+          {
+            "$ref": "#/$defs/event_soul"
+          },
+          {
+            "$ref": "#/$defs/event_soulProfile"
+          },
+          {
+            "$ref": "#/$defs/event_soulAppearance"
+          },
+          {
+            "$ref": "#/$defs/event_soulTeleport"
+          },
+          {
+            "$ref": "#/$defs/event_soulDrift"
+          },
+          {
+            "$ref": "#/$defs/event_clear"
+          },
+          {
+            "$ref": "#/$defs/event_shake"
+          },
+          {
+            "$ref": "#/$defs/event_sfx"
+          },
+          {
+            "$ref": "#/$defs/event_anim"
+          },
+          {
+            "$ref": "#/$defs/event_end"
+          }
+        ]
+      },
+      "examples": [
+        [
+          {
+            "id": "ev_end",
+            "at": 9.9,
+            "type": "end",
+            "label": "回合結束"
+          }
+        ]
+      ]
+    },
+    "demo": {
+      "title": "自動演示",
+      "type": "object",
+      "description": "攻擊的自動演示腳本（SPEC-AUTOPLAY §2.1）：path = 跟隨路徑、inputs = 重播錄製輸入、bot = 全程 AI。省略 mode 時依序看 path → inputs → bot。",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "path",
+            "inputs",
+            "bot"
+          ],
+          "description": "預設模式：path = 路徑點；inputs = 錄製的輸入；bot = 全程 AI。省略 = 有 path 用 path、否則有 inputs 用 inputs、否則 bot。"
+        },
+        "path": {
+          "type": "array",
+          "description": "路徑點（t 秒遞增、x/y 邏輯座標、選填 slow/hold）。照時間插值目標點並按方向鍵跟隨，不瞬移。",
+          "items": {
+            "title": "路徑點",
+            "type": "object",
+            "required": [
+              "t",
+              "x",
+              "y"
+            ],
+            "properties": {
+              "t": {
+                "description": "時間（秒；同一數值允許，需遞增）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+                "oneOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+                    "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+                    "examples": [
+                      "2b",
+                      "0.5b"
+                    ]
+                  }
+                ],
+                "examples": [
+                  1.2
+                ]
+              },
+              "x": {
+                "type": "number",
+                "description": "目標 x（640×480 邏輯座標；跟隨時會夾在戰鬥框內）。",
+                "examples": [
+                  304
+                ]
+              },
+              "y": {
+                "type": "number",
+                "description": "目標 y（會夾在戰鬥框內）。",
+                "examples": [
+                  254
+                ]
+              },
+              "slow": {
+                "type": "boolean",
+                "description": "這一段改用低速移動（按住 X/Shift）。",
+                "default": false
+              },
+              "hold": {
+                "type": "number",
+                "description": "抵達後停留秒數（下一個點的時間會自動往後推）。",
+                "minimum": 0,
+                "examples": [
+                  0.4
+                ]
+              }
+            },
+            "additionalProperties": true
+          },
+          "examples": [
+            [
+              {
+                "t": 0,
+                "x": 320,
+                "y": 190
+              },
+              {
+                "t": 1.2,
+                "x": 280,
+                "y": 240
+              },
+              {
+                "t": 2,
+                "x": 360,
+                "y": 240,
+                "slow": true
+              },
+              {
+                "t": 3.5,
+                "x": 320,
+                "y": 160,
+                "hold": 0.4
+              }
+            ]
+          ]
+        },
+        "inputs": {
+          "type": "string",
+          "description": "錄製的輸入（行程長度編碼）：`幀:鍵` 以 ; 分隔，代表從該幀起按住直到下一段；鍵 L/R/U/D/S（S = slow），單次按下 !z（確認）!x（取消）!c（選單）附在鍵後，空鍵 = 放開。例：\"0:;12:R;30:RD;45:D;60:DS;90:\"",
+          "examples": [
+            "0:;12:R;30:RD;45:D;60:DS;90:"
+          ]
+        },
+        "fallback": {
+          "type": "string",
+          "enum": [
+            "bot",
+            "stay"
+          ],
+          "description": "腳本用完（路徑最後一點之後 / inputs 結束）後的行為：bot = 交給 AI；stay = 不再按鍵（預設）。",
+          "default": "stay"
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        {
+          "mode": "path",
+          "fallback": "bot",
+          "path": [
+            {
+              "t": 0,
+              "x": 320,
+              "y": 190
+            },
+            {
+              "t": 3.3,
+              "x": 304,
+              "y": 254,
+              "slow": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "textValue": {
+      "title": "文字值",
+      "description": "文字欄位：可給字串（兩種語言共用），或 { \"zh\": \"簡體中文\", \"en\": \"English\" } 由語言選項取用。",
+      "oneOf": [
+        {
+          "type": "string",
+          "examples": [
+            "* 魯丁擋住了去路！"
+          ]
+        },
+        {
+          "type": "object",
+          "description": "{ zh, en } 雙語物件；未知語言鍵會被忽略。",
+          "properties": {
+            "zh": {
+              "type": "string",
+              "description": "簡體中文（遊戲畫面預設語言）。"
+            },
+            "en": {
+              "type": "string",
+              "description": "英文。"
+            }
+          },
+          "additionalProperties": false,
+          "examples": [
+            {
+              "zh": "* 魯丁擋住了去路！",
+              "en": "* Rudinn blocks the way!"
+            }
+          ]
+        }
+      ]
+    },
+    "bulletType": {
+      "title": "子彈類型",
+      "description": "定義一種子彈的外觀與碰撞。timeline 的 spawn/emitter 用 bullet 名稱參照。",
+      "type": "object",
+      "properties": {
+        "sprite": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "sprite 名（assets/index.json 的 key）。null = 用純色方塊（洋紅佔位）。",
+          "examples": [
+            "spr_spadebullet",
+            null
+          ]
+        },
+        "frameRate": {
+          "type": "number",
+          "description": "動畫每秒幀數（0 = 靜止單幀）。",
+          "minimum": 0,
+          "default": 0
+        },
+        "scale": {
+          "type": "number",
+          "description": "繪製縮放。",
+          "default": 1
+        },
+        "color": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "染色（null = 原色）。",
+          "examples": [
+            "#ff00ff",
+            null
+          ]
+        },
+        "hitbox": {
+          "title": "碰撞盒",
+          "description": "碰撞判定形狀。子彈的判定是與靈魂（紅心半徑 4px）的距離。",
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "shape",
+                "r"
+              ],
+              "properties": {
+                "shape": {
+                  "const": "circle",
+                  "description": "圓形判定。"
+                },
+                "r": {
+                  "type": "number",
+                  "description": "半徑（像素）。",
+                  "minimum": 0,
+                  "default": 6
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "required": [
+                "shape",
+                "w",
+                "h"
+              ],
+              "properties": {
+                "shape": {
+                  "const": "rect",
+                  "description": "矩形判定（會隨子彈 rotation 旋轉）。"
+                },
+                "w": {
+                  "type": "number",
+                  "description": "寬（像素）。",
+                  "minimum": 0,
+                  "default": 8
+                },
+                "h": {
+                  "type": "number",
+                  "description": "高（像素）。",
+                  "minimum": 0,
+                  "default": 8
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "damage": {
+          "type": "number",
+          "description": "這一種子彈的傷害；null = 用 settings.damage。",
+          "minimum": 0
+        },
+        "decor": {
+          "type": "boolean",
+          "default": false,
+          "description": "純裝飾子彈，不命中、不擦彈，不納入 AI 或難度密度。"
+        },
+        "grazeable": {
+          "type": "boolean",
+          "description": "是否可擦彈（擦到 +grazeTP TP）。false 用於純裝飾或無法擦的危險彈。",
+          "default": true
+        },
+        "destroyOnHit": {
+          "type": "boolean",
+          "description": "命中後是否消失。",
+          "default": true
+        },
+        "faceVelocity": {
+          "type": "boolean",
+          "description": "true = sprite 朝向速度方向（rotation 自動跟隨）。",
+          "default": true
+        },
+        "offscreen": {
+          "enum": [
+            "destroy",
+            "keep"
+          ],
+          "description": "離開畫面（含 200px 邊界）後的行為：destroy = 回收，keep = 保留。",
+          "default": "destroy"
+        },
+        "shootable": {
+          "type": "boolean",
+          "default": false,
+          "description": "可被玩家彈擊破。"
+        },
+        "maskToBox": {
+          "type": "boolean",
+          "description": "舊版裁剪設定：未指定 clipTo 時，true 相當於 box。",
+          "default": false
+        },
+        "clipTo": {
+          "enum": [
+            "none",
+            "box",
+            "arena",
+            "custom"
+          ],
+          "description": "子彈的裁剪與碰撞範圍：none 不裁剪、box 戰鬥框、arena 玩家活動區、custom 獨立多邊形。"
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        {
+          "sprite": "spr_spadebullet",
+          "frameRate": 0,
+          "scale": 0.55,
+          "hitbox": {
+            "shape": "circle",
+            "r": 6
+          },
+          "damage": null,
+          "grazeable": true,
+          "destroyOnHit": true,
+          "faceVelocity": true,
+          "offscreen": "destroy",
+          "maskToBox": false
+        }
+      ]
+    },
+    "spawnFields": {
+      "title": "生成欄位",
+      "type": "object",
+      "description": "數值欄位可用白名單表達式字串，於生成時求值一次（pathX/pathY 例外：每幀求值）。",
+      "properties": {
+        "x": {
+          "description": "生成點 x（像素，640×480 邏輯座標）。省略 = 戰鬥框中心。例：\"rand(box.left + 8, box.right - 8)\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "y": {
+          "description": "生成點 y。省略 = 戰鬥框中心。例：\"box.top - 18\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "speed": {
+          "description": "初速（像素/幀）。例：\"rand(2.2, 3.6)\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "angle": {
+          "description": "初速方向（度；0 = 向右、90 = 向下、180 = 向左、270 = 向上）。例：\"aim(soul.x, soul.y)\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "accel": {
+          "description": "每幀加速度（沿速度方向；負值 = 減速）。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "angularVel": {
+          "description": "每幀角度增量（度），讓子彈轉彎。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "scale": {
+          "description": "繪製縮放（1 = 原始大小）。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 1,
+          "examples": [
+            1
+          ]
+        },
+        "rotation": {
+          "description": "初始旋轉（度）；bulletType.faceVelocity 為 true 時會被速度方向覆寫。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "life": {
+          "description": "存活秒數；null = 一直存在（直到離開畫面）。可給數字（秒）、拍點字串（\"4b\"，需 settings.bpm），或白名單表達式字串（例如 \"beat*4\"，生成時求值）。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "examples": [
+                2.5
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串，例如 \"4b\"。",
+              "examples": [
+                "4b"
+              ]
+            },
+            {
+              "type": "string",
+              "description": "白名單表達式字串（生成時求值）。",
+              "examples": [
+                "beat*4"
+              ]
+            }
+          ],
+          "x-default": null,
+          "default": null,
+          "examples": [
+            2.5,
+            "4b",
+            "beat*4"
+          ]
+        },
+        "alpha": {
+          "description": "不透明度 0..1。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 1,
+          "examples": [
+            1
+          ]
+        },
+        "pathX": {
+          "description": "每幀求值的 x 位移表達式（相對生成點）。與 speed 並用時 pathX 會覆寫 x 軸運動。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathY": {
+          "description": "每幀求值的 y 位移表達式（相對生成點）。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathScale": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathAlpha": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathZ": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathFrame": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathRotation": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "solidWhen": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "memory": {
+          "title": "子彈記憶",
+          "type": "object",
+          "description": "每顆子彈的記憶（SPEC-EXPR-V2 §2.2）：生成時依 JSON 鍵順序求值一次後固定，之後用 mem.<name> 在生成欄位與 pathX/pathY 讀取。名稱需為合法識別字（不可用 constructor / __proto__ 等保留名），值為數字或表達式字串；沒定義的名字讀到 0。",
+          "propertyNames": {
+            "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"
+          },
+          "additionalProperties": {
+            "description": "數字，或白名單表達式字串（可引用先算出的 mem.<name>）。",
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "examples": [
+                  "i*90 + k*20"
+                ]
+              }
+            ]
+          },
+          "examples": [
+            {
+              "a0": "i*90 + k*20",
+              "dir": "rand(0, 360)"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "event_spawn": {
+      "title": "一次性生成",
+      "description": "在 at 時刻一次生成 count 發子彈（搭配變數 i / n 做扇形、環形）。",
+      "type": "object",
+      "required": [
+        "type",
+        "at",
+        "bullet"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "bullet": {
+          "type": "string",
+          "description": "bulletTypes 的 key。"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "description": "一次生成幾發。"
+        },
+        "x": {
+          "description": "生成點 x（像素，640×480 邏輯座標）。省略 = 戰鬥框中心。例：\"rand(box.left + 8, box.right - 8)\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "y": {
+          "description": "生成點 y。省略 = 戰鬥框中心。例：\"box.top - 18\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "speed": {
+          "description": "初速（像素/幀）。例：\"rand(2.2, 3.6)\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "angle": {
+          "description": "初速方向（度；0 = 向右、90 = 向下、180 = 向左、270 = 向上）。例：\"aim(soul.x, soul.y)\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "accel": {
+          "description": "每幀加速度（沿速度方向；負值 = 減速）。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "angularVel": {
+          "description": "每幀角度增量（度），讓子彈轉彎。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "scale": {
+          "description": "繪製縮放（1 = 原始大小）。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 1,
+          "examples": [
+            1
+          ]
+        },
+        "rotation": {
+          "description": "初始旋轉（度）；bulletType.faceVelocity 為 true 時會被速度方向覆寫。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 0,
+          "examples": [
+            0
+          ]
+        },
+        "life": {
+          "description": "存活秒數；null = 一直存在（直到離開畫面）。可給數字（秒）、拍點字串（\"4b\"，需 settings.bpm），或白名單表達式字串（例如 \"beat*4\"，生成時求值）。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "examples": [
+                2.5
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串，例如 \"4b\"。",
+              "examples": [
+                "4b"
+              ]
+            },
+            {
+              "type": "string",
+              "description": "白名單表達式字串（生成時求值）。",
+              "examples": [
+                "beat*4"
+              ]
+            }
+          ],
+          "x-default": null,
+          "default": null,
+          "examples": [
+            2.5,
+            "4b",
+            "beat*4"
+          ]
+        },
+        "alpha": {
+          "description": "不透明度 0..1。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": 1,
+          "examples": [
+            1
+          ]
+        },
+        "pathX": {
+          "description": "每幀求值的 x 位移表達式（相對生成點）。與 speed 並用時 pathX 會覆寫 x 軸運動。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathY": {
+          "description": "每幀求值的 y 位移表達式（相對生成點）。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathScale": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathAlpha": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathZ": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathFrame": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "pathRotation": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "solidWhen": {
+          "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "examples": [
+                "rand(2.2, 3.6)"
+              ]
+            }
+          ],
+          "x-default": null,
+          "examples": [
+            "rand(0, 360)"
+          ]
+        },
+        "memory": {
+          "title": "子彈記憶",
+          "type": "object",
+          "description": "每顆子彈的記憶（SPEC-EXPR-V2 §2.2）：生成時依 JSON 鍵順序求值一次後固定，之後用 mem.<name> 在生成欄位與 pathX/pathY 讀取。名稱需為合法識別字（不可用 constructor / __proto__ 等保留名），值為數字或表達式字串；沒定義的名字讀到 0。",
+          "propertyNames": {
+            "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"
+          },
+          "additionalProperties": {
+            "description": "數字，或白名單表達式字串（可引用先算出的 mem.<name>）。",
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "examples": [
+                  "i*90 + k*20"
+                ]
+              }
+            ]
+          },
+          "examples": [
+            {
+              "a0": "i*90 + k*20",
+              "dir": "rand(0, 360)"
+            }
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        {
+          "id": "ev_ring",
+          "at": 1,
+          "type": "spawn",
+          "bullet": "spade",
+          "count": 16,
+          "x": "box.x",
+          "y": "box.y",
+          "speed": 2.4,
+          "angle": "i / n * 360"
+        }
+      ]
+    },
+    "event_emitter": {
+      "title": "持續發射器",
+      "description": "從 at 起持續 duration 秒，每 interval 秒生成 count 發。",
+      "type": "object",
+      "required": [
+        "type",
+        "at",
+        "duration",
+        "interval",
+        "spawn"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "duration": {
+          "description": "持續秒數。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            8.4,
+            "16b"
+          ]
+        },
+        "interval": {
+          "description": "每幾秒發一次。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "default": 0.25,
+          "examples": [
+            0.16,
+            "1b"
+          ]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "description": "每批幾發。"
+        },
+        "spawn": {
+          "title": "生成規格",
+          "type": "object",
+          "required": [
+            "bullet"
+          ],
+          "properties": {
+            "bullet": {
+              "type": "string",
+              "description": "bulletTypes 的 key。"
+            },
+            "x": {
+              "description": "生成點 x（像素，640×480 邏輯座標）。省略 = 戰鬥框中心。例：\"rand(box.left + 8, box.right - 8)\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": 0,
+              "examples": [
+                0
+              ]
+            },
+            "y": {
+              "description": "生成點 y。省略 = 戰鬥框中心。例：\"box.top - 18\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": 0,
+              "examples": [
+                0
+              ]
+            },
+            "speed": {
+              "description": "初速（像素/幀）。例：\"rand(2.2, 3.6)\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": 0,
+              "examples": [
+                0
+              ]
+            },
+            "angle": {
+              "description": "初速方向（度；0 = 向右、90 = 向下、180 = 向左、270 = 向上）。例：\"aim(soul.x, soul.y)\"（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": 0,
+              "examples": [
+                0
+              ]
+            },
+            "accel": {
+              "description": "每幀加速度（沿速度方向；負值 = 減速）。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": 0,
+              "examples": [
+                0
+              ]
+            },
+            "angularVel": {
+              "description": "每幀角度增量（度），讓子彈轉彎。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": 0,
+              "examples": [
+                0
+              ]
+            },
+            "scale": {
+              "description": "繪製縮放（1 = 原始大小）。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": 1,
+              "examples": [
+                1
+              ]
+            },
+            "rotation": {
+              "description": "初始旋轉（度）；bulletType.faceVelocity 為 true 時會被速度方向覆寫。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": 0,
+              "examples": [
+                0
+              ]
+            },
+            "life": {
+              "description": "存活秒數；null = 一直存在（直到離開畫面）。可給數字（秒）、拍點字串（\"4b\"，需 settings.bpm），或白名單表達式字串（例如 \"beat*4\"，生成時求值）。",
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "examples": [
+                    2.5
+                  ]
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+                  "description": "拍點字串，例如 \"4b\"。",
+                  "examples": [
+                    "4b"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "description": "白名單表達式字串（生成時求值）。",
+                  "examples": [
+                    "beat*4"
+                  ]
+                }
+              ],
+              "x-default": null,
+              "default": null,
+              "examples": [
+                2.5,
+                "4b",
+                "beat*4"
+              ]
+            },
+            "alpha": {
+              "description": "不透明度 0..1。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": 1,
+              "examples": [
+                1
+              ]
+            },
+            "pathX": {
+              "description": "每幀求值的 x 位移表達式（相對生成點）。與 speed 並用時 pathX 會覆寫 x 軸運動。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": null,
+              "examples": [
+                "rand(0, 360)"
+              ]
+            },
+            "pathY": {
+              "description": "每幀求值的 y 位移表達式（相對生成點）。（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": null,
+              "examples": [
+                "rand(0, 360)"
+              ]
+            },
+            "pathScale": {
+              "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": null,
+              "examples": [
+                "rand(0, 360)"
+              ]
+            },
+            "pathAlpha": {
+              "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": null,
+              "examples": [
+                "rand(0, 360)"
+              ]
+            },
+            "pathZ": {
+              "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": null,
+              "examples": [
+                "rand(0, 360)"
+              ]
+            },
+            "pathFrame": {
+              "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": null,
+              "examples": [
+                "rand(0, 360)"
+              ]
+            },
+            "pathRotation": {
+              "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": null,
+              "examples": [
+                "rand(0, 360)"
+              ]
+            },
+            "solidWhen": {
+              "description": "生成欄位（可給數字，或字串形式的白名單表達式，例如 \"rand(2, 4)\"、\"aim(soul.x, soul.y)\"）",
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "examples": [
+                    "rand(2.2, 3.6)"
+                  ]
+                }
+              ],
+              "x-default": null,
+              "examples": [
+                "rand(0, 360)"
+              ]
+            },
+            "memory": {
+              "title": "子彈記憶",
+              "type": "object",
+              "description": "每顆子彈的記憶（SPEC-EXPR-V2 §2.2）：生成時依 JSON 鍵順序求值一次後固定，之後用 mem.<name> 在生成欄位與 pathX/pathY 讀取。名稱需為合法識別字（不可用 constructor / __proto__ 等保留名），值為數字或表達式字串；沒定義的名字讀到 0。",
+              "propertyNames": {
+                "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"
+              },
+              "additionalProperties": {
+                "description": "數字，或白名單表達式字串（可引用先算出的 mem.<name>）。",
+                "oneOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string",
+                    "examples": [
+                      "i*90 + k*20"
+                    ]
+                  }
+                ]
+              },
+              "examples": [
+                {
+                  "a0": "i*90 + k*20",
+                  "dir": "rand(0, 360)"
+                }
+              ]
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        {
+          "id": "ev_rain_a",
+          "at": 0.4,
+          "type": "emitter",
+          "duration": 8.4,
+          "interval": 0.16,
+          "count": 2,
+          "spawn": {
+            "bullet": "spade",
+            "x": "rand(box.left + 8, box.right - 8)",
+            "y": "box.top - 18",
+            "speed": "rand(2.2, 3.6)",
+            "angle": "90 + rand(-12, 12)"
+          }
+        }
+      ]
+    },
+    "event_box": {
+      "title": "戰鬥框補間",
+      "description": "把戰鬥框（含靈魂可行走範圍）從目前值補間到 to；未給的欄位保持不變。",
+      "type": "object",
+      "required": [
+        "type",
+        "at",
+        "to"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "duration": {
+          "description": "補間秒數。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "default": 0.5
+        },
+        "ease": {
+          "type": "string",
+          "enum": [
+            "linear",
+            "quadIn",
+            "quadOut",
+            "quadInOut",
+            "sineInOut",
+            "backOut"
+          ],
+          "default": "linear",
+          "description": "補間曲線。"
+        },
+        "to": {
+          "type": "object",
+          "description": "目標框（中心點 x/y、寬高、旋轉）。",
+          "properties": {
+            "x": {
+              "type": "number",
+              "description": "中心 x。",
+              "default": 320
+            },
+            "y": {
+              "type": "number",
+              "description": "中心 y。",
+              "default": 190
+            },
+            "w": {
+              "type": "number",
+              "description": "寬。",
+              "exclusiveMinimum": 0,
+              "default": 144
+            },
+            "h": {
+              "type": "number",
+              "description": "高。",
+              "exclusiveMinimum": 0,
+              "default": 158
+            },
+            "rotation": {
+              "type": "number",
+              "description": "旋轉角度。",
+              "default": 0
+            }
+          },
+          "additionalProperties": false,
+          "examples": [
+            {
+              "w": 120,
+              "h": 200
+            }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "event_soul": {
+      "title": "靈魂設定",
+      "description": "改變靈魂模式/位置/顏色。Phase 1 只有 red 模式（自由移動）。",
+      "type": "object",
+      "required": [
+        "type",
+        "at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "red"
+          ],
+          "description": "靈魂模式（目前只支援 red）。"
+        },
+        "x": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "把靈魂傳送到 x；null = 不動。"
+        },
+        "y": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "把靈魂傳送到 y；null = 不動。"
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{3,8}$",
+          "description": "靈魂顏色。",
+          "examples": [
+            "#00c000",
+            "#ff0000",
+            "#ffffff"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "event_soulProfile": {
+      "title": "切換靈魂配置",
+      "type": "object",
+      "required": [
+        "type",
+        "at",
+        "profile"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "profile": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{1,40}$"
+        }
+      }
+    },
+    "event_soulAppearance": {
+      "title": "調整靈魂外觀",
+      "type": "object",
+      "required": [
+        "type",
+        "at",
+        "appearance"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "appearance": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}$"
+            },
+            "sprite": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "examples": [
+                "builtin:soul-car"
+              ]
+            },
+            "rotate": {
+              "type": "boolean"
+            },
+            "anchorX": {
+              "type": "number",
+              "minimum": -128,
+              "maximum": 128
+            },
+            "anchorY": {
+              "type": "number",
+              "minimum": -128,
+              "maximum": 128
+            }
+          }
+        }
+      }
+    },
+    "event_soulTeleport": {
+      "title": "傳送靈魂",
+      "type": "object",
+      "required": [
+        "type",
+        "at",
+        "x",
+        "y"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      }
+    },
+    "event_soulDrift": {
+      "title": "持續推動靈魂",
+      "description": "每幀把靈魂推 (dx, dy) 像素，一直生效到下一個 soulDrift 事件；dx、dy 都是 0 就停止。可寫運算式（soul、box、t＝事件開始後的秒數）。",
+      "type": "object",
+      "required": [
+        "type",
+        "at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "dx": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "每幀水平位移（像素，可為運算式）。",
+          "default": 0
+        },
+        "dy": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "每幀垂直位移（像素，可為運算式）。",
+          "default": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "event_clear": {
+      "title": "清場",
+      "description": "清除畫面上所有子彈（可淡出）。",
+      "type": "object",
+      "required": [
+        "type",
+        "at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "fade": {
+          "description": "淡出秒數（0 = 立刻消失）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "default": 0.3
+        }
+      },
+      "additionalProperties": true
+    },
+    "event_shake": {
+      "title": "震動",
+      "description": "畫面震動。",
+      "type": "object",
+      "required": [
+        "type",
+        "at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "duration": {
+          "description": "持續秒數。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "default": 0.4
+        },
+        "amount": {
+          "type": "number",
+          "description": "震動像素。",
+          "minimum": 0,
+          "default": 4
+        }
+      },
+      "additionalProperties": true
+    },
+    "event_sfx": {
+      "type": "object",
+      "title": "播放音效",
+      "description": "播放一次音效（音效名見 assets/index.json 的 audio；缺檔會靜默）。",
+      "required": [
+        "type",
+        "at",
+        "sound"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "sound": {
+          "type": "string",
+          "description": "音效名（例如 snd_hurt1、snd_graze、snd_menumove）。",
+          "examples": [
+            "snd_hurt1"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "event_anim": {
+      "title": "播放演員動畫",
+      "description": "遭遇戰中切換演員的動畫。獨立彈幕試玩沒有遭遇演員。",
+      "type": "object",
+      "required": [
+        "type",
+        "at",
+        "actor",
+        "anim"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1,
+          "description": "遭遇演員 ID。"
+        },
+        "anim": {
+          "type": "string",
+          "minLength": 1,
+          "description": "目前形態的動畫名稱。"
+        }
+      },
+      "additionalProperties": true
+    },
+    "event_end": {
+      "title": "結束回合",
+      "description": "提前結束回合（通常最後一個事件）。",
+      "type": "object",
+      "required": [
+        "type",
+        "at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "事件 id（同一檔案不可重複；編輯器用來識別）。"
+        },
+        "at": {
+          "description": "觸發時間（秒，30 FPS 對齊）。也接受拍點字串（例如 \"2b\"、\"0.5b\"、\"1.5b\"），換算為拍數 × 60 / settings.bpm；時間點欄位（at、demo.path[].t）會再加上 settings.beatOffset，長度欄位不會。用拍點字串需要 settings.bpm。",
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)[bB]$",
+              "description": "拍點字串：拍數 + b，例如 \"2b\"、\"1.5b\"、\".5b\"（需 settings.bpm）。",
+              "examples": [
+                "2b",
+                "0.5b"
+              ]
+            }
+          ],
+          "examples": [
+            0.4
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "給人看的中文標籤（不影響模擬）。"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "spawn",
+            "emitter",
+            "box",
+            "soul",
+            "soulProfile",
+            "soulAppearance",
+            "soulTeleport",
+            "soulDrift",
+            "clear",
+            "shake",
+            "sfx",
+            "anim",
+            "end"
+          ],
+          "description": "事件類型。"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "x-expressions": {
+    "variables": [
+      {
+        "name": "t",
+        "desc": "本發子彈生成後經過的秒數（spawn 時為 0；pathX/pathY 每幀求值時很有用）。"
+      },
+      {
+        "name": "T",
+        "desc": "整段攻擊的總長秒數（settings.duration）。"
+      },
+      {
+        "name": "i",
+        "desc": "本次生成批次中的索引（0 起算）——做扇形、環形彈幕的角度公式。"
+      },
+      {
+        "name": "n",
+        "desc": "本次生成批次的總數量（與 i 搭配算出均分角度）。"
+      },
+      {
+        "name": "k",
+        "desc": "生成批次編號（第幾波）。"
+      },
+      {
+        "name": "age",
+        "desc": "子彈年齡（秒），與 t 類似但從出生開始累加。"
+      },
+      {
+        "name": "box",
+        "desc": "戰鬥框 {x,y,w,h,left,right,top,bottom,rotation}；邊界座標不含旋轉，rotation 為角度（度）。"
+      },
+      {
+        "name": "soul",
+        "desc": "靈魂（紅心）{x,y}。"
+      },
+      {
+        "name": "x",
+        "desc": "本次生成「已求值」的 x 座標（讓 angle 可用 aim(x, y)）。"
+      },
+      {
+        "name": "y",
+        "desc": "本次生成「已求值」的 y 座標。"
+      },
+      {
+        "name": "turn",
+        "desc": "目前回合編號（遭遇戰用）。"
+      },
+      {
+        "name": "tp",
+        "desc": "目前 TP 值（0..100）。"
+      },
+      {
+        "name": "spawnX",
+        "desc": "本發子彈的生成 x（spawn.x 求值後；省略時為戰鬥框中心）。生成欄位與 pathX/pathY 都讀得到，用來寫「相對生成點」的位移。"
+      },
+      {
+        "name": "spawnY",
+        "desc": "本發子彈的生成 y（與 spawnX 同時固定）；生成欄位與 pathX/pathY 都讀得到。"
+      },
+      {
+        "name": "spawnT",
+        "desc": "本發子彈的生成時間（秒）＝生成該幀的回合時間 frame / 30；與 t（事件開始後的相對秒數）不同。"
+      },
+      {
+        "name": "bpm",
+        "desc": "settings.bpm（每分鐘拍數）；沒設定 bpm 時為 0。例：speed: \"bpm/60\"。"
+      },
+      {
+        "name": "beat",
+        "desc": "一拍秒數＝60 / bpm；沒設定 bpm 時為 0。例：life: \"beat*4\"。"
+      },
+      {
+        "name": "mem",
+        "desc": "每顆子彈的記憶物件：mem.<name>，由 spawn.memory 於生成時求值一次後固定；未定義的名字讀到 0。"
+      }
+    ],
+    "helpers": [
+      {
+        "name": "sin",
+        "desc": "sin(角度弧度)。例：sin(t * 6)"
+      },
+      {
+        "name": "cos",
+        "desc": "cos(角度弧度)。"
+      },
+      {
+        "name": "tan",
+        "desc": "tan(角度弧度)。"
+      },
+      {
+        "name": "atan2",
+        "desc": "atan2(y, x) → 弧度。"
+      },
+      {
+        "name": "sqrt",
+        "desc": "平方根。"
+      },
+      {
+        "name": "abs",
+        "desc": "絕對值。"
+      },
+      {
+        "name": "min",
+        "desc": "min(a, b)。"
+      },
+      {
+        "name": "max",
+        "desc": "max(a, b)。"
+      },
+      {
+        "name": "floor",
+        "desc": "向下取整。"
+      },
+      {
+        "name": "ceil",
+        "desc": "向上取整。"
+      },
+      {
+        "name": "round",
+        "desc": "四捨五入。"
+      },
+      {
+        "name": "PI",
+        "desc": "圓周率常數（用法：PI）。"
+      },
+      {
+        "name": "rand",
+        "desc": "rand(min, max) → [min, max) 的亂數（決定性，受 settings.seed 控制）。"
+      },
+      {
+        "name": "pick",
+        "desc": "pick(a, b, ...) → 隨機挑一個參數。"
+      },
+      {
+        "name": "aim",
+        "desc": "aim(x, y) → 從「生成本次子彈的位置」指到 (x, y) 的角度（度）。常用 aim(soul.x, soul.y)。"
+      },
+      {
+        "name": "lerp",
+        "desc": "lerp(a, b, u) → 線性插值。"
+      },
+      {
+        "name": "trailX",
+        "desc": ""
+      },
+      {
+        "name": "trailY",
+        "desc": ""
+      }
+    ],
+    "lookups": [
+      {
+        "name": "mercy",
+        "desc": "merc.<id> 之前要寫 mercy.<enemyId> —— 敵人饒恕值 0..100。"
+      },
+      {
+        "name": "hp",
+        "desc": "hp.<id> —— 隊員或敵人目前 HP。"
+      },
+      {
+        "name": "maxHp",
+        "desc": "maxHp.<id> —— 隊員或敵人最大 HP。"
+      },
+      {
+        "name": "alive",
+        "desc": "alive.<id> —— 存活為 1，否則 0。"
+      },
+      {
+        "name": "actCount",
+        "desc": "actCount.<enemyId>_<actId> —— 某個 ACT 被使用過幾次。"
+      },
+      {
+        "name": "vars",
+        "desc": "vars.<name> 或 var.<name> —— 自訂變數（set 指令寫入）。"
+      }
+    ],
+    "proxied": [
+      "box.left",
+      "box.right",
+      "box.top",
+      "box.bottom",
+      "soul.x",
+      "soul.y"
+    ],
+    "blocked": [
+      "window",
+      "document",
+      "globalThis",
+      "self",
+      "top",
+      "parent",
+      "frames",
+      "opener",
+      "fetch",
+      "XMLHttpRequest",
+      "WebSocket",
+      "Worker",
+      "localStorage",
+      "sessionStorage",
+      "indexedDB",
+      "navigator",
+      "location",
+      "history",
+      "Function",
+      "importScripts",
+      "setTimeout",
+      "setInterval",
+      "requestAnimationFrame",
+      "postMessage",
+      "process",
+      "require",
+      "module",
+      "exports",
+      "console",
+      "Math",
+      "alert",
+      "prompt",
+      "confirm"
+    ],
+    "note": "表達式在詞法白名單沙箱內求值：只用上面列的變數/函式與 + - * / % 括號。禁止屬性或函式呼叫以外的 JS。"
+  },
+  "x-defaults": {
+    "settings": {
+      "duration": 8,
+      "seed": 1,
+      "damage": 10,
+      "invincibleFrames": 30,
+      "grazeTP": 1,
+      "background": null,
+      "bgm": null,
+      "bpm": null,
+      "beatOffset": 0
+    },
+    "box": {
+      "x": 320,
+      "y": 190,
+      "w": 144,
+      "h": 158,
+      "rotation": 0,
+      "border": 3,
+      "color": "#00c000"
+    },
+    "soul": {
+      "x": null,
+      "y": null,
+      "speed": 4,
+      "slowSpeed": 2,
+      "mode": "red",
+      "color": "#ff0000"
+    },
+    "bullet": {
+      "sprite": null,
+      "frameRate": 0,
+      "scale": 1,
+      "color": null,
+      "hitbox": {
+        "shape": "circle",
+        "r": 6
+      },
+      "damage": null,
+      "grazeable": true,
+      "decor": false,
+      "destroyOnHit": true,
+      "faceVelocity": true,
+      "offscreen": "destroy",
+      "maskToBox": false
+    },
+    "spawn": {
+      "x": 0,
+      "y": 0,
+      "speed": 0,
+      "angle": 0,
+      "accel": 0,
+      "angularVel": 0,
+      "scale": 1,
+      "rotation": 0,
+      "life": null,
+      "alpha": 1,
+      "pathX": null,
+      "pathY": null,
+      "pathScale": null,
+      "pathAlpha": null,
+      "pathZ": null,
+      "pathFrame": null,
+      "pathRotation": null,
+      "solidWhen": null
+    },
+    "spawnNumericFields": [
+      "x",
+      "y",
+      "speed",
+      "angle",
+      "accel",
+      "angularVel",
+      "scale",
+      "rotation",
+      "life",
+      "alpha"
+    ],
+    "spawnPathFields": [
+      "pathX",
+      "pathY",
+      "pathScale",
+      "pathAlpha",
+      "pathZ",
+      "pathFrame",
+      "pathRotation",
+      "solidWhen"
+    ]
+  },
+  "x-easingNames": [
+    "linear",
+    "quadIn",
+    "quadOut",
+    "quadInOut",
+    "sineInOut",
+    "backOut"
+  ],
+  "x-eventTypes": [
+    "spawn",
+    "emitter",
+    "box",
+    "soul",
+    "soulProfile",
+    "soulAppearance",
+    "soulTeleport",
+    "soulDrift",
+    "clear",
+    "shake",
+    "sfx",
+    "anim",
+    "end"
+  ]
+}

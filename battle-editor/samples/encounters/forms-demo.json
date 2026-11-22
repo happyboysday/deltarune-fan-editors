@@ -1,0 +1,245 @@
+{
+  "format": "dr-battle-encounter/1",
+  "meta": {
+    "name": "形態示範：烘焙師 Rudinn",
+    "author": "DR Battle Editor",
+    "description": "V2-07 actor.forms 示範：第二回合用 form 指令切換成烘焙師形態（整組動畫＋顯示偏移），第三回合用 if 依變數切回；形態內沒定義的動畫沿用基礎。"
+  },
+  "settings": {
+    "seed": 11,
+    "bgm": "battle",
+    "background": "spr_battlebg_0",
+    "introText": "* Rudinn 圍上了圍裙！",
+    "canFlee": true
+  },
+  "actors": {
+    "kris": {
+      "kind": "party",
+      "x": 96,
+      "y": 140,
+      "anims": {
+        "idle": { "sprite": "spr_krisb_idle", "fps": 5, "loop": true },
+        "attack": { "sprite": "spr_krisb_attack", "fps": 15, "loop": false, "then": "idle" },
+        "act": { "sprite": "spr_krisb_act", "fps": 10, "loop": false, "then": "idle" },
+        "spare": { "sprite": "spr_krisb_idle", "fps": 5, "loop": false },
+        "defend": { "sprite": "spr_krisb_defend", "fps": 8, "loop": false },
+        "hurt": { "sprite": "spr_krisb_hurt", "fps": 12, "loop": false, "then": "idle" },
+        "down": { "sprite": "spr_krisb_defeat", "fps": 1, "loop": false },
+        "victory": { "sprite": "spr_krisb_victory", "fps": 8, "loop": false }
+      }
+    },
+    "susie": {
+      "kind": "party",
+      "x": 104,
+      "y": 230,
+      "anims": {
+        "idle": { "sprite": "spr_susieb_idle", "fps": 4, "loop": true },
+        "attack": { "sprite": "spr_susieb_attack", "fps": 15, "loop": false, "then": "idle" },
+        "act": { "sprite": "spr_susieb_act", "fps": 10, "loop": false, "then": "idle" },
+        "spare": { "sprite": "spr_susieb_idle", "fps": 4, "loop": false },
+        "defend": { "sprite": "spr_susieb_defend", "fps": 8, "loop": false },
+        "hurt": { "sprite": "spr_susieb_hurt", "fps": 12, "loop": false, "then": "idle" },
+        "down": { "sprite": "spr_susieb_defeat", "fps": 1, "loop": false },
+        "victory": { "sprite": "spr_susieb_victory", "fps": 10, "loop": false }
+      }
+    },
+    "ralsei": {
+      "kind": "party",
+      "x": 100,
+      "y": 322,
+      "anims": {
+        "idle": { "sprite": "spr_ralseib_idle", "fps": 4, "loop": true },
+        "attack": { "sprite": "spr_ralseib_attack", "fps": 15, "loop": false, "then": "idle" },
+        "act": { "sprite": "spr_ralseib_act", "fps": 10, "loop": false, "then": "idle" },
+        "spare": { "sprite": "spr_ralseib_idle", "fps": 4, "loop": false },
+        "defend": { "sprite": "spr_ralseib_defend", "fps": 8, "loop": false },
+        "hurt": { "sprite": "spr_ralseib_shock_enemy", "fps": 6, "loop": false, "then": "idle" },
+        "down": { "sprite": "spr_ralseib_defeat", "fps": 1, "loop": false },
+        "victory": { "sprite": "spr_ralseib_victory", "fps": 8, "loop": false }
+      }
+    },
+    "rudinn": {
+      "kind": "enemy",
+      "x": 500,
+      "y": 270,
+      "form": "normal",
+      "anims": {
+        "idle": { "sprite": "spr_diamondm_idle", "fps": 5, "loop": true },
+        "hurt": { "sprite": "spr_diamondm_hurt", "fps": 1, "loop": false, "then": "idle" },
+        "spared": { "sprite": "spr_diamondm_spared", "fps": 6, "loop": false },
+        "defeat": { "sprite": "spr_diamondm_hurt", "fps": 1, "loop": false }
+      },
+      "forms": {
+        "normal": {
+          "anims": {}
+        },
+        "baked": {
+          "scale": 1,
+          "offset": { "x": 0, "y": -21 },
+          "anims": {
+            "idle": { "sprite": "spr_bakesale_rudinn", "fps": 4, "loop": true },
+            "hurt": { "sprite": "spr_bakesale_rudinn", "fps": 8, "loop": false, "then": "idle" },
+            "happy": { "sprite": "spr_bakesale_rudinn", "fps": 8, "loop": true }
+          }
+        }
+      }
+    }
+  },
+  "party": [
+    {
+      "id": "kris",
+      "actor": "kris",
+      "name": "Kris",
+      "hp": 90,
+      "maxHp": 90,
+      "atk": 12,
+      "def": 2,
+      "magic": 0,
+      "color": "#00ffff",
+      "commands": ["fight", "act", "item", "spare", "defend"]
+    },
+    {
+      "id": "susie",
+      "actor": "susie",
+      "name": "Susie",
+      "hp": 110,
+      "maxHp": 110,
+      "atk": 16,
+      "def": 2,
+      "magic": 0,
+      "color": "#ff00ff",
+      "commands": ["fight", "act", "item", "spare", "defend"]
+    },
+    {
+      "id": "ralsei",
+      "actor": "ralsei",
+      "name": "Ralsei",
+      "hp": 70,
+      "maxHp": 70,
+      "atk": 10,
+      "def": 4,
+      "magic": 12,
+      "color": "#00ff00",
+      "commands": ["fight", "item", "spare", "defend"]
+    }
+  ],
+  "enemies": [
+    {
+      "id": "rudinn",
+      "actor": "rudinn",
+      "name": "Rudinn",
+      "hp": 90,
+      "maxHp": 90,
+      "atk": 5,
+      "def": 0,
+      "mercy": 0,
+      "spareAt": 100,
+      "tired": false,
+      "acts": [
+        {
+          "id": "check",
+          "name": "Check",
+          "text": "* RUDINN——輪班中的烘焙師。\n* 圍裙底下還是那顆菱形。",
+          "cues": []
+        },
+        {
+          "id": "sniff",
+          "name": "Sniff",
+          "party": ["kris"],
+          "mercy": 30,
+          "cues": [
+            { "cmd": "say", "speaker": "Kris", "portrait": "spr_headkris", "text": "* 好香。是剛出爐的。 " },
+            { "cmd": "anim", "actor": "rudinn", "anim": "happy" }
+          ]
+        }
+      ],
+      "onHurt": [
+        { "cmd": "shake", "amount": 2, "duration": 0.2 },
+        { "cmd": "sfx", "sound": "snd_hurt1" }
+      ],
+      "onSpare": [
+        { "cmd": "form", "actor": "rudinn", "name": "normal", "anim": "spared" },
+        { "cmd": "flash", "color": "#ffff00", "duration": 0.3 }
+      ],
+      "onDefeat": [
+        { "cmd": "form", "actor": "rudinn", "name": "normal", "anim": "defeat" },
+        { "cmd": "sfx", "sound": "snd_enemy_defeat" }
+      ]
+    }
+  ],
+  "items": [
+    { "id": "darkburger", "name": "Dark Burger", "count": 2, "heal": 70, "target": "party", "text": "* Kris吃下了黑暗汉堡。" }
+  ],
+  "turns": [
+    {
+      "id": "t1",
+      "flavor": "* Rudinn 正在繫圍裙。",
+      "talk": [{ "actor": "rudinn", "text": "先來點……\n普通模式。" }],
+      "attack": "spade-rain",
+      "start": [
+        { "cmd": "bubble", "actor": "rudinn", "text": "烘焙也是\n需要熱身的。", "wait": 0.8 }
+      ],
+      "end": []
+    },
+    {
+      "id": "t2",
+      "flavor": "* Rudinn 的圍裙發出了光！",
+      "talk": [{ "actor": "rudinn", "text": "鏘鏘！\n烘焙師形態！" }],
+      "attack": "ring-burst",
+      "start": [
+        { "cmd": "set", "var": "baked", "value": 1 },
+        { "cmd": "form", "actor": "rudinn", "name": "baked" },
+        { "cmd": "anim", "actor": "rudinn", "anim": "idle" },
+        { "cmd": "say", "speaker": "Rudinn", "portrait": "spr_face_king", "text": "* 看，整組動畫都換了！", "speed": 2 },
+        { "cmd": "bubble", "actor": "rudinn", "text": "麵團也是\n彈幕喔。", "wait": 0.8 }
+      ],
+      "end": []
+    },
+    {
+      "id": "t3",
+      "flavor": "* Rudinn 聞到了烤箱的味道。",
+      "talk": [{ "actor": "rudinn", "text": "該回去\n顧烤箱了。" }],
+      "attack": "box-shrink-aim",
+      "start": [
+        {
+          "cmd": "if",
+          "cond": "vars.baked",
+          "then": [
+            { "cmd": "form", "actor": "rudinn", "name": "normal" },
+            { "cmd": "set", "var": "baked", "value": 0 },
+            { "cmd": "say", "speaker": "Rudinn", "text": "* 形態切回去了（由變數判斷）。" }
+          ],
+          "else": [
+            { "cmd": "form", "actor": "rudinn", "name": "baked" },
+            { "cmd": "say", "speaker": "Rudinn", "text": "* 還沒變身過，直接換上烘焙師形態。" }
+          ]
+        }
+      ],
+      "end": []
+    }
+  ],
+  "turnOrder": "loop-last",
+  "hooks": {
+    "intro": [
+      { "cmd": "bgm", "track": "battle" },
+      { "cmd": "say", "text": "* Rudinn 圍上了圍裙！", "speed": 2 },
+      { "cmd": "bubble", "actor": "rudinn", "text": "今天為你\n準備了驚喜。", "wait": 1.5 }
+    ],
+    "victory": [
+      { "cmd": "bgm", "track": "fanfare" },
+      { "cmd": "form", "actor": "rudinn", "name": "normal", "anim": "defeat" },
+      { "cmd": "say", "text": "* 圍裙掉了下來。" }
+    ],
+    "spared": [
+      { "cmd": "bgm", "track": null },
+      { "cmd": "form", "actor": "rudinn", "name": "normal", "anim": "spared" },
+      { "cmd": "say", "text": "* 你饒恕了烘焙師 Rudinn。" }
+    ],
+    "defeat": [
+      { "cmd": "bgm", "track": "gameover_short" },
+      { "cmd": "say", "text": "* 烤箱還開著……" }
+    ],
+    "flee": [{ "cmd": "say", "text": "* 你逃跑了（烤箱留在原地）。" }]
+  },
+  "vars": { "baked": 0 }
+}

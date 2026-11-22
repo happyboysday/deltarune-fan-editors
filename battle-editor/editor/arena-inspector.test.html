@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Arena inspector browser test</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="panels.css">
+<!-- Serve over HTTP. Results appear in #result. Add ?engine to test the integrated validator. -->
+<pre id="result">Running…</pre>
+<main id="inspector" style="width:240px"></main>
+<script type="module">
+  import { createEmptyAttack, mount } from './inspector.js';
+  import { createStore } from './store.js';
+  import { setLocale } from './i18n.js';
+  import { validateAttack } from '../engine/attack.js';
+  import { createPreview } from './preview.js';
+
+  const root = document.querySelector('#inspector');
+  const result = document.querySelector('#result');
+  const check = (condition, message) => { if (!condition) throw new Error(message); };
+  const select = (label) => root.querySelector(`select[aria-label="${label}"]`);
+  const section = (title) => [...root.querySelectorAll('section')].find((s) => s.head?.textContent.includes(title));
+  const button = (scope, text) => [...scope.querySelectorAll('button')].find((b) => b.textContent === text);
+  const choose = (control, value) => {
+    control.value = value;
+    control.dispatchEvent(new Event('change'));
+  };
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+  const report = (text) => { result.textContent += `\nPASS ${text}`; };
+
+  try {
+    setLocale('en');
+    const original = createEmptyAttack();
+    original.bulletTypes = { 'legacy.on': { maskToBox: true }, off: { maskToBox: false }, absent: {} };
+    const store = createStore(original, { autosave: false });
+    mount(root, { store });
+
+    check(select('Soul movement').value === 'box', 'Old attacks use the battle box');
+    check(select('Box appearance').value === 'classic', 'Old attacks show the classic box');
+    const opacity = () => root.querySelector('input[aria-label="Area background opacity"]');
+    check(opacity().value === '' && opacity().placeholder === '1', 'Opacity defaults without writing old JSON');
+    for (const [name, expected] of [['legacy.on', 'box'], ['off', 'none'], ['absent', 'none']]) {
+      store.select('bulletType', name);
+      check(select('Limit bullets to').value === expected, `Legacy clip: ${name}`);
+    }
+    check(JSON.stringify(store.attack) === JSON.stringify(original) && !store.undo(), 'Viewing old files does not write defaults');
+    report('legacy defaults and unchanged JSON');
+
+    store.select('bulletType', 'legacy.on');
+    choose(select('Limit bullets to'), 'custom');
+    check(store.attack.clipRegion.points.length === 4, 'Custom mode creates the clip shape immediately');
+    check(store.attack.bulletTypes['legacy.on'].clipTo === 'custom' && store.attack.bulletTypes['legacy.on'].maskToBox,
+      'Explicit mode takes precedence without losing legacy data');
+    check(store.undo() && store.attack.clipRegion === undefined && select('Limit bullets to').value === 'box', 'Single undo restores both changes');
+    check(store.redo() && select('Limit bullets to').value === 'custom', 'Redo restores custom mode');
+    store.select(null, null);
+    check(button(section('Custom bullet region'), 'Remove custom region').disabled, 'Referenced region cannot be removed');
+    store.select('bulletType', 'legacy.on');
+    choose(select('Limit bullets to'), 'arena');
+    store.select(null, null);
+    button(section('Custom bullet region'), 'Remove custom region').click();
+    check(store.attack.clipRegion === undefined, 'Unreferenced region can be removed');
+    check(store.undo() && store.attack.clipRegion.points.length === 4, 'Undo restores removed region');
+    report('atomic custom clip, precedence and removal');
+
+    choose(select('Soul movement'), 'stage');
+    const outline = section('Movement area').querySelector('input[type=checkbox]');
+    outline.click();
+    check(store.attack.arena.kind === 'stage' && store.attack.arena.outline === true, 'Stage and outline are independent');
+    const fill = () => section('Movement area').querySelector('.pan-color-hex');
+    choose(fill(), '#080611');
+    check(store.attack.arena.fill === '#080611' && store.attack.arena.kind === 'stage', 'Background color preserves movement mode');
+    check(store.undo() && store.attack.arena.fill === undefined, 'Background color supports undo');
+    check(store.redo() && fill().value === '#080611', 'Redo restores the background field');
+    choose(fill(), '');
+    check(store.attack.arena.fill === undefined && store.attack.arena.outline, 'Clearing fill preserves the outline');
+    report('area background, clear and undo');
+    choose(opacity(), '0.35');
+    check(store.attack.arena.fillAlpha === 0.35, 'Opacity stores a number');
+    check(store.undo() && store.attack.arena.fillAlpha === undefined, 'Opacity supports undo');
+    check(store.redo() && opacity().value === '0.35', 'Opacity redo updates the control');
+    for (const value of [0, 1]) {
+      choose(opacity(), String(value));
+      check(store.attack.arena.fillAlpha === value, `Opacity endpoint ${value}`);
+    }
+    for (const value of ['-0.1', '1.1']) {
+      choose(opacity(), value);
+      check(!opacity().checkValidity() && store.attack.arena.fillAlpha === 1, 'Out-of-range input is not committed');
+    }
+    choose(opacity(), '');
+    check(!Object.hasOwn(store.attack.arena, 'fillAlpha'), 'Clearing opacity removes the optional field');
+    store.update((draft) => { draft.arena.fillAlpha = null; });
+    check(opacity().value === '', 'Null displays the default, not zero');
+    choose(opacity(), '0.25');
+    choose(fill(), '#080611');
+    choose(select('Soul movement'), 'box');
+    const saved = JSON.parse(JSON.stringify(store.attack));
+    check(saved.arena.fillAlpha === 0.25 && saved.arena.fill === '#080611', 'JSON round trip preserves opacity and fill');
+    const viewport = document.createElement('div');
+    const canvas = document.createElement('canvas');
+    viewport.style.cssText = 'width:640px;height:480px';
+    viewport.appendChild(canvas); document.body.appendChild(viewport);
+    const preview = createPreview({ canvas, viewport, store });
+    check(preview.isReady() && preview.getState().arena.fillAlpha === 0.25, 'Explicit box fill reaches the actual editor preview');
+    choose(opacity(), '0.5');
+    for (let i = 0; i < 20 && preview.getState().arena.fillAlpha !== 0.5; i++) await settle();
+    check(preview.getState().arena.fillAlpha === 0.5, 'Inspector changes refresh the preview');
+    preview.destroy(); viewport.remove();
+    report('opacity endpoints, validation, undo, null, JSON and live preview');
+    choose(select('Soul movement'), 'stage');
+    choose(select('Box appearance'), 'hidden');
+    check(store.attack.box.appearance === 'hidden' && store.attack.arena.kind === 'stage', 'Box appearance does not change movement');
+    check(store.undo() && select('Box appearance').value === 'classic', 'Undo restores implicit box appearance');
+    choose(select('Soul movement'), 'polygon');
+    const arena = () => section('Movement area');
+    check(arena().querySelectorAll('tbody tr').length === 4, 'Polygon starts with editable points');
+    button(arena(), 'Use diamond').click();
+    const seed = structuredClone(store.attack.arena.points);
+    check(seed[0].x === seed[2].x && seed[1].y === seed[3].y, 'Diamond preset replaces the shape');
+    const add = () => button(arena(), 'Add point');
+    add().click();
+    check(store.attack.arena.points.length === 5, 'Add inserts a point');
+    check(store.undo() && JSON.stringify(store.attack.arena.points) === JSON.stringify(seed), 'Undo restores shape before adding');
+    arena().querySelector('tbody button').click();
+    check(store.attack.arena.points.length === 3 && [...arena().querySelectorAll('tbody button')].every((b) => b.disabled),
+      'Remove stops at three points');
+    for (let count = 3; count < 64; count += 1) add().click();
+    check(store.attack.arena.points.length === 64 && add().disabled, 'Add stops at 64 points');
+    button(arena(), 'Use rectangle').click();
+    const x = () => arena().querySelector('input[aria-label="Point 1 X coordinate"]');
+    const y = () => arena().querySelector('input[aria-label="Point 1 Y coordinate"]');
+    choose(x(), '800');
+    choose(y(), '385');
+    check(store.attack.arena.points[0].x === 640 && store.attack.arena.points[0].y === 362, 'Coordinates respect stage limits');
+    check(store.undo() && y().value !== '362' && store.undo() && x().value !== '640', 'Coordinate edits undo separately and update the inputs');
+    const points = JSON.stringify(store.attack.arena.points);
+    choose(x(), '');
+    check(JSON.stringify(store.attack.arena.points) === points && x().value !== '', 'Blank coordinate restores the previous value');
+    choose(select('Soul movement'), 'box');
+    choose(select('Soul movement'), 'polygon');
+    check(JSON.stringify(store.attack.arena.points) === points, 'Changing movement modes preserves authored points');
+    report('movement modes, box appearance, presets and point editing');
+
+    const paths = ['arena.points', 'clipRegion.points'];
+    let errors = paths.map((path) => ({ path, message: `Edges cross: ${path}` }));
+    if (new URLSearchParams(location.search).has('engine')) {
+      add().click();
+      check(!validateAttack(store.attack).some((e) => paths.includes(e.path)), 'Engine accepts the presets and inserted point');
+      const invalid = structuredClone(store.attack);
+      const bowtie = [{ x: 100, y: 100 }, { x: 200, y: 200 }, { x: 200, y: 100 }, { x: 100, y: 200 }];
+      invalid.arena.points = invalid.clipRegion.points = bowtie;
+      errors = validateAttack(invalid).filter((e) => paths.includes(e.path));
+      check(paths.every((path) => errors.some((e) => e.path === path)), 'Engine reports both self-crossing polygons');
+    }
+    store.setErrors(errors);
+    await settle();
+    for (const [title, path] of [['Movement area', 'arena.points'], ['Custom bullet region', 'clipRegion.points']]) {
+      check(section(title).querySelector('[role=alert]').textContent === errors.find((e) => e.path === path).message,
+        `${path} error appears by its points`);
+      check(section(title).body.scrollWidth <= section(title).body.clientWidth, `${title} fits a narrow inspector`);
+    }
+    store.setErrors([]);
+    await settle();
+    check(!root.querySelector('[role=alert]'), 'Resolved errors clear');
+    report('engine validation paths display and clear');
+
+    for (const [locale, label, option] of [['zh-Hans', '灵魂可移动的范围', '自定义形状'], ['zh-Hant', '靈魂可移動的範圍', '自訂形狀']]) {
+      setLocale(locale);
+      check(select(label).selectedOptions[0].textContent === option, `${locale} labels and selection`);
+      const alphaLabel = '底色不透明度';
+      check(root.querySelector(`input[aria-label="${alphaLabel}"]`).value === '0.5', `${locale} opacity label and value`);
+    }
+    report('Chinese locale switching');
+    result.dataset.status = 'passed';
+  } catch (error) {
+    result.dataset.status = 'failed';
+    result.textContent += `\nFAIL ${error.stack}`;
+  }
+</script>

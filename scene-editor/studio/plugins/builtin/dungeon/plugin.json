@@ -1,0 +1,20 @@
+{
+  "id": "dungeon",
+  "name": "动作地下城",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "description": "动作地下城玩法与绘制",
+  "author": "Scene Studio",
+  "runtime": "runtime.mjs",
+  "provides": {
+    "modes": [
+      "dungeon"
+    ],
+    "entities": [
+      "actionEnemy"
+    ],
+    "actions": []
+  },
+  "dependencies": [],
+  "editor": "editor.mjs"
+}

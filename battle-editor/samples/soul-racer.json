@@ -1,0 +1,458 @@
+{
+  "format": "dr-battle-attack/1",
+  "meta": {
+    "name": "灵魂试验：失控弯道",
+    "author": "DR Battle Editor"
+  },
+  "settings": {
+    "duration": 10,
+    "seed": 67,
+    "damage": 5
+  },
+  "box": {
+    "x": 330,
+    "y": 181,
+    "w": 418,
+    "h": 245,
+    "appearance": "hidden",
+    "color": "#65e5d4"
+  },
+  "arena": {
+    "kind": "polygon",
+    "outline": true,
+    "points": [
+      {
+        "x": 127,
+        "y": 61
+      },
+      {
+        "x": 552,
+        "y": 61
+      },
+      {
+        "x": 552,
+        "y": 185
+      },
+      {
+        "x": 382,
+        "y": 185
+      },
+      {
+        "x": 382,
+        "y": 310
+      },
+      {
+        "x": 127,
+        "y": 310
+      }
+    ]
+  },
+  "soul": {
+    "profile": "racer",
+    "x": 181,
+    "y": 250
+  },
+  "soulProfiles": {
+    "racer": {
+      "appearance": {
+        "color": "#55e5df",
+        "sprite": "builtin:soul-car",
+        "rotate": true
+      },
+      "movement": {
+        "id": "inertia",
+        "version": 1,
+        "params": {
+          "acceleration": 0.65,
+          "brake": 1.25,
+          "drag": 0.14,
+          "maxSpeed": 8.5,
+          "turn": 7
+        }
+      }
+    }
+  },
+  "bulletTypes": {
+    "cone": {
+      "sprite": "spr_starbullet_test",
+      "color": "#fcac56",
+      "scale": 1,
+      "clipTo": "arena",
+      "hitbox": {
+        "shape": "circle",
+        "r": 5
+      }
+    },
+    "barrier": {
+      "sprite": "spr_starbullet_test",
+      "color": "#df73d0",
+      "scale": 1.05,
+      "clipTo": "arena",
+      "hitbox": {
+        "shape": "rect",
+        "w": 8,
+        "h": 8
+      }
+    },
+    "paint": {
+      "sprite": "spr_starbullet_test",
+      "color": "#688fb0",
+      "scale": 0.32,
+      "decor": true
+    }
+  },
+  "timeline": [
+    {
+      "id": "paint-0",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 154,
+      "y": 218,
+      "speed": 0
+    },
+    {
+      "id": "paint-1",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 175,
+      "y": 218,
+      "speed": 0
+    },
+    {
+      "id": "paint-2",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 196,
+      "y": 218,
+      "speed": 0
+    },
+    {
+      "id": "paint-3",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 217,
+      "y": 218,
+      "speed": 0
+    },
+    {
+      "id": "paint-4",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 238,
+      "y": 218,
+      "speed": 0
+    },
+    {
+      "id": "paint-5",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 259,
+      "y": 218,
+      "speed": 0
+    },
+    {
+      "id": "paint-6",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 280,
+      "y": 218,
+      "speed": 0
+    },
+    {
+      "id": "paint-7",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 301,
+      "y": 218,
+      "speed": 0
+    },
+    {
+      "id": "paint-8",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 322,
+      "y": 218,
+      "speed": 0
+    },
+    {
+      "id": "paint-9",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 332,
+      "y": 196,
+      "speed": 0
+    },
+    {
+      "id": "paint-10",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 332,
+      "y": 175,
+      "speed": 0
+    },
+    {
+      "id": "paint-11",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 332,
+      "y": 154,
+      "speed": 0
+    },
+    {
+      "id": "paint-12",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 332,
+      "y": 133,
+      "speed": 0
+    },
+    {
+      "id": "paint-13",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 353,
+      "y": 126,
+      "speed": 0
+    },
+    {
+      "id": "paint-14",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 374,
+      "y": 126,
+      "speed": 0
+    },
+    {
+      "id": "paint-15",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 395,
+      "y": 126,
+      "speed": 0
+    },
+    {
+      "id": "paint-16",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 416,
+      "y": 126,
+      "speed": 0
+    },
+    {
+      "id": "paint-17",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 437,
+      "y": 126,
+      "speed": 0
+    },
+    {
+      "id": "paint-18",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 458,
+      "y": 126,
+      "speed": 0
+    },
+    {
+      "id": "paint-19",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 479,
+      "y": 126,
+      "speed": 0
+    },
+    {
+      "id": "paint-20",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "paint",
+      "x": 500,
+      "y": 126,
+      "speed": 0
+    },
+    {
+      "id": "cone-0",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 245,
+      "y": 274,
+      "speed": 0,
+      "rotation": 0
+    },
+    {
+      "id": "cone-1",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 283,
+      "y": 278,
+      "speed": 0,
+      "rotation": 10
+    },
+    {
+      "id": "cone-2",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 326,
+      "y": 274,
+      "speed": 0,
+      "rotation": 20
+    },
+    {
+      "id": "cone-3",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 371,
+      "y": 275,
+      "speed": 0,
+      "rotation": 30
+    },
+    {
+      "id": "cone-4",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 274,
+      "y": 175,
+      "speed": 0,
+      "rotation": 40
+    },
+    {
+      "id": "cone-5",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 296,
+      "y": 153,
+      "speed": 0,
+      "rotation": 50
+    },
+    {
+      "id": "cone-6",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 391,
+      "y": 111,
+      "speed": 0,
+      "rotation": 60
+    },
+    {
+      "id": "cone-7",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 433,
+      "y": 104,
+      "speed": 0,
+      "rotation": 70
+    },
+    {
+      "id": "cone-8",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 476,
+      "y": 109,
+      "speed": 0,
+      "rotation": 80
+    },
+    {
+      "id": "cone-9",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 526,
+      "y": 89,
+      "speed": 0,
+      "rotation": 90
+    },
+    {
+      "id": "cone-10",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 528,
+      "y": 157,
+      "speed": 0,
+      "rotation": 100
+    },
+    {
+      "id": "cone-11",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 454,
+      "y": 170,
+      "speed": 0,
+      "rotation": 110
+    },
+    {
+      "id": "cone-12",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "cone",
+      "x": 349,
+      "y": 208,
+      "speed": 0,
+      "rotation": 120
+    },
+    {
+      "id": "start",
+      "at": 0.15,
+      "type": "sfx",
+      "sound": "snd_menumove"
+    },
+    {
+      "id": "cross",
+      "at": 4.7,
+      "type": "emitter",
+      "duration": 3.8,
+      "interval": 0.7,
+      "count": 1,
+      "spawn": {
+        "bullet": "barrier",
+        "x": 521,
+        "y": "120 + k*8",
+        "speed": 2,
+        "angle": 180,
+        "angularVel": 0,
+        "life": 4
+      }
+    },
+    {
+      "id": "finish",
+      "at": 9.6,
+      "type": "sfx",
+      "sound": "snd_menumove"
+    }
+  ],
+  "demo": {
+    "mode": "inputs",
+    "inputs": "v2:[[0,[],[]],[7,[\"up\"],[]],[32,[],[]],[40,[\"down\"],[]],[47,[\"left\"],[]],[60,[\"up\"],[]],[84,[\"down\",\"right\"],[]],[96,[\"up\"],[]],[120,[],[]],[129,[\"down\"],[]],[137,[\"left\"],[]],[163,[\"up\"],[]],[195,[\"down\"],[]],[211,[],[]],[226,[\"right\"],[]],[239,[\"up\"],[]],[266,[\"down\"],[]],[285,[],[]],[299,[],[]]]"
+  }
+}

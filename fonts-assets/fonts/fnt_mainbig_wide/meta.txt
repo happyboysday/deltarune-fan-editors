@@ -1,0 +1,8 @@
+name=fnt_mainbig_wide
+source_font=fnt_mainbig
+chapter=ch1
+png_w=2048
+png_h=2048
+glyphs=2532
+em_size=24
+line_height=32

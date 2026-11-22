@@ -1,0 +1,208 @@
+{
+  "format": "dr-battle-encounter/1",
+  "meta": {
+    "name": "第一关 · 余火巡逻",
+    "author": "Scene Studio"
+  },
+  "settings": {
+    "soulFlight": "classic",
+    "canFlee": true,
+    "bgm": "battle",
+    "seed": 83,
+    "hudLayout": "classic",
+    "introText": {
+      "zh": "* 灯芯巡逻员举起点名纸。",
+      "en": "* A wick patrol raises the roll sheet."
+    }
+  },
+  "actors": {
+    "kris": {
+      "kind": "party",
+      "x": 120,
+      "y": 219,
+      "anims": {
+        "idle": {
+          "sprite": "spr_krisb_idle",
+          "fps": 5
+        },
+        "attack": {
+          "sprite": "spr_krisb_attack",
+          "fps": 15,
+          "loop": false,
+          "then": "idle"
+        },
+        "defend": {
+          "sprite": "spr_krisb_defend",
+          "fps": 8
+        },
+        "down": {
+          "sprite": "spr_krisb_defeat",
+          "fps": 1
+        },
+        "victory": {
+          "sprite": "spr_krisb_victory",
+          "fps": 8
+        }
+      }
+    },
+    "guard": {
+      "kind": "enemy",
+      "x": 502,
+      "y": 247,
+      "anims": {
+        "idle": {
+          "sprite": "spr_diamondm_idle",
+          "fps": 5
+        },
+        "hurt": {
+          "sprite": "spr_diamondm_hurt",
+          "fps": 6,
+          "loop": false,
+          "then": "idle"
+        },
+        "spared": {
+          "sprite": "spr_diamondm_spared",
+          "fps": 6,
+          "loop": false
+        },
+        "defeat": {
+          "sprite": "spr_diamondm_hurt",
+          "fps": 1
+        }
+      }
+    }
+  },
+  "party": [
+    {
+      "id": "kris",
+      "actor": "kris",
+      "name": "Kris",
+      "hp": 88,
+      "maxHp": 88,
+      "atk": 28,
+      "def": 0,
+      "color": "#00ffff",
+      "commands": [
+        "fight",
+        "act",
+        "item",
+        "spare",
+        "defend"
+      ]
+    }
+  ],
+  "enemies": [
+    {
+      "id": "guard",
+      "actor": "guard",
+      "name": "灯芯巡逻员",
+      "hp": 21,
+      "maxHp": 21,
+      "atk": 8,
+      "def": 0,
+      "mercy": 0,
+      "spareAt": 100,
+      "acts": [
+        {
+          "id": "greet",
+          "name": "打招呼",
+          "mercy": 100,
+          "text": {
+            "zh": "* 你拍掉了制服上的火星。",
+            "en": "* You brush sparks off the uniform."
+          }
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "id": "cinders",
+      "flavor": {
+        "zh": "* 灯芯巡逻员仍在守着门。",
+        "en": "* The guard holds its post."
+      },
+      "attack": "ember-curtain"
+    }
+  ],
+  "hooks": {
+    "intro": [
+      {
+        "cmd": "damage",
+        "target": "kris",
+        "amount": 13
+      },
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 一颗火星蹦进袖口。先用颗星糖，再躲过纸弹。",
+          "en": "* A spark jumps into your sleeve. Use a STAR CANDY, then dodge the paper."
+        }
+      }
+    ],
+    "victory": [
+      {
+        "cmd": "item",
+        "id": "ash",
+        "delta": 1
+      },
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 巡逻员掉下一袋余烬。",
+          "en": "* The patrol drops a pouch of embers."
+        }
+      }
+    ],
+    "spared": [
+      {
+        "cmd": "item",
+        "id": "ash",
+        "delta": 1
+      },
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 巡逻员送给你一袋余烬。",
+          "en": "* The patrol gives you a pouch of embers."
+        }
+      }
+    ],
+    "defeat": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 灯芯还亮着。",
+          "en": "* The wick is still lit."
+        }
+      }
+    ],
+    "flee": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 你暂时退回走廊。",
+          "en": "* You retreat into the corridor."
+        }
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "treat",
+      "name": "补给星糖",
+      "count": 9,
+      "heal": 13,
+      "text": {
+        "zh": "* 星糖发出轻响。",
+        "en": "* The star candy crackles."
+      }
+    },
+    {
+      "id": "ash",
+      "name": "余烬袋",
+      "count": 0,
+      "heal": 7
+    }
+  ]
+}

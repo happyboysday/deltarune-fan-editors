@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DELTARUNE · 场景编辑器 V1.0</title><link rel="stylesheet" href="/studio/studio.css"></head>
+<body>
+<header class="top"><div class="brand"><span class="logo">✦</span><div><small>DELTARUNE DIRECTOR</small><strong>场景编辑器 <em>V1.0</em></strong></div></div>
+<nav inert><a href="/studio/chapters.html" data-capability="chapters">章节主线</a><a href="/layout/" id="layoutLink" hidden data-capability="layout">布景工作台 ↗</a><button id="openBattleEditor" data-capability="battle">战斗编辑器 ↗</button><button id="example">回声工坊</button><button id="battleExample" data-capability="battle battleAssets">纸门值班室</button><button id="campaignExample" data-capability="battle battleAssets">余火接力</button><button id="chapter5Example" data-capability="chapter5">第 5 章地图</button><button id="dungeonExample" data-capability="dungeonExample" data-example="example-dungeon" data-project="examples/dungeon-demo.scene.json">横版地下城</button><a href="/studio/settings.html">设置</a><a href="/studio/plugins.html">插件管理</a></nav></header>
+<aside id="pluginIssue" hidden><p id="pluginIssueText" role="alert"></p><a href="/studio/plugins.html">插件管理</a> · <button id="downloadDraft">导出当前工程 JSON</button></aside>
+<main id="workspace" inert>
+<div class="toolbar">
+ <div class="cluster"><button id="new">新建</button><button id="import">导入工程 / 布景</button><button id="open" data-capability="projects">打开存档</button><button id="save" data-capability="projectSave">保存</button></div>
+ <div class="cluster"><button id="exportJson">导出 JSON</button><button id="exportHtml">离线 HTML</button></div>
+ <div class="cluster"><button id="editMode" aria-pressed="true">编辑</button><button id="play" class="primary" aria-pressed="false">▶ 试玩</button><button id="restart" hidden>重新开始</button></div>
+ <input type="file" id="file" accept=".json,application/json" hidden><input type="file" id="image" accept="image/png,image/webp,image/jpeg,image/gif" hidden>
+</div>
+<div class="columns">
+ <aside class="left">
+  <section><h2>工程</h2><label>标题 <input id="title" maxlength="150"></label><label>筛选房间 <input id="sceneSearch" placeholder="输入名称或房间 ID"></label><label>房间 <select id="rooms"></select></label>
+   <div class="inline"><button id="addRoom">＋ 房间</button><button id="png">＋ 背景图</button><button id="embedLayout" hidden data-capability="chapter5Layouts">内嵌布景</button></div>
+   <div class="inline subtle"><span id="dimensions">—</span><label><input type="checkbox" id="grid" checked> 网格</label>
+    <label title="这个房间每一格的像素大小">每格 <select id="gridSize" aria-label="每格像素"></select></label></div>
+  </section>
+  <section><details id="campaignPanel"><summary>队伍与试玩档</summary><div id="campaignEditor"></div></details></section>
+  <section><h2>官方房间 <small>本机资料</small></h2>
+   <label>章节 <select id="chapter" data-capability="roomImport"><option>ch1</option><option selected>ch2</option><option>ch3</option><option>ch4</option><option>ch5</option></select></label>
+   <input id="roomSearch" data-capability="roomImport" placeholder="按房间名过滤" aria-label="搜索官方房间">
+   <select id="officialRooms" data-capability="roomImport" aria-label="选择官方房间"></select><button id="importRoom" data-capability="roomImport">＋ 导入所选布景</button>
+   <details id="hintPanel"><summary id="hintTitle">物件候选</summary><p>碰撞范围来自初始资源；带「估」的方框仅标记物件位置。只添加你核对过的候选。</p>
+    <div class="inline"><label><input type="checkbox" id="showHints" data-capability="officialHints"> 显示</label><button id="useHint" data-capability="officialHints">添加选中</button></div>
+    <select id="hints" data-capability="officialHints" size="5" aria-label="物件候选"></select>
+   </details>
+  </section>
+ </aside>
+ <div class="center">
+  <div class="viewport-title"><span><i></i><span id="sceneLabel">场景预览</span></span><span id="canvasHint">左键放置 · 右键擦除 · 中键拖动画面</span></div>
+  <div class="frame"><canvas id="screen" tabindex="0" width="480" height="300" aria-label="场景画布"></canvas></div>
+  <details id="sceneNav" hidden><summary>AI 自动跑图</summary><div class="cluster"><label>前往 <select id="sceneNavTarget" aria-label="自动跑图目的地"></select></label><button type="button" id="sceneNavStart">开始跑图</button><button type="button" id="sceneNavStop" disabled>暂停 / 接管</button></div><output id="sceneNavInfo" role="status">选择房间，或探索未到过的房间。</output></details>
+  <div class="touch" aria-label="试玩触控" hidden><div><button data-key="left">←</button><button data-key="up">↑</button><button data-key="down">↓</button><button data-key="right">→</button></div><div><button data-key="act">Z</button><button data-key="cancel">X</button><button data-key="skill2" title="灵魂弹反">F</button><button data-key="tool" title="使用手持工具">C</button><button data-key="dash" data-combat>V</button><button data-key="shoot" data-combat>B</button></div></div>
+  <div class="status"><span id="status" role="status">载入中…</span><span id="cursorInfo">方向键 / WASD · Z · X</span></div>
+  <details class="json" id="jsonPanel"><summary>工程 JSON <small>适合精确编辑和 AI 交接</small></summary>
+   <div class="inline"><button id="refreshJson">读取当前工程</button><button id="applyJson">应用并校验</button><button id="validate">校验工程</button></div>
+   <textarea id="document" rows="11" spellcheck="false" aria-label="工程 JSON"></textarea><pre id="diagnostics" hidden></pre>
+  </details>
+  <details class="json" id="mapPanel"><summary>文字地图 <small>一格一个字符：适合 AI 交接和整片修改</small></summary>
+   <div class="inline"><button id="mapRead">读取当前房间</button><button id="mapApply">应用到当前房间</button><button id="mapCopy">复制</button></div>
+   <textarea id="mapText" rows="14" spellcheck="false" aria-label="文字地图"></textarea>
+   <p class="subtle">改完按「应用」。物件挪到别的格子会保留名称和事件；旧物件显示为 ?，请原样保留。命令行：<code>node tools/scene.mjs grid show 工程.json 房间</code></p>
+  </details>
+ </div>
+ <aside class="right">
+  <section id="maker"><h2>逐格摆放 <small>选零件，在格子上画</small></h2>
+   <div id="pluginTools"></div>
+   <div id="tools" class="tool-row" aria-label="编辑工具"></div>
+   <div class="inline maker-row"><button id="undo" title="撤销（Ctrl+Z）">↶ 撤销</button><button id="redo" title="重做（Ctrl+Y）">↷ 重做</button>
+    <label title="关掉后按像素自由拖出物件"><input type="checkbox" id="snap" checked> 吸附格子</label></div>
+   <div id="palette" class="palette" aria-label="零件"></div>
+   <p class="subtle" id="placementHelp"></p>
+  </section>
+  <section><h2>检查器 <small id="objectCount"></small></h2>
+   <select id="entities" aria-label="选择房间物件"></select>
+   <div id="fields"></div>
+   <div class="inline"><button id="setStart">设为起点</button><button id="playRoom">试当前房间</button><button id="remove" class="danger">删除选中</button></div>
+  </section>
+  <section><details id="eventPanel"><summary>事件与演出</summary><p>用模板新建事件，校验后可在物件检查器绑定。</p><div id="eventEditor"></div></details></section>
+  <section><details id="battlePanel"><summary>遭遇战与结算</summary><div id="battleEditor"></div></details></section>
+  <section><h2>图层</h2><div id="layers" class="layers">—</div></section>
+ </aside>
+</div>
+</main>
+<dialog id="dialog"><form method="dialog"><h2 id="dialogTitle"></h2><div id="dialogBody"></div><div class="inline"><button value="cancel">取消</button><button value="ok" class="primary">确定</button></div></form></dialog>
+<script type="module" src="/studio/editor.mjs"></script>
+</body></html>

@@ -1,0 +1,10 @@
+# 只影響 battle-editor/tools/audio_fonts/ 底下的產物
+__pycache__/
+*.pyc
+
+# 中間產物：每一輪的 UTMT 輸入清單與 log（可重跑再生）
+catalog/sfx_lists/
+catalog/font_lists/
+
+# 注意：catalog/probe_ch*/probe.json、snd_availability.json、ALL_*_NAMES.txt
+# 刻意保留進 git —— 它們是「哪些音效/字體在哪一章」的可追溯證據。

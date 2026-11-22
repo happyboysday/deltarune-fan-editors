@@ -1,0 +1,13 @@
+name=fnt_legend@zh
+source_font=fnt_legend
+source_chapter=chapter4
+source_csv=glyphs_fnt_legend.csv
+display_name=MixSerifCondense
+em_size=12.0
+bold=False
+italic=False
+png_w=772
+png_h=784
+glyphs=3580
+format=dr-battle-font/1
+note=字形只存在於 alpha 通道；RGB 已統一為白色。座標為 PNG 左上角像素，scale=1。

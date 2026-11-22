@@ -1,0 +1,2425 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://deltaruneworks.local/schema/encounter.json",
+  "title": "DR Battle Editor — 遭遇檔",
+  "description": "遭遇檔（dr-battle-encounter/1）：敵人、隊伍、回合與演出指令。回合的彈幕以 attack 參照。",
+  "x-format": "dr-battle-encounter/1",
+  "x-schema-version": "dr-battle-schema/1",
+  "x-engine-fps": 30,
+  "type": "object",
+  "required": [],
+  "properties": {
+    "format": {
+      "const": "dr-battle-encounter/1",
+      "description": "格式代號（固定值）。"
+    },
+    "meta": {
+      "title": "中繼資料",
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/textValue",
+          "description": "遭遇名稱（可給 {zh,en}）。"
+        },
+        "author": {
+          "type": "string",
+          "description": "作者。"
+        }
+      },
+      "additionalProperties": true
+    },
+    "settings": {
+      "title": "設定",
+      "type": "object",
+      "properties": {
+        "seed": {
+          "type": "number",
+          "description": "亂數種子（決定性）。",
+          "default": 1
+        },
+        "bgm": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "背景音樂名（kind=music）。"
+        },
+        "background": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "背景 sprite 名。"
+        },
+        "introText": {
+          "$ref": "#/$defs/textValue",
+          "description": "開場文字（顯示在文字框）。"
+        },
+        "canFlee": {
+          "type": "boolean",
+          "description": "是否允許逃跑。",
+          "default": false
+        }
+      },
+      "additionalProperties": true
+    },
+    "actors": {
+      "title": "演員",
+      "type": "object",
+      "description": "畫面上的角色（隊伍與敵人共用）。key 是演員 id，指令用 actor 參照。",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "演員 id（預設 = key）。"
+          },
+          "kind": {
+            "enum": [
+              "party",
+              "enemy"
+            ],
+            "description": "隊伍或敵人。"
+          },
+          "x": {
+            "type": "number",
+            "description": "x 座標。",
+            "default": 120
+          },
+          "y": {
+            "type": "number",
+            "description": "y 座標。",
+            "default": 200
+          },
+          "flip": {
+            "type": "boolean",
+            "description": "是否水平翻轉。",
+            "default": false
+          },
+          "alpha": {
+            "type": "number",
+            "description": "不透明度 0..1。",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 1
+          },
+          "scale": {
+            "type": "number",
+            "description": "縮放。",
+            "default": 1
+          },
+          "layer": {
+            "type": "number",
+            "description": "繪製層級（大 = 上層）。",
+            "default": 0
+          },
+          "visible": {
+            "type": "boolean",
+            "description": "是否顯示。",
+            "default": true
+          },
+          "initialAnim": {
+            "type": "string",
+            "description": "初始動畫狀態。",
+            "default": "idle"
+          },
+          "anims": {
+            "type": "object",
+            "description": "動畫狀態表。隊伍內建狀態：idle / attack / act / magic / item / spare / defend / hurt / down / victory；敵人：idle / hurt / spared / defeat。",
+            "additionalProperties": {
+              "title": "動畫",
+              "type": "object",
+              "description": "一個動畫狀態：換哪張 sprite、每秒幾幀、是否循環。",
+              "properties": {
+                "sprite": {
+                  "type": "string",
+                  "description": "sprite 名（assets/index.json 的 key）。"
+                },
+                "fps": {
+                  "type": "number",
+                  "description": "每秒幀數。",
+                  "minimum": 0,
+                  "default": 10
+                },
+                "loop": {
+                  "type": "boolean",
+                  "description": "是否循環播放。",
+                  "default": true
+                },
+                "then": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "非循環動畫播完後接哪個狀態（null = 停在最後一格）。"
+                },
+                "frames": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "總幀數（有素材時可省略）。"
+                },
+                "duration": {
+                  "type": "number",
+                  "description": "秒數（frames 未提供時的長度）。",
+                  "minimum": 0
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "form": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "初始形態名（SPEC-P2 §1）；省略或 null = 不使用 forms。有 forms 時必須是 forms 的鍵，否則正規化為 null、validateEncounter() 回報未知形態。",
+            "default": null
+          },
+          "forms": {
+            "type": "object",
+            "description": "形態表（SPEC-P2 §1，選用）：key 是形態名，可用 cue form 切換（也可用 if + set 決定）。形態內沒定義的動畫退回演員基礎 anims。",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "scale": {
+                  "type": "number",
+                  "description": "此形態的縮放（會乘上演員本身 scale）。",
+                  "minimum": 0.01,
+                  "default": 1
+                },
+                "offset": {
+                  "type": "object",
+                  "description": "此形態的繪製位移（只影響繪製位置，世界內部座標不變）。",
+                  "properties": {
+                    "x": {
+                      "type": "number",
+                      "description": "x 位移。",
+                      "default": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "description": "y 位移。",
+                      "default": 0
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "anims": {
+                  "type": "object",
+                  "description": "此形態的動畫覆寫表（格式同 actor.anims）；未定義的狀態退回 actor.anims。",
+                  "additionalProperties": {
+                    "title": "動畫",
+                    "type": "object",
+                    "description": "一個動畫狀態：換哪張 sprite、每秒幾幀、是否循環。",
+                    "properties": {
+                      "sprite": {
+                        "type": "string",
+                        "description": "sprite 名（assets/index.json 的 key）。"
+                      },
+                      "fps": {
+                        "type": "number",
+                        "description": "每秒幀數。",
+                        "minimum": 0,
+                        "default": 10
+                      },
+                      "loop": {
+                        "type": "boolean",
+                        "description": "是否循環播放。",
+                        "default": true
+                      },
+                      "then": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "非循環動畫播完後接哪個狀態（null = 停在最後一格）。"
+                      },
+                      "frames": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "總幀數（有素材時可省略）。"
+                      },
+                      "duration": {
+                        "type": "number",
+                        "description": "秒數（frames 未提供時的長度）。",
+                        "minimum": 0
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "party": {
+      "title": "隊伍",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "隊員 id（指令與表達式用 hp.<id> 參照）。"
+          },
+          "actor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "對應的演員 id。"
+          },
+          "name": {
+            "$ref": "#/$defs/textValue",
+            "description": "顯示名稱。"
+          },
+          "hp": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "目前 HP。"
+          },
+          "maxHp": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "最大 HP。"
+          },
+          "atk": {
+            "type": "number",
+            "description": "攻擊力。",
+            "default": 10
+          },
+          "def": {
+            "type": "number",
+            "description": "防禦力（受傷減免）。",
+            "default": 0
+          },
+          "magic": {
+            "type": "number",
+            "description": "魔法值。",
+            "default": 0
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{3,8}$",
+            "description": "名字 / HP 條顏色。",
+            "examples": [
+              "#00c000",
+              "#ff0000",
+              "#ffffff"
+            ]
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "default": null,
+            "description": "戰鬥頭像 sprite 名；null 使用預設頭像。"
+          },
+          "commands": {
+            "type": "array",
+            "description": "可用指令（子集）：fight / act / magic / item / spare / defend。",
+            "items": {
+              "enum": [
+                "fight",
+                "act",
+                "magic",
+                "item",
+                "spare",
+                "defend"
+              ]
+            }
+          },
+          "spells": {
+            "type": "array",
+            "description": "法術（消耗 TP）。",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "法術 id。"
+                },
+                "name": {
+                  "$ref": "#/$defs/textValue",
+                  "description": "法術名。"
+                },
+                "tp": {
+                  "type": "number",
+                  "description": "消耗 TP。",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "target": {
+                  "enum": [
+                    "enemy",
+                    "party",
+                    "all"
+                  ],
+                  "description": "目標類型。",
+                  "default": "enemy"
+                },
+                "cues": {
+                  "type": "array",
+                  "description": "施放時執行的指令。",
+                  "items": {
+                    "$ref": "#/$defs/cue"
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "enemies": {
+      "title": "敵人",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "敵人 id（hp.<id> / mercy.<id> 參照）。"
+          },
+          "actor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "對應的演員 id。"
+          },
+          "name": {
+            "$ref": "#/$defs/textValue",
+            "description": "敵人顯示名稱。"
+          },
+          "hp": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "目前 HP。"
+          },
+          "maxHp": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "最大 HP。"
+          },
+          "atk": {
+            "type": "number",
+            "description": "攻擊力（決定彈幕傷害）。",
+            "default": 5
+          },
+          "def": {
+            "type": "number",
+            "description": "防禦力。",
+            "default": 0
+          },
+          "mercy": {
+            "type": "number",
+            "description": "目前饒恕值 0..100。",
+            "minimum": 0,
+            "maximum": 100,
+            "default": 0
+          },
+          "spareAt": {
+            "type": "number",
+            "description": "可饒恕門檻。",
+            "minimum": 0,
+            "maximum": 100,
+            "default": 100
+          },
+          "tired": {
+            "type": "boolean",
+            "description": "是否已疲勞（可饒恕提示）。",
+            "default": false
+          },
+          "acts": {
+            "type": "array",
+            "description": "ACT 選項（玩家在 ACT 選單可選）。",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ACT id（actCount.<enemyId>_<actId> 會累計）。"
+                },
+                "name": {
+                  "$ref": "#/$defs/textValue",
+                  "description": "選單顯示名稱。"
+                },
+                "text": {
+                  "$ref": "#/$defs/textValue",
+                  "description": "選單下方的調查文字。"
+                },
+                "party": {
+                  "type": "array",
+                  "description": "哪些隊員可以用（空 = 全員）。",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "mercy": {
+                  "type": "number",
+                  "description": "使用後增加的饒恕值。",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "default": 0
+                },
+                "autoAnim": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "自動播放隊員的 ACT 動作。關閉時由 cues 安排動作。"
+                },
+                "cues": {
+                  "type": "array",
+                  "description": "使用時執行的演出。",
+                  "items": {
+                    "$ref": "#/$defs/cue"
+                  }
+                }
+              },
+              "additionalProperties": true,
+              "examples": [
+                {
+                  "id": "compliment",
+                  "name": "Compliment",
+                  "party": [
+                    "kris"
+                  ],
+                  "mercy": 40,
+                  "cues": [
+                    {
+                      "cmd": "say",
+                      "text": "* 你稱讚了魯丁的光澤。"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "onHurt": {
+            "type": "array",
+            "description": "敵人受傷時執行。",
+            "items": {
+              "$ref": "#/$defs/cue"
+            }
+          },
+          "onSpare": {
+            "type": "array",
+            "description": "敵人被饒恕時執行。",
+            "items": {
+              "$ref": "#/$defs/cue"
+            }
+          },
+          "onDefeat": {
+            "type": "array",
+            "description": "敵人被擊倒時執行。",
+            "items": {
+              "$ref": "#/$defs/cue"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "items": {
+      "title": "道具",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "道具 id。"
+          },
+          "name": {
+            "$ref": "#/$defs/textValue",
+            "description": "道具名。"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "數量。",
+            "default": 1
+          },
+          "heal": {
+            "type": "number",
+            "description": "回復量。",
+            "default": 0
+          },
+          "revive": {
+            "type": "boolean",
+            "default": false,
+            "description": "可選擇 HP 為 0 的隊員。"
+          },
+          "target": {
+            "enum": [
+              "party",
+              "enemy",
+              "all"
+            ],
+            "description": "目標。",
+            "default": "party"
+          },
+          "text": {
+            "$ref": "#/$defs/textValue",
+            "description": "使用時的訊息。"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "turns": {
+      "title": "回合",
+      "type": "array",
+      "description": "依 turnOrder 依序進行的回合；每回合可先演戲再放彈幕。",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "回合 id。"
+          },
+          "flavor": {
+            "$ref": "#/$defs/textValue",
+            "description": "回合開始的文字（文字框）。"
+          },
+          "talk": {
+            "type": "array",
+            "description": "敵人對話泡泡。",
+            "items": {
+              "type": "object",
+              "properties": {
+                "actor": {
+                  "type": "string",
+                  "description": "說話的演員 id。"
+                },
+                "text": {
+                  "$ref": "#/$defs/textValue",
+                  "description": "台詞。"
+                },
+                "parallel": {
+                  "type": "boolean",
+                  "description": "是否與下一句同時。",
+                  "default": false
+                },
+                "speed": {
+                  "type": "number",
+                  "description": "打字速度。",
+                  "default": 1
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "attack": {
+            "description": "這回合的彈幕：攻擊檔名（attacks/ 或 samples/，不含 .json），或直接內嵌攻擊物件。",
+            "oneOf": [
+              {
+                "type": "string",
+                "examples": [
+                  "spade-rain"
+                ]
+              },
+              {
+                "type": "object",
+                "description": "內嵌攻擊（格式同 attack.json）。"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "start": {
+            "type": "array",
+            "description": "回合開始（選單前）的演出。",
+            "items": {
+              "$ref": "#/$defs/cue"
+            }
+          },
+          "beforeAttack": {
+            "type": "array",
+            "description": "玩家行動與敵人台詞之後、彈幕開始前的演出。",
+            "items": {
+              "$ref": "#/$defs/cue"
+            }
+          },
+          "end": {
+            "type": "array",
+            "description": "回合結束的演出。",
+            "items": {
+              "$ref": "#/$defs/cue"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "turnOrder": {
+      "enum": [
+        "sequential",
+        "loop-last",
+        "random"
+      ],
+      "description": "回合順序：sequential = 依序循環；loop-last = 最後一回合重複；random = 隨機。",
+      "default": "loop-last"
+    },
+    "hooks": {
+      "title": "時機掛鉤",
+      "type": "object",
+      "description": "各階段的演出指令：intro / victory / spared / defeat / flee。",
+      "properties": {
+        "intro": {
+          "type": "array",
+          "description": "intro 時執行。",
+          "items": {
+            "$ref": "#/$defs/cue"
+          }
+        },
+        "victory": {
+          "type": "array",
+          "description": "victory 時執行。",
+          "items": {
+            "$ref": "#/$defs/cue"
+          }
+        },
+        "spared": {
+          "type": "array",
+          "description": "spared 時執行。",
+          "items": {
+            "$ref": "#/$defs/cue"
+          }
+        },
+        "defeat": {
+          "type": "array",
+          "description": "defeat 時執行。",
+          "items": {
+            "$ref": "#/$defs/cue"
+          }
+        },
+        "flee": {
+          "type": "array",
+          "description": "flee 時執行。",
+          "items": {
+            "$ref": "#/$defs/cue"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "vars": {
+      "title": "自訂變數",
+      "type": "object",
+      "description": "初始變數值（數字）。之後用 set 指令改、用 var.<name> 讀。",
+      "additionalProperties": {
+        "type": "number"
+      },
+      "examples": [
+        {
+          "praised": 0
+        }
+      ]
+    },
+    "demo": {
+      "title": "自動演示（遭遇）",
+      "type": "object",
+      "description": "遭遇的自動演示腳本（SPEC-AUTOPLAY §2.2）：自動按掉文字、導航選單、指定 FIGHT 時機與每回合躲避方式；找不到的選項會退回 default 並記 warnings。",
+      "properties": {
+        "text": {
+          "title": "文字",
+          "type": "object",
+          "description": "文字框 / 泡泡的自動推進。",
+          "properties": {
+            "auto": {
+              "type": "boolean",
+              "description": "打完字後自動按確認（預設 true）。",
+              "default": true
+            },
+            "delay": {
+              "type": "number",
+              "description": "自動確認前等待秒數（預設 0.5）。",
+              "minimum": 0,
+              "default": 0.5
+            }
+          },
+          "additionalProperties": true
+        },
+        "menuDelay": {
+          "type": "number",
+          "description": "選單中每次游標移動 / 確認之間的幀數（預設 6，讓觀眾看得到；0 = 最快）。",
+          "minimum": 0,
+          "default": 6
+        },
+        "turns": {
+          "title": "回合腳本",
+          "type": "array",
+          "description": "依實際進行的回合（turn 1 起算，重複回合繼續累計）指定隊員選擇、FIGHT 時機與躲避方式；未列出的回合用 default。",
+          "items": {
+            "type": "object",
+            "properties": {
+              "turn": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "回合編號（1 起算）。",
+                "examples": [
+                  1
+                ]
+              },
+              "choices": {
+                "type": "array",
+                "description": "每位隊員的選擇；未列出的隊員用 default。",
+                "items": {
+                  "title": "隊員選擇",
+                  "type": "object",
+                  "required": [
+                    "member",
+                    "command"
+                  ],
+                  "properties": {
+                    "member": {
+                      "type": "string",
+                      "description": "隊員 id（encounter.party[].id）。",
+                      "examples": [
+                        "kris"
+                      ]
+                    },
+                    "command": {
+                      "type": "string",
+                      "enum": [
+                        "fight",
+                        "act",
+                        "magic",
+                        "item",
+                        "spare",
+                        "defend"
+                      ],
+                      "description": "指令。"
+                    },
+                    "target": {
+                      "type": "string",
+                      "description": "敵人 id 或隊員 id（item / magic 的對象）。",
+                      "examples": [
+                        "rudinn"
+                      ]
+                    },
+                    "option": {
+                      "type": "string",
+                      "description": "ACT 名稱 / 法術名 / 道具名（比對 en 名或 id）。",
+                      "examples": [
+                        "Check"
+                      ]
+                    }
+                  },
+                  "additionalProperties": true
+                },
+                "examples": [
+                  [
+                    {
+                      "member": "kris",
+                      "command": "act",
+                      "target": "rudinn",
+                      "option": "Check"
+                    },
+                    {
+                      "member": "susie",
+                      "command": "fight",
+                      "target": "rudinn"
+                    },
+                    {
+                      "member": "ralsei",
+                      "command": "magic",
+                      "option": "Pacify",
+                      "target": "rudinn"
+                    }
+                  ]
+                ]
+              },
+              "fight": {
+                "description": "FIGHT 打擊條的時機：perfect / good / miss，或 0..1（0 = 判定點正中、1 = 最邊緣）。",
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "perfect",
+                      "good",
+                      "miss"
+                    ]
+                  },
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                ]
+              },
+              "dodge": {
+                "type": "string",
+                "enum": [
+                  "path",
+                  "inputs",
+                  "bot",
+                  "none"
+                ],
+                "description": "該回合的躲避方式：path / inputs 讀該回合攻擊檔的 demo；bot = AI；none = 不躲避。省略 = 攻擊檔 demo.mode，再省略 = bot。"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "default": {
+          "title": "預設規則",
+          "type": "object",
+          "description": "沒在 turns 列出的回合（或隊員）使用；choices 可省略。",
+          "properties": {
+            "choices": {
+              "description": "預設選擇：指令字串（例如 \"fight\" / \"defend\"）或與 turns[].choices 相同的陣列。",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "fight",
+                    "act",
+                    "magic",
+                    "item",
+                    "spare",
+                    "defend"
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "title": "隊員選擇",
+                    "type": "object",
+                    "required": [
+                      "member",
+                      "command"
+                    ],
+                    "properties": {
+                      "member": {
+                        "type": "string",
+                        "description": "隊員 id（encounter.party[].id）。",
+                        "examples": [
+                          "kris"
+                        ]
+                      },
+                      "command": {
+                        "type": "string",
+                        "enum": [
+                          "fight",
+                          "act",
+                          "magic",
+                          "item",
+                          "spare",
+                          "defend"
+                        ],
+                        "description": "指令。"
+                      },
+                      "target": {
+                        "type": "string",
+                        "description": "敵人 id 或隊員 id（item / magic 的對象）。",
+                        "examples": [
+                          "rudinn"
+                        ]
+                      },
+                      "option": {
+                        "type": "string",
+                        "description": "ACT 名稱 / 法術名 / 道具名（比對 en 名或 id）。",
+                        "examples": [
+                          "Check"
+                        ]
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              ]
+            },
+            "fight": {
+              "description": "FIGHT 打擊條的時機：perfect / good / miss，或 0..1（0 = 判定點正中、1 = 最邊緣）。",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "perfect",
+                    "good",
+                    "miss"
+                  ]
+                },
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              ]
+            },
+            "dodge": {
+              "type": "string",
+              "enum": [
+                "path",
+                "inputs",
+                "bot",
+                "none"
+              ],
+              "description": "該回合的躲避方式：path / inputs 讀該回合攻擊檔的 demo；bot = AI；none = 不躲避。省略 = 攻擊檔 demo.mode，再省略 = bot。"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        {
+          "text": {
+            "auto": true,
+            "delay": 0.5
+          },
+          "menuDelay": 6,
+          "turns": [
+            {
+              "turn": 1,
+              "choices": [
+                {
+                  "member": "kris",
+                  "command": "act",
+                  "target": "rudinn",
+                  "option": "Compliment"
+                },
+                {
+                  "member": "susie",
+                  "command": "defend"
+                }
+              ],
+              "fight": "perfect",
+              "dodge": "path"
+            }
+          ],
+          "default": {
+            "choices": "fight",
+            "fight": "good",
+            "dodge": "bot"
+          }
+        }
+      ]
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "textValue": {
+      "title": "文字值",
+      "description": "文字欄位：可給字串（兩種語言共用），或 { \"zh\": \"簡體中文\", \"en\": \"English\" } 由語言選項取用。",
+      "oneOf": [
+        {
+          "type": "string",
+          "examples": [
+            "* 魯丁擋住了去路！"
+          ]
+        },
+        {
+          "type": "object",
+          "description": "{ zh, en } 雙語物件；未知語言鍵會被忽略。",
+          "properties": {
+            "zh": {
+              "type": "string",
+              "description": "簡體中文（遊戲畫面預設語言）。"
+            },
+            "en": {
+              "type": "string",
+              "description": "英文。"
+            }
+          },
+          "additionalProperties": false,
+          "examples": [
+            {
+              "zh": "* 魯丁擋住了去路！",
+              "en": "* Rudinn blocks the way!"
+            }
+          ]
+        }
+      ]
+    },
+    "anim": {
+      "title": "動畫",
+      "type": "object",
+      "description": "一個動畫狀態：換哪張 sprite、每秒幾幀、是否循環。",
+      "properties": {
+        "sprite": {
+          "type": "string",
+          "description": "sprite 名（assets/index.json 的 key）。"
+        },
+        "fps": {
+          "type": "number",
+          "description": "每秒幀數。",
+          "minimum": 0,
+          "default": 10
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "是否循環播放。",
+          "default": true
+        },
+        "then": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "非循環動畫播完後接哪個狀態（null = 停在最後一格）。"
+        },
+        "frames": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "總幀數（有素材時可省略）。"
+        },
+        "duration": {
+          "type": "number",
+          "description": "秒數（frames 未提供時的長度）。",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "cueList": {
+      "type": "array",
+      "description": "指令清單，依序執行（async:true 的指令不阻塞）。",
+      "items": {
+        "$ref": "#/$defs/cue"
+      }
+    },
+    "cue": {
+      "title": "演出指令",
+      "description": "以 cmd 區分的聯集；見 cues.json 的完整參數表。",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/cue_say"
+        },
+        {
+          "$ref": "#/$defs/cue_bubble"
+        },
+        {
+          "$ref": "#/$defs/cue_move"
+        },
+        {
+          "$ref": "#/$defs/cue_anim"
+        },
+        {
+          "$ref": "#/$defs/cue_form"
+        },
+        {
+          "$ref": "#/$defs/cue_flip"
+        },
+        {
+          "$ref": "#/$defs/cue_fade"
+        },
+        {
+          "$ref": "#/$defs/cue_wait"
+        },
+        {
+          "$ref": "#/$defs/cue_sfx"
+        },
+        {
+          "$ref": "#/$defs/cue_bgm"
+        },
+        {
+          "$ref": "#/$defs/cue_shake"
+        },
+        {
+          "$ref": "#/$defs/cue_flash"
+        },
+        {
+          "$ref": "#/$defs/cue_set"
+        },
+        {
+          "$ref": "#/$defs/cue_mercy"
+        },
+        {
+          "$ref": "#/$defs/cue_heal"
+        },
+        {
+          "$ref": "#/$defs/cue_item"
+        },
+        {
+          "$ref": "#/$defs/cue_damage"
+        },
+        {
+          "$ref": "#/$defs/cue_if"
+        },
+        {
+          "$ref": "#/$defs/cue_parallel"
+        },
+        {
+          "$ref": "#/$defs/cue_attack"
+        },
+        {
+          "$ref": "#/$defs/cue_end"
+        }
+      ]
+    },
+    "cue_say": {
+      "title": "cue: say",
+      "description": "在下方文字框說一句話；打完字等玩家按 Z（打字中按 Z = 立即顯示全文）。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "text"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "say",
+          "description": "指令名稱（固定 \"say\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "text": {
+          "description": "（必填）台詞；可用 \\n 換行。 可給字串或 {zh,en}。",
+          "x-param-type": "text",
+          "x-required": true,
+          "type": [
+            "string",
+            "object"
+          ]
+        },
+        "speaker": {
+          "description": "說話者名稱（顯示在文字框上方；省略則不顯示）。 可給字串或 {zh,en}。",
+          "x-param-type": "text",
+          "type": [
+            "string",
+            "object"
+          ]
+        },
+        "portrait": {
+          "description": "頭像 sprite 名（assets/index.json 的 sprite key）。",
+          "x-param-type": "sprite",
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "speed": {
+          "description": "打字速度，每秒幾個字（1 = 原始速度）。 預設：1。",
+          "x-param-type": "number",
+          "default": 1,
+          "type": "number"
+        },
+        "voice": {
+          "description": "每個字播放的音效名（打字音）。",
+          "x-param-type": "sound",
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "win": {
+          "description": "這句就是勝利旁白：victory/spared 掛鉤裡有它時，引擎不再在掛鉤後補一句「你赢了！」（用來讓演出和勝利旁白同時進行，例如包在 parallel 裡）（型別：bool） 預設：false。",
+          "x-param-type": "bool",
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "say",
+            "speaker": "Susie",
+            "text": "* 喂，你這顆亮晶晶的石頭。",
+            "speed": 1
+          }
+        ]
+      ],
+      "x-blocking": true,
+      "x-category": "text"
+    },
+    "cue_bubble": {
+      "title": "cue: bubble",
+      "description": "在某個演員旁邊冒出對話泡泡；預設等玩家按 Z 或逾時。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "actor",
+        "text"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "bubble",
+          "description": "指令名稱（固定 \"bubble\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "actor": {
+          "description": "說話的演員（型別：actor）",
+          "x-param-type": "actor",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "text": {
+          "description": "泡泡文字（型別：text） 可給字串或 {zh,en}。",
+          "x-param-type": "text",
+          "x-required": true,
+          "type": [
+            "string",
+            "object"
+          ]
+        },
+        "side": {
+          "description": "泡泡在演員的哪一側；auto = 依演員位置自動。 預設：\"auto\"。 可選：left / right / auto。",
+          "x-param-type": "enum",
+          "default": "auto",
+          "enum": [
+            "left",
+            "right",
+            "auto"
+          ],
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "speed": {
+          "description": "打字速度（字/幀）（型別：number） 預設：1。",
+          "x-param-type": "number",
+          "default": 1,
+          "type": "number"
+        },
+        "wait": {
+          "description": "\"input\" 等玩家按 Z；或給秒數逾時自動關閉。 預設：\"input\"。",
+          "x-param-type": "any",
+          "default": "input",
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "bubble",
+            "actor": "rudinn",
+            "text": "嘿嘿，\n準備好接招了嗎？",
+            "side": "right",
+            "wait": 2
+          }
+        ]
+      ],
+      "x-blocking": true,
+      "x-category": "text"
+    },
+    "cue_move": {
+      "title": "cue: move",
+      "description": "把演員平滑移動到指定座標（可相對）。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "actor"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "move",
+          "description": "指令名稱（固定 \"move\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "actor": {
+          "description": "（型別：actor）",
+          "x-param-type": "actor",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "x": {
+          "description": "目標 x（省略 = 不動）（型別：number）",
+          "x-param-type": "number",
+          "type": "number"
+        },
+        "y": {
+          "description": "目標 y（省略 = 不動）（型別：number）",
+          "x-param-type": "number",
+          "type": "number"
+        },
+        "relative": {
+          "description": "x/y 是否為相對位移（型別：bool） 預設：false。",
+          "x-param-type": "bool",
+          "default": false,
+          "type": "boolean"
+        },
+        "duration": {
+          "description": "補間秒數（型別：number） 預設：0.5。",
+          "x-param-type": "number",
+          "default": 0.5,
+          "type": "number"
+        },
+        "ease": {
+          "description": "補間曲線：linear / quadIn / quadOut / quadInOut / sineInOut / backOut。 預設：\"quadOut\"。",
+          "x-param-type": "ease",
+          "default": "quadOut",
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "move",
+            "actor": "rudinn",
+            "x": 520,
+            "y": 190,
+            "duration": 0.6,
+            "ease": "quadOut"
+          }
+        ]
+      ],
+      "x-blocking": true,
+      "x-category": "actor"
+    },
+    "cue_anim": {
+      "title": "cue: anim",
+      "description": "切換演員的動畫狀態（anims 的 key）或直接指定 sprite。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "actor"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "anim",
+          "description": "指令名稱（固定 \"anim\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "actor": {
+          "description": "（型別：actor）",
+          "x-param-type": "actor",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "anim": {
+          "description": "動畫狀態名（actors.<id>.anims 的 key），例如 idle / attack / hurt。",
+          "x-param-type": "string",
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "sprite": {
+          "description": "直接指定 sprite（覆寫狀態），適合一次性特效。",
+          "x-param-type": "sprite",
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "fps": {
+          "description": "覆寫播放速度（型別：number）",
+          "x-param-type": "number",
+          "type": "number"
+        },
+        "loop": {
+          "description": "覆寫是否循環（型別：bool）",
+          "x-param-type": "bool",
+          "type": "boolean"
+        },
+        "waitEnd": {
+          "description": "true 時等「非循環動畫」播完才繼續（適合攻擊動作）。 預設：false。",
+          "x-param-type": "bool",
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "anim",
+            "actor": "rudinn",
+            "anim": "hurt",
+            "waitEnd": true
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "actor"
+    },
+    "cue_form": {
+      "title": "cue: form",
+      "description": "切換演員形態（actor.forms 的 key）；形態內未定義的動畫退回基礎 anims（SPEC-P2 §1）。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "actor",
+        "name"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "form",
+          "description": "指令名稱（固定 \"form\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "actor": {
+          "description": "要變身的演員（型別：actor）",
+          "x-param-type": "actor",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "name": {
+          "description": "形態名（actor.forms 的 key）；null 切回基礎形態（型別：string）",
+          "x-param-type": "string",
+          "x-required": true,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "anim": {
+          "description": "切換後要播的動畫（省略 = 沿用目前動畫名，沒有就 idle）（型別：string）",
+          "x-param-type": "string",
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "form"
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "actor"
+    },
+    "cue_flip": {
+      "title": "cue: flip",
+      "description": "水平翻轉演員（面朝左 / 右）。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "actor"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "flip",
+          "description": "指令名稱（固定 \"flip\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "actor": {
+          "description": "（型別：actor）",
+          "x-param-type": "actor",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "value": {
+          "description": "是否水平翻轉（型別：bool） 預設：true。",
+          "x-param-type": "bool",
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "flip",
+            "actor": "susie",
+            "value": true
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "actor"
+    },
+    "cue_fade": {
+      "title": "cue: fade",
+      "description": "把演員淡入淡出到指定透明度。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "actor",
+        "alpha"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "fade",
+          "description": "指令名稱（固定 \"fade\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "actor": {
+          "description": "（型別：actor）",
+          "x-param-type": "actor",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "alpha": {
+          "description": "目標透明度 0..1（型別：number）",
+          "x-param-type": "number",
+          "x-required": true,
+          "type": "number"
+        },
+        "duration": {
+          "description": "補間秒數（型別：number） 預設：0.5。",
+          "x-param-type": "number",
+          "default": 0.5,
+          "type": "number"
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "fade",
+            "actor": "rudinn",
+            "alpha": 0,
+            "duration": 0.8
+          }
+        ]
+      ],
+      "x-blocking": true,
+      "x-category": "actor"
+    },
+    "cue_wait": {
+      "title": "cue: wait",
+      "description": "暫停指定秒數。",
+      "type": "object",
+      "required": [
+        "cmd"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "wait",
+          "description": "指令名稱（固定 \"wait\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "seconds": {
+          "description": "等待秒數（型別：number） 預設：0.5。",
+          "x-param-type": "number",
+          "default": 0.5,
+          "type": "number"
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "wait",
+            "seconds": 0.5
+          }
+        ]
+      ],
+      "x-blocking": true,
+      "x-category": "flow"
+    },
+    "cue_sfx": {
+      "title": "cue: sfx",
+      "description": "播放一次音效（音效名見 assets/index.json 的 audio 或 /api/assets/search）。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "sound"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "sfx",
+          "description": "指令名稱（固定 \"sfx\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "sound": {
+          "description": "音效索引名（型別：sound）",
+          "x-param-type": "sound",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "sfx",
+            "sound": "snd_hurt1"
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "audio"
+    },
+    "cue_bgm": {
+      "title": "cue: bgm",
+      "description": "切換背景音樂；track 為 null 表示停止，fade 為淡出秒數。",
+      "type": "object",
+      "required": [
+        "cmd"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "bgm",
+          "description": "指令名稱（固定 \"bgm\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "track": {
+          "description": "音樂名；null = 停止（型別：string）",
+          "x-param-type": "string",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fade": {
+          "description": "淡出秒數（0 = 立即）（型別：number） 預設：0。",
+          "x-param-type": "number",
+          "default": 0,
+          "type": "number"
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "bgm",
+            "track": "battle",
+            "fade": 0.35
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "audio"
+    },
+    "cue_shake": {
+      "title": "cue: shake",
+      "description": "畫面震動。",
+      "type": "object",
+      "required": [
+        "cmd"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "shake",
+          "description": "指令名稱（固定 \"shake\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "amount": {
+          "description": "震動像素（型別：number） 預設：4。",
+          "x-param-type": "number",
+          "default": 4,
+          "type": "number"
+        },
+        "duration": {
+          "description": "震動秒數（型別：number） 預設：0.3。",
+          "x-param-type": "number",
+          "default": 0.3,
+          "type": "number"
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "shake",
+            "amount": 4,
+            "duration": 0.3
+          }
+        ]
+      ],
+      "x-blocking": true,
+      "x-category": "camera"
+    },
+    "cue_flash": {
+      "title": "cue: flash",
+      "description": "畫面閃光。",
+      "type": "object",
+      "required": [
+        "cmd"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "flash",
+          "description": "指令名稱（固定 \"flash\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "color": {
+          "description": "閃光顏色（型別：color） 預設：\"#ffffff\"。",
+          "x-param-type": "color",
+          "default": "#ffffff",
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "duration": {
+          "description": "閃光秒數（型別：number） 預設：0.2。",
+          "x-param-type": "number",
+          "default": 0.2,
+          "type": "number"
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "flash",
+            "color": "#ffffff",
+            "duration": 0.2
+          }
+        ]
+      ],
+      "x-blocking": true,
+      "x-category": "camera"
+    },
+    "cue_set": {
+      "title": "cue: set",
+      "description": "設定或累加一個自訂變數（Agent 常用來記錄 ACT 分支）。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "var"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "set",
+          "description": "指令名稱（固定 \"set\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "var": {
+          "description": "（必填）變數名（之後用 var.<name> 或 vars.<name> 讀取）。",
+          "x-param-type": "string",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "value": {
+          "description": "數字或表達式字串，例如 \"var.praised + 1\"。 預設：0。",
+          "x-param-type": "expr",
+          "default": 0,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "op": {
+          "description": "覆寫或累加（型別：enum） 預設：\"set\"。 可選：set / add。",
+          "x-param-type": "enum",
+          "default": "set",
+          "enum": [
+            "set",
+            "add"
+          ],
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "set",
+            "var": "praised",
+            "value": "var.praised + 1",
+            "op": "add"
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "value"
+    },
+    "cue_mercy": {
+      "title": "cue: mercy",
+      "description": "增加敵人饒恕值（夾在 0..100）。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "enemy"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "mercy",
+          "description": "指令名稱（固定 \"mercy\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "enemy": {
+          "description": "（必填）敵人 id（enemies[].id）。",
+          "x-param-type": "actor",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "amount": {
+          "description": "增加量（夾在 0..100；可為表達式）（型別：expr） 預設：0。",
+          "x-param-type": "expr",
+          "default": 0,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "mercy",
+            "enemy": "rudinn",
+            "amount": 40
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "value"
+    },
+    "cue_heal": {
+      "title": "cue: heal",
+      "description": "回復目標 HP 並跳數字（\"party\" 代表全隊）。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "target"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "heal",
+          "description": "指令名稱（固定 \"heal\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "target": {
+          "description": "（必填）隊員 id / 敵人 id / \"party\"（全隊）。",
+          "x-param-type": "target",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "amount": {
+          "description": "回復量（可為表達式）（型別：expr） 預設：0。",
+          "x-param-type": "expr",
+          "default": 0,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "heal",
+            "target": "party",
+            "amount": 40
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "value"
+    },
+    "cue_item": {
+      "title": "cue: item",
+      "description": "增減這場遭遇的道具數量（戰鬥獎勵或消耗；減到 0 為止）。場景編輯器在戰後把剩餘數量帶回場景。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "id"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "item",
+          "description": "指令名稱（固定 \"item\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "id": {
+          "description": "（必填）道具 id（這場遭遇 items[].id）。",
+          "x-param-type": "string",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "delta": {
+          "description": "增減數量；負數為消耗。可寫表達式。 預設：1。",
+          "x-param-type": "expr",
+          "default": 1,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "item",
+            "id": "tonic",
+            "delta": 1
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "value"
+    },
+    "cue_damage": {
+      "title": "cue: damage",
+      "description": "對目標造成傷害並跳數字（\"party\" 代表全隊）。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "target"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "damage",
+          "description": "指令名稱（固定 \"damage\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "target": {
+          "description": "隊員 id / 敵人 id / \"party\"（型別：target）",
+          "x-param-type": "target",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "amount": {
+          "description": "傷害量（可為表達式）（型別：expr） 預設：0。",
+          "x-param-type": "expr",
+          "default": 0,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "damage",
+            "target": "kris",
+            "amount": 10
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "value"
+    },
+    "cue_if": {
+      "title": "cue: if",
+      "description": "條件分支：cond 非 0 走 then，否則走 else。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "cond"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "if",
+          "description": "指令名稱（固定 \"if\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "cond": {
+          "description": "（必填）表達式；非 0 為真。例如 \"mercy.rudinn >= 100\"。",
+          "x-param-type": "expr",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        },
+        "then": {
+          "description": "條件成立時執行（型別：cues） 預設：[]。",
+          "x-param-type": "cues",
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cue"
+          }
+        },
+        "else": {
+          "description": "條件不成立時執行（型別：cues） 預設：[]。",
+          "x-param-type": "cues",
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cue"
+          }
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "if",
+            "cond": "mercy.rudinn >= 100",
+            "then": [
+              {
+                "cmd": "anim",
+                "actor": "rudinn",
+                "anim": "spared"
+              }
+            ],
+            "else": [
+              {
+                "cmd": "say",
+                "text": "* 牠還沒準備好原諒你。"
+              }
+            ]
+          }
+        ]
+      ],
+      "x-blocking": true,
+      "x-category": "flow"
+    },
+    "cue_parallel": {
+      "title": "cue: parallel",
+      "description": "同時執行多條子指令，全部完成才繼續。",
+      "type": "object",
+      "required": [
+        "cmd"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "parallel",
+          "description": "指令名稱（固定 \"parallel\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "cues": {
+          "description": "同時執行的子指令（型別：cues） 預設：[]。",
+          "x-param-type": "cues",
+          "default": [],
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cue"
+          }
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "parallel",
+            "cues": [
+              {
+                "cmd": "shake",
+                "amount": 3,
+                "duration": 0.4
+              },
+              {
+                "cmd": "sfx",
+                "sound": "snd_noise"
+              }
+            ]
+          }
+        ]
+      ],
+      "x-blocking": true,
+      "x-category": "flow"
+    },
+    "cue_attack": {
+      "title": "cue: attack",
+      "description": "在腳本中插入一段彈幕（回合的攻擊也可用 turns[].attack）。",
+      "type": "object",
+      "required": [
+        "cmd",
+        "attack"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "attack",
+          "description": "指令名稱（固定 \"attack\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "attack": {
+          "description": "（必填）攻擊檔名（attacks/ 或 samples/ 下的檔名，不含 .json）或內嵌攻擊物件。",
+          "x-param-type": "attack",
+          "x-required": true,
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "attack",
+            "attack": "spade-rain"
+          }
+        ]
+      ],
+      "x-blocking": true,
+      "x-category": "flow"
+    },
+    "cue_end": {
+      "title": "cue: end",
+      "description": "立即以指定結果結束遭遇。",
+      "type": "object",
+      "required": [
+        "cmd"
+      ],
+      "properties": {
+        "cmd": {
+          "const": "end",
+          "description": "指令名稱（固定 \"end\"）。"
+        },
+        "async": {
+          "type": "boolean",
+          "description": "true = 不阻塞後續指令（parallel 外的另一種並行寫法）。",
+          "default": false
+        },
+        "result": {
+          "description": "終局結果：victory / spared / defeat / flee。 預設：\"victory\"。 可選：victory / spared / defeat / flee。",
+          "x-param-type": "enum",
+          "default": "victory",
+          "enum": [
+            "victory",
+            "spared",
+            "defeat",
+            "flee"
+          ],
+          "type": [
+            "string",
+            "number",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "examples": [
+        [
+          {
+            "cmd": "end",
+            "result": "victory"
+          }
+        ]
+      ],
+      "x-blocking": false,
+      "x-category": "flow"
+    }
+  },
+  "x-cueCommands": [
+    "say",
+    "bubble",
+    "move",
+    "anim",
+    "form",
+    "flip",
+    "fade",
+    "wait",
+    "sfx",
+    "bgm",
+    "shake",
+    "flash",
+    "set",
+    "mercy",
+    "heal",
+    "item",
+    "damage",
+    "if",
+    "parallel",
+    "attack",
+    "end"
+  ],
+  "x-resultTypes": [
+    "victory",
+    "spared",
+    "defeat",
+    "flee"
+  ],
+  "x-turnOrders": [
+    "sequential",
+    "loop-last",
+    "random"
+  ],
+  "x-phases": [
+    "intro",
+    "turnStart",
+    "menu",
+    "resolve",
+    "enemyTalk",
+    "beforeAttack",
+    "attack",
+    "turnEnd",
+    "victory",
+    "spared",
+    "defeat",
+    "flee"
+  ],
+  "x-hookNames": [
+    "intro",
+    "victory",
+    "spared",
+    "defeat",
+    "flee"
+  ],
+  "x-langs": [
+    "zh",
+    "en"
+  ],
+  "x-partyCommands": [
+    "fight",
+    "act",
+    "magic",
+    "item",
+    "spare",
+    "defend"
+  ],
+  "x-partyAnimStates": [
+    "idle",
+    "attack",
+    "act",
+    "magic",
+    "item",
+    "spare",
+    "defend",
+    "hurt",
+    "down",
+    "victory"
+  ],
+  "x-enemyAnimStates": [
+    "idle",
+    "hurt",
+    "spared",
+    "defeat"
+  ]
+}

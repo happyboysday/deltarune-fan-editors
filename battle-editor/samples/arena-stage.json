@@ -1,0 +1,36 @@
+{
+  "format": "dr-battle-attack/1",
+  "meta": { "name": "无框躲避：风向标", "author": "DR Battle Editor" },
+  "settings": { "duration": 8, "seed": 5, "damage": 5 },
+  "box": { "x": 320, "y": 180, "w": 140, "h": 144, "appearance": "hidden" },
+  "arena": { "kind": "stage" },
+  "soul": { "x": 122, "y": 236, "speed": 4, "slowSpeed": 2 },
+  "demo": {
+    "mode": "path",
+    "fallback": "stay",
+    "path": [
+      { "t": 0, "x": 122, "y": 236 },
+      { "t": 0.7, "x": 122, "y": 197 },
+      { "t": 5.9, "x": 520, "y": 197 }
+    ]
+  },
+  "bulletTypes": {
+    "wind": {
+      "sprite": "spr_spadebullet",
+      "scale": 0.8,
+      "color": "#a9b8ff",
+      "hitbox": { "shape": "circle", "r": 6 },
+      "clipTo": "arena"
+    }
+  },
+  "timeline": [
+    {
+      "id": "gust-right", "at": 0.3, "type": "emitter", "duration": 6.8, "interval": 0.55, "count": 5,
+      "spawn": { "bullet": "wind", "x": 4, "y": "35 + i*66 + 10*sin(k*72)", "angle": 0, "speed": 4.5, "life": 5 }
+    },
+    {
+      "id": "gust-left", "at": 2.6, "type": "emitter", "duration": 4.6, "interval": 0.8, "count": 4,
+      "spawn": { "bullet": "wind", "x": 636, "y": "(i < 2 ? 52+i*82 : 249+(i-2)*66) - 12*cos(k*66)", "angle": 180, "speed": 5.5, "life": 5 }
+    }
+  ]
+}

@@ -1,0 +1,583 @@
+[
+  {
+    "n": 58,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 5,
+    "hold": [
+      "up"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 11
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 1
+  },
+  {
+    "n": 22,
+    "hold": [
+      "left"
+    ]
+  },
+  {
+    "n": 75,
+    "hold": [
+      "up"
+    ],
+    "mark": "collision"
+  },
+  {
+    "n": 37,
+    "hold": [
+      "down"
+    ]
+  },
+  {
+    "n": 35,
+    "hold": [
+      "left"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "up"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 11
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 11
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 11
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 1
+  },
+  {
+    "n": 1,
+    "hold": [
+      "down"
+    ],
+    "press": [
+      "down"
+    ]
+  },
+  {
+    "n": 1
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 11
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 1,
+    "mark": "foreman"
+  },
+  {
+    "n": 56,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "up"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 24,
+    "mark": "enter-canal"
+  },
+  {
+    "n": 12,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 8,
+    "mark": "inertia"
+  },
+  {
+    "n": 35,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 25
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 1,
+    "mark": "pressure"
+  },
+  {
+    "n": 65,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 24,
+    "mark": "enter-stage"
+  },
+  {
+    "n": 37,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 193
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 11
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 1,
+    "mark": "rhythm-retry"
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 29
+  },
+  {
+    "n": 1,
+    "hold": [
+      "left"
+    ],
+    "press": [
+      "left"
+    ]
+  },
+  {
+    "n": 23
+  },
+  {
+    "n": 1,
+    "hold": [
+      "up"
+    ],
+    "press": [
+      "up"
+    ]
+  },
+  {
+    "n": 23
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 23
+  },
+  {
+    "n": 1,
+    "hold": [
+      "right"
+    ],
+    "press": [
+      "right"
+    ]
+  },
+  {
+    "n": 23
+  },
+  {
+    "n": 1,
+    "hold": [
+      "down"
+    ],
+    "press": [
+      "down"
+    ]
+  },
+  {
+    "n": 23
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 60
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 11
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 1,
+    "mark": "rhythm-pass"
+  },
+  {
+    "n": 9,
+    "hold": [
+      "down"
+    ]
+  },
+  {
+    "n": 79,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 24,
+    "mark": "enter-garden"
+  },
+  {
+    "n": 48,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 68,
+    "mark": "grip-reset"
+  },
+  {
+    "n": 42,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 53,
+    "hold": [
+      "up"
+    ]
+  },
+  {
+    "n": 100
+  },
+  {
+    "n": 66,
+    "hold": [
+      "up"
+    ],
+    "mark": "climb"
+  },
+  {
+    "n": 25,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 18,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 7
+  },
+  {
+    "n": 70,
+    "hold": [
+      "act"
+    ]
+  },
+  {
+    "n": 10
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 11
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 1,
+    "mark": "water"
+  },
+  {
+    "n": 10,
+    "hold": [
+      "up"
+    ]
+  },
+  {
+    "n": 50,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 12,
+    "hold": [
+      "down"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 24,
+    "mark": "enter-hub"
+  },
+  {
+    "n": 19,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 7,
+    "hold": [
+      "up"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "right"
+    ]
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 28
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 11
+  },
+  {
+    "n": 1,
+    "hold": [
+      "act"
+    ],
+    "press": [
+      "act"
+    ]
+  },
+  {
+    "n": 1,
+    "mark": "complete"
+  }
+]

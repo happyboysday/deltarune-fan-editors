@@ -1,0 +1,377 @@
+/**
+ * editor/encounter/demo-panel.css — 遭遇編輯器「演示」面板（AP2）
+ *
+ * 風格沿用指令清單編輯器（cue-editor.css）的卡片／小按鈕語彙：
+ *   深色卡片 + 左側色條 + 緊湊的 17px 高小按鈕 + mono 路徑訊息。
+ * 只新增 .encdemo-* 類別，避免影響既有面板。
+ */
+
+.encdemo-root {
+  --demo-bg: #0b0b12;
+  --demo-card: #15151f;
+  --demo-card-hi: #1b1b28;
+  --demo-line: #2a2a3d;
+  --demo-line-soft: #20202e;
+  --demo-text: #e6e6f0;
+  --demo-dim: #8b8ba4;
+  --demo-dim2: #6a6a83;
+  --demo-accent: #7aa2ff;
+  --demo-err: #ff5f6d;
+  --demo-ok: #58d68d;
+  --demo-mono: "Cascadia Mono", "Consolas", "Microsoft JhengHei", monospace;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  background: var(--demo-bg);
+  color: var(--demo-text);
+  font-size: 11.5px;
+}
+
+/* ------------------------------------------------------------ 工具列 */
+
+.encdemo-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--demo-line-soft);
+  background: #10101a;
+}
+
+.encdemo-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.encdemo-note {
+  margin-left: auto;
+  color: var(--demo-dim2);
+  font-family: var(--demo-mono);
+  font-size: 10px;
+}
+
+/* ------------------------------------------------------------ 捲動區 */
+
+.encdemo-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 6px 8px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: #33334a #101018;
+}
+
+.encdemo-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+.encdemo-scroll::-webkit-scrollbar-track { background: #101018; }
+.encdemo-scroll::-webkit-scrollbar-thumb { background: #33334a; border-radius: 5px; }
+.encdemo-scroll::-webkit-scrollbar-thumb:hover { background: #43436a; }
+
+.encdemo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 40px;
+}
+
+.encdemo-section-title {
+  margin-top: 4px;
+  color: var(--demo-dim2);
+  font-size: 9.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------ 設定區 */
+
+.encdemo-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 8px;
+  border: 1px solid var(--demo-line-soft);
+  border-radius: 4px;
+  background: #10101a;
+}
+
+.encdemo-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 22px;
+  flex-wrap: wrap;
+}
+
+.encdemo-mini-label {
+  color: var(--demo-dim);
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+.encdemo-hint {
+  color: var(--demo-dim2);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.encdemo-inline.is-error,
+.encdemo-card.is-error,
+.encdemo-row.is-error {
+  box-shadow: inset 0 0 0 1px rgba(255, 95, 109, 0.55);
+}
+
+.encdemo-inline.is-error { border-radius: 3px; background: #1e1014; }
+.encdemo-row.is-error { background: #1e1014; }
+
+.encdemo-is-flash {
+  animation: encdemo-flash 1.2s ease-out;
+}
+
+@keyframes encdemo-flash {
+  0% { box-shadow: 0 0 0 2px var(--demo-accent); }
+  100% { box-shadow: 0 0 0 0 rgba(122, 162, 255, 0); }
+}
+
+[data-demo-path].is-flash { animation: encdemo-flash 1.2s ease-out; }
+
+/* ------------------------------------------------------------ 回合卡 */
+
+.encdemo-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--demo-line-soft);
+  border-left: 3px solid var(--demo-accent);
+  border-radius: 4px;
+  background: var(--demo-card);
+}
+
+.encdemo-card:hover { border-color: #34344c; border-left-color: var(--demo-accent); }
+
+.encdemo-card.is-error {
+  border-color: var(--demo-err);
+  border-left-color: var(--demo-err);
+}
+
+.encdemo-card-default { border-left-color: var(--demo-dim); }
+
+.encdemo-card-head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--demo-line-soft);
+  background: #12121c;
+  overflow: hidden;
+}
+
+.encdemo-card-title {
+  font-weight: 600;
+  color: #dfe0ee;
+  white-space: nowrap;
+}
+
+.encdemo-chip {
+  min-width: 16px;
+  padding: 0 5px;
+  border: 1px solid #3a3a52;
+  border-radius: 8px;
+  background: #1f1f2e;
+  color: var(--demo-dim);
+  font-size: 9px;
+  text-align: center;
+}
+
+.encdemo-turnnum {
+  width: 52px;
+  height: 20px;
+  padding: 0 4px;
+  font-size: 10.5px;
+}
+
+.encdemo-headselect {
+  height: 20px;
+  font-size: 10.5px;
+  padding: 0 3px;
+}
+
+.encdemo-card-head > .pan-btn,
+.encdemo-card-head > .encdemo-mini { margin-left: auto; }
+.encdemo-card-head > .pan-btn ~ .pan-btn,
+.encdemo-card-head > .encdemo-mini ~ .encdemo-mini { margin-left: 0; }
+
+.encdemo-mini {
+  appearance: none;
+  min-width: 19px;
+  height: 18px;
+  padding: 0 4px;
+  border: 1px solid #31314a;
+  border-radius: 3px;
+  background: #1a1a28;
+  color: var(--demo-dim);
+  font-family: var(--demo-mono);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.encdemo-mini:hover { background: #26263a; color: var(--demo-text); border-color: #43436a; }
+.encdemo-mini:disabled { opacity: 0.35; cursor: default; }
+
+/* ------------------------------------------------------------ 隊員列 */
+
+.encdemo-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 6px 6px;
+}
+
+.encdemo-row {
+  display: grid;
+  grid-template-columns: 74px 108px 118px minmax(96px, 1fr) 116px 108px;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 3px;
+  border-radius: 3px;
+}
+
+.encdemo-row:hover { background: var(--demo-card-hi); }
+
+.encdemo-member {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #cfd0e0;
+  font-weight: 600;
+}
+
+.encdemo-select,
+.encdemo-row .pan-select {
+  width: 100%;
+  min-width: 0;
+  height: 21px;
+  font-size: 10.5px;
+  padding: 0 3px;
+}
+
+.encdemo-select:disabled { opacity: 0.55; }
+
+.encdemo-fightcell {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.encdemo-fightcell .encdemo-num {
+  width: 52px;
+  height: 21px;
+  font-size: 10.5px;
+  padding: 0 3px;
+}
+
+.encdemo-num {
+  width: 62px;
+  height: 22px;
+  padding: 0 4px;
+  font-size: 10.5px;
+}
+
+.encdemo-default-body { gap: 4px; }
+
+.encdemo-empty {
+  padding: 8px;
+  color: var(--demo-dim2);
+  font-size: 10.5px;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------ 錯誤清單 */
+
+.encdemo-errors {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px 7px;
+  border: 1px solid var(--demo-line-soft);
+  border-radius: 4px;
+  background: #101018;
+}
+
+.encdemo-errors-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.encdemo-errors-title { color: var(--demo-accent); font-size: 10.5px; font-weight: 600; }
+.encdemo-errors-none { color: var(--demo-dim2); font-size: 10px; }
+
+.encdemo-errrow {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(0, 2fr) 44px;
+  gap: 6px;
+  align-items: start;
+  padding: 3px 5px;
+  border-radius: 3px;
+  background: #1a1016;
+  border: 1px solid #3a222c;
+}
+
+.encdemo-errpath {
+  color: #ff9aa3;
+  font-family: var(--demo-mono);
+  font-size: 10px;
+  word-break: break-all;
+}
+
+.encdemo-errmsg {
+  color: var(--demo-dim);
+  font-size: 10.5px;
+  word-break: break-word;
+}
+
+.encdemo-jump {
+  height: 19px;
+  padding: 0 6px;
+  font-size: 10px;
+}
+
+/* ------------------------------------------------------------ 分頁（cue 面板） */
+
+.encdemo-tabs {
+  margin-left: 6px;
+}
+
+.encdemo-tabs .panel-tab {
+  height: 100%;
+  font-size: 11px;
+}
+
+.encdemo-body {
+  overflow: auto;
+  padding: 0;
+}
+
+/* 窄視窗：隊員列改成兩排 */
+@media (max-width: 1280px) {
+  .encdemo-row {
+    grid-template-columns: 66px 96px 104px minmax(88px, 1fr) 104px 96px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .encdemo-row {
+    grid-template-columns: 60px minmax(0, 1fr) minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    row-gap: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-demo-path].is-flash { animation: none; }
+}

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>插件管理 · 场景编辑器 V1.0</title><link rel="stylesheet" href="/studio/pages.css"></head>
+<body>
+<header class="top"><div class="brand"><span class="logo">✦</span><div><small>DELTARUNE DIRECTOR</small><strong>场景编辑器 <em>V1.0</em></strong></div></div>
+<nav><a href="/">← 返回编辑器</a><a href="/studio/settings.html">设置</a><a href="/studio/plugins.html" aria-current="page">插件管理</a></nav></header>
+<main>
+<div class="page-head"><div><h1>插件管理</h1><p class="lead">插件可以给编辑器加入新的玩法模式、实体、事件动作和编辑面板。开发方法见使用手册与「插件开发」文档。</p></div></div>
+<p class="banner warn">插件会在浏览器和本机 Node.js 中执行代码。只安装信任来源的插件。</p>
+<section class="card">
+  <div class="card-head"><div><h2>安装插件</h2><p>插件文件夹需包含 plugin.json。安装时会检查清单、API 版本、文件类型和路径。</p></div></div>
+  <fieldset id="install" class="install" disabled>
+    <form id="folderForm"><h3>从本机文件夹</h3><p>填写插件文件夹的绝对路径，文件会复制到用户插件目录。</p>
+      <div class="field-row"><input id="folder" class="path" required placeholder="例如 D:\插件\fireflies" spellcheck="false"><button class="primary">安装</button></div></form>
+    <form id="zipForm"><h3>从 ZIP 文件</h3><p>最多 20 MiB，压缩包内应包含插件的 plugin.json。</p>
+      <div class="field-row"><label class="drop"><b>⇪</b><span id="zipName">选择 ZIP 文件</span><input id="zip" type="file" accept=".zip,application/zip" required></label><button class="primary">安装</button></div></form>
+  </fieldset>
+</section>
+<section class="card">
+  <div class="card-head"><div><h2>已安装插件</h2><p>停用后，依赖它的工程会暂停试玩与编辑，并在编辑器里提示。卸载不会删除文件，插件目录会移入回收区。</p></div>
+    <button id="refresh" type="button" class="ghost">刷新列表</button></div>
+  <p id="status" role="status" class="lead"></p>
+  <ul id="plugins" class="plugin-list"></ul>
+</section>
+</main>
+<script type="module" src="/studio/plugin-manager.mjs"></script>
+</body>
+</html>

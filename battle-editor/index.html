@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DR 戰鬥編輯器</title>
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="editor/styles.css">
+<!-- ED2 / ED3 的樣式；檔案尚未建立時 404 不影響頁面運作 -->
+<link rel="stylesheet" href="editor/timeline.css">
+<link rel="stylesheet" href="editor/panels.css">
+</head>
+<body>
+<!-- ED2/ED3 樣式（timeline.css / panels.css）若尚未建立，補上最小樣式避免版面破損 -->
+<script>
+  (function () {
+    var links = [
+      { href: 'editor/timeline.css', css: '#timeline .panel-body{overflow:hidden} #timeline-body{height:100%}' },
+      { href: 'editor/panels.css', css: '#inspector-body,#assets-browser,#bullet-types{height:100%}' }
+    ];
+    window.addEventListener('load', function () {
+      for (var i = 0; i < links.length; i++) {
+        var link = document.querySelector('link[href="' + links[i].href + '"]');
+        if (!link || !link.sheet) {
+          var style = document.createElement('style');
+          style.setAttribute('data-fallback', links[i].href);
+          style.textContent = links[i].css;
+          document.head.appendChild(style);
+        }
+      }
+    });
+  })();
+</script>
+
+<div id="app">
+
+  <!-- ======================= 工具列 ======================= -->
+  <header id="toolbar" class="toolbar">
+    <div class="brand" data-i18n-title="app.brandTitle">
+      <span class="brand-mark">◆</span><span class="brand-text" data-i18n="app.brand">DR 戰鬥編輯器</span>
+    </div>
+
+    <a id="link-encounter-editor" class="tb-link" href="encounter.html" data-i18n="app.openEncounter" data-i18n-title="app.openEncounterTip" title="切換到遭遇編輯器（編輯隊伍、敵人、回合與演出指令，encounter.html）">遭遇編輯器</a>
+
+    <div class="tb-group" role="group" data-i18n-aria-label="toolbar.group.file" aria-label="檔案">
+      <button type="button" id="btn-new" class="tb-btn" data-i18n="toolbar.new" data-i18n-title="toolbar.tip.new" title="新建攻擊（會清空復原紀錄）">新建</button>
+      <button type="button" id="btn-open" class="tb-btn" data-i18n="toolbar.open" data-i18n-title="toolbar.tip.open" title="從伺服器開啟">開啟…</button>
+      <button type="button" id="btn-save" class="tb-btn" data-i18n="toolbar.save" data-i18n-title="toolbar.tip.save" title="儲存到伺服器 (Ctrl+S)">儲存</button>
+      <button type="button" id="btn-save-as" class="tb-btn" data-i18n="toolbar.saveAs" data-i18n-title="toolbar.tip.saveAs" title="另存新檔到伺服器">另存為…</button>
+    </div>
+
+    <span class="tb-sep" aria-hidden="true"></span>
+
+    <div class="tb-group" role="group" data-i18n-aria-label="toolbar.group.exchange" aria-label="交換">
+      <button type="button" id="btn-import" class="tb-btn" data-i18n="toolbar.import" data-i18n-title="toolbar.tip.import" title="從本機匯入 JSON">匯入…</button>
+      <button type="button" id="btn-export" class="tb-btn" data-i18n="toolbar.export" data-i18n-title="toolbar.tip.export" title="匯出 JSON 到本機">匯出…</button>
+      <button type="button" id="btn-samples" class="tb-btn has-menu" data-i18n-title="toolbar.tip.samples" title="開啟 samples/ 內的範例" aria-haspopup="true" aria-expanded="false"><span data-i18n="toolbar.samples">範例</span> <span class="caret">▾</span></button>
+    </div>
+
+    <span class="tb-sep" aria-hidden="true"></span>
+
+    <!-- V2-06：作品包（含遭遇／素材）匯出／匯入；行為在 editor/pack.js，由 fileops.js 掛載 -->
+    <div class="tb-group" role="group" data-i18n-aria-label="toolbar.group.pack" aria-label="作品包">
+      <button type="button" id="btn-pack-export" class="tb-btn" data-i18n="fileops.pack.export" data-i18n-title="fileops.pack.exportTip" title="把目前作品（含遭遇、素材）打包成 .drpack.json 下載">匯出作品包</button>
+      <button type="button" id="btn-pack-import" class="tb-btn" data-i18n="fileops.pack.import" data-i18n-title="fileops.pack.importTip" title="從 .drpack.json 匯入作品；名稱衝突時可選取消／自動改名／覆蓋">匯入作品包</button>
+    </div>
+
+    <span class="tb-sep" aria-hidden="true"></span>
+
+    <div class="tb-group" role="group" data-i18n-aria-label="toolbar.group.edit" aria-label="編輯">
+      <button type="button" id="btn-undo" class="tb-btn" data-i18n="toolbar.undo" data-i18n-title="toolbar.tip.undo" title="復原 (Ctrl+Z)" disabled>↶ 復原</button>
+      <button type="button" id="btn-redo" class="tb-btn" data-i18n="toolbar.redo" data-i18n-title="toolbar.tip.redo" title="重做 (Ctrl+Y / Ctrl+Shift+Z)" disabled>↷ 重做</button>
+    </div>
+
+    <span class="tb-sep" aria-hidden="true"></span>
+
+    <div class="tb-group" role="group" data-i18n-aria-label="toolbar.group.play" aria-label="播放">
+      <button type="button" id="btn-play" class="tb-btn" data-i18n="toolbar.play" data-i18n-title="toolbar.tip.play" title="播放／暫停 (空白鍵) · P＝切換自動演示 · R＝重來" disabled>▶ 播放</button>
+      <button type="button" id="btn-try" class="tb-btn" data-i18n="toolbar.try" data-i18n-title="toolbar.tip.try" title="頁內試玩：在這個預覽上直接控制靈魂（Esc 返回）；Play 另行開 play.html 跑完整回合" disabled>頁內試玩</button>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <div class="tb-status">
+      <span id="toolbar-msg" class="tb-msg" aria-live="polite"></span>
+      <span id="error-count" class="err-chip" data-i18n-title="toolbar.errorChipTitle" title="驗證錯誤數" hidden>0 個錯誤</span>
+      <span class="doc-meta">
+        <span id="doc-name" data-i18n-title="toolbar.fileName" title="目前檔名">未命名</span><span id="doc-dirty" class="dirty-dot" data-i18n-title="toolbar.dirtyTitle" title="尚未儲存" hidden>●</span>
+      </span>
+      <span id="sync-chip" class="sync-chip" data-state="idle" hidden></span>
+      <span id="agent-note" class="agent-note" aria-live="polite" hidden></span>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <label class="tb-locale" data-i18n-title="app.localeTitle" title="介面語言">
+        <span class="tb-locale-label" data-i18n="app.localeLabel">語言</span>
+        <select id="opt-locale" class="tb-select" data-i18n-aria-label="app.localeLabel" aria-label="介面語言"></select>
+      </label>
+    </div>
+  </header>
+
+  <!-- ======================= 素材面板（左） ======================= -->
+  <aside id="assets-panel" class="panel panel-assets">
+    <div class="panel-head">
+      <div class="panel-tabs" role="tablist" data-i18n-aria-label="app.assetsTabs" aria-label="素材面板分頁">
+        <button type="button" class="panel-tab is-active" role="tab" data-tab="pane-assets" data-i18n="app.tabAssets" aria-selected="true">素材</button>
+        <button type="button" class="panel-tab" role="tab" data-tab="pane-bullets" data-i18n="app.tabBullets" aria-selected="false">子彈類型</button>
+      </div>
+      <div class="panel-head-actions">
+        <span id="assets-state" class="mini-note" data-i18n-title="app.assetsStateTitle" title="素材索引狀態"></span>
+      </div>
+    </div>
+    <div class="panel-body panel-panes">
+      <div id="assets-browser" class="pane" data-pane="pane-assets" role="tabpanel"></div>
+      <div id="bullet-types" class="pane" data-pane="pane-bullets" role="tabpanel" hidden></div>
+    </div>
+  </aside>
+
+  <div id="split-assets" class="splitter splitter-v" role="separator" aria-orientation="vertical" data-i18n-title="app.splitterTip" title="拖曳調整寬度，雙擊回復預設"></div>
+
+  <!-- ======================= 預覽（中） ======================= -->
+  <main id="preview" class="panel panel-preview">
+    <div class="panel-head">
+      <span class="panel-title" data-i18n="preview.title">預覽</span>
+      <div class="panel-head-actions"></div>
+    </div>
+
+    <div id="preview-stage" class="preview-stage">
+      <div id="stage-viewport" class="stage-viewport">
+        <canvas id="preview-canvas" width="640" height="480" data-i18n-aria-label="app.canvasAria" aria-label="戰鬥預覽畫面"></canvas>
+        <div id="editor-overlay" class="editor-overlay" hidden>
+          <div id="box-shape" class="box-shape" data-part="move" data-i18n-title="preview.box.moveTip" title="拖曳移動戰鬥框">
+            <i class="handle" data-handle="nw"></i>
+            <i class="handle" data-handle="n"></i>
+            <i class="handle" data-handle="ne"></i>
+            <i class="handle" data-handle="e"></i>
+            <i class="handle" data-handle="se"></i>
+            <i class="handle" data-handle="s"></i>
+            <i class="handle" data-handle="sw"></i>
+            <i class="handle" data-handle="w"></i>
+            <span class="box-tag" data-i18n="preview.box.tag">戰鬥框</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="engine-banner" class="engine-banner" hidden></div>
+    </div>
+
+    <div id="transport" class="transport">
+      <button type="button" id="btn-goto-start" class="tp-btn" data-i18n-title="preview.tip.gotoStart" title="回到開頭 (Home)" disabled>⏮</button>
+      <button type="button" id="btn-step-back" class="tp-btn" data-i18n-title="preview.tip.stepBack" title="上一幀 (←)" disabled>◀</button>
+      <button type="button" id="btn-play-pause" class="tp-btn tp-btn-play" data-i18n-title="preview.tip.playPause" title="播放／暫停 (空白鍵)" disabled>▶</button>
+      <button type="button" id="btn-step-fwd" class="tp-btn" data-i18n-title="preview.tip.stepFwd" title="下一幀 (→)" disabled>▶|</button>
+      <span id="timecode" class="timecode" data-i18n-title="preview.timecode.title" title="目前時間 / 總長度（秒:幀）">00:00 / 00:00</span>
+      <span class="tp-sep" aria-hidden="true"></span>
+      <label class="chk" data-i18n-title="preview.tip.grid" title="顯示引擎程序化格線背景"><input type="checkbox" id="opt-grid"> <span data-i18n="preview.grid">格線</span></label>
+      <label class="chk" data-i18n-title="preview.tip.hitboxes" title="顯示子彈／靈魂碰撞框"><input type="checkbox" id="opt-hitbox"> <span data-i18n="preview.hitboxes">碰撞框</span></label>
+      <span class="tp-sep" aria-hidden="true"></span>
+      <button type="button" id="btn-battle-lang" class="tp-btn tp-btn-lang" data-i18n-title="preview.battleLang" data-i18n-aria-label="preview.battleLang" title="切換戰鬥畫面語言（中／EN）" aria-label="切換戰鬥畫面語言">中</button>
+      <span class="tp-sep" aria-hidden="true"></span>
+      <span id="preview-mode" class="mode-chip" data-i18n-title="preview.modeTitle" title="目前預覽模式">編輯模式</span>
+      <span id="preview-meta" class="preview-meta"></span>
+    </div>
+  </main>
+
+  <div id="split-inspector" class="splitter splitter-v" role="separator" aria-orientation="vertical" data-i18n-title="app.splitterTip" title="拖曳調整寬度，雙擊回復預設"></div>
+
+  <!-- ======================= 檢查器（右） ======================= -->
+  <aside id="inspector" class="panel panel-inspector">
+    <div class="panel-head">
+      <span class="panel-title" data-i18n="app.panel.inspector">檢查器</span>
+      <div class="panel-head-actions"><span id="selection-label" class="mini-note"></span></div>
+    </div>
+    <div class="panel-body" id="inspector-body"></div>
+  </aside>
+
+  <div id="split-timeline" class="splitter splitter-h" role="separator" aria-orientation="horizontal" data-i18n-title="app.splitterTip" title="拖曳調整高度，雙擊回復預設"><i class="splitter-grip" aria-hidden="true"></i></div>
+
+  <!-- ======================= 時間軸（下） ======================= -->
+  <section id="timeline" class="panel panel-timeline">
+    <div class="panel-head">
+      <span class="panel-title" data-i18n="app.panel.timeline">時間軸</span>
+      <div class="panel-head-actions">
+        <span id="timeline-note" class="mini-note"></span>
+      </div>
+    </div>
+    <div class="panel-body" id="timeline-body"></div>
+  </section>
+
+</div><!-- /#app -->
+
+<!-- 啟動／錯誤遮罩 -->
+<div id="boot-overlay" class="boot-overlay">
+  <div class="boot-card">
+    <div class="boot-title"><span class="brand-mark">◆</span> <span data-i18n="app.brand">DR 戰鬥編輯器</span></div>
+    <div class="boot-status" id="boot-status" data-i18n="app.boot.loading">載入中…</div>
+    <pre class="boot-detail" id="boot-detail" hidden></pre>
+    <div class="boot-hint" data-i18n="app.boot.hint">若一直停在這裡，請確認已透過 <code>serve.py</code> 從 http://127.0.0.1:18900/ 開啟本頁，而不是直接雙擊 index.html。</div>
+  </div>
+</div>
+
+<!-- 通用對話框 / 下拉選單 / 提示 -->
+<div id="modal-root" class="modal-root" hidden></div>
+<div id="menu-root" class="menu-root" hidden></div>
+<div id="toast-root" class="toast-root" aria-live="polite"></div>
+
+<script>
+  // 模組載入前的錯誤也要看得到，否則只會白屏。
+  (function () {
+    var shown = false;
+    function showError(text, detail) {
+      try {
+        var overlay = document.getElementById('boot-overlay');
+        var status = document.getElementById('boot-status');
+        var box = document.getElementById('boot-detail');
+        if (!overlay || !status) return;
+        overlay.hidden = false;
+        overlay.dataset.error = '1';
+        status.textContent = text || '載入失敗';
+        if (detail && box) { box.hidden = false; box.textContent = String(detail); }
+        shown = true;
+      } catch (e) { /* 忽略 */ }
+    }
+    window.__drBootError = showError;
+    window.addEventListener('error', function (e) {
+      var t = e && e.target;
+      // 資源載入錯誤（link/script/img/audio…）不算程式錯誤：
+      // 素材或面板樣式缺失時引擎會畫佔位方塊，不該蓋住整個編輯器。
+      if (t && t.tagName && t !== window && t.nodeType === 1) {
+        var tag = String(t.tagName).toUpperCase();
+        if (tag === 'SCRIPT' && !t.dataset.optional) {
+          showError('資源載入失敗：' + (t.src || ''));
+        } else {
+          console.warn('[index] 資源載入失敗（已忽略）：<' + tag.toLowerCase() + '> ' + (t.src || t.href || ''));
+        }
+        return;
+      }
+      if (!e || !e.message) return;
+      showError('執行時錯誤', e.message + (e.filename ? '\n' + e.filename + ':' + e.lineno : ''));
+    }, true);
+    window.addEventListener('unhandledrejection', function (e) {
+      var r = e && e.reason;
+      showError('未處理的非同步錯誤', r && r.stack ? r.stack : String(r));
+    });
+  })();
+</script>
+<script type="module" src="editor/main.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,8 @@
+name=fnt_tinynoelle
+source_font=fnt_tinynoelle
+chapter=ch5
+png_w=128
+png_h=64
+glyphs=96
+em_size=7
+line_height=9

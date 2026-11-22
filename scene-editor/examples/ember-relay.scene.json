@@ -1,0 +1,407 @@
+{
+  "format": "deltarune-scene/1",
+  "id": "ember-relay",
+  "title": "余火接力",
+  "viewport": {
+    "w": 480,
+    "h": 300
+  },
+  "start": {
+    "room": "hall",
+    "entry": "arrival"
+  },
+  "player": {
+    "sprite": "walker",
+    "speed": 2.8,
+    "radius": 6,
+    "reach": 21
+  },
+  "assets": {
+    "walker": {
+      "ticks": 5,
+      "anchor": "feet",
+      "idle_down": "/studio/art/walker-down-0.png",
+      "walk_down": [
+        "/studio/art/walker-down-0.png",
+        "/studio/art/walker-down-1.png",
+        "/studio/art/walker-down-0.png",
+        "/studio/art/walker-down-2.png"
+      ],
+      "idle_left": "/studio/art/walker-left-0.png",
+      "walk_left": [
+        "/studio/art/walker-left-0.png",
+        "/studio/art/walker-left-1.png",
+        "/studio/art/walker-left-0.png",
+        "/studio/art/walker-left-2.png"
+      ],
+      "idle_right": "/studio/art/walker-right-0.png",
+      "walk_right": [
+        "/studio/art/walker-right-0.png",
+        "/studio/art/walker-right-1.png",
+        "/studio/art/walker-right-0.png",
+        "/studio/art/walker-right-2.png"
+      ],
+      "idle_up": "/studio/art/walker-up-0.png",
+      "walk_up": [
+        "/studio/art/walker-up-0.png",
+        "/studio/art/walker-up-1.png",
+        "/studio/art/walker-up-0.png",
+        "/studio/art/walker-up-2.png"
+      ]
+    },
+    "clerk": "/studio/art/foreman.png",
+    "face": "/studio/art/foreman-face.png",
+    "lamp": {
+      "frames": [
+        "/studio/art/lantern-0.png",
+        "/studio/art/lantern-1.png"
+      ],
+      "ticks": 12
+    }
+  },
+  "campaign": {
+    "saveKey": "ember-relay-v1",
+    "defeat": "load",
+    "party": {
+      "kris": {
+        "name": "Kris",
+        "hp": 34,
+        "maxHp": 48
+      }
+    },
+    "items": {
+      "tonic": {
+        "name": "星糖",
+        "heal": 13,
+        "text": "＊ 一颗星糖在嘴里化开。"
+      },
+      "cinder": {
+        "name": "余烬袋",
+        "heal": 7
+      },
+      "badge": {
+        "name": "灯章",
+        "heal": 5
+      }
+    }
+  },
+  "inventory": {
+    "tonic": 2,
+    "room_key": 1
+  },
+  "battleTransition": {
+    "style": "classic",
+    "ticks": 25,
+    "sound": true
+  },
+  "battles": {
+    "patrol": {
+      "encounter": "ember-patrol",
+      "carry": "inherit",
+      "itemMap": {
+        "treat": "tonic",
+        "ash": "cinder"
+      },
+      "resultFlag": "patrol_result",
+      "rewards": {
+        "victory": {
+          "badge": 1
+        },
+        "spared": {
+          "badge": 1
+        }
+      },
+      "on": {
+        "victory": "first_clear",
+        "spared": "first_clear",
+        "flee": "retreat"
+      }
+    },
+    "latch": {
+      "encounter": "ember-latch",
+      "carry": "inherit",
+      "partyMap": {
+        "guest": "kris"
+      },
+      "resultFlag": "latch_result",
+      "rewards": {
+        "victory": {
+          "badge": 1
+        }
+      },
+      "on": {
+        "victory": "second_clear",
+        "spared": "second_clear",
+        "flee": "retreat",
+        "defeat": "defeated"
+      }
+    }
+  },
+  "rooms": {
+    "hall": {
+      "title": "01 · 灯芯走廊",
+      "w": 650,
+      "h": 320,
+      "style": "workshop",
+      "entries": {
+        "arrival": {
+          "x": 118,
+          "y": 174,
+          "face": "up"
+        },
+        "lamp": {
+          "x": 208,
+          "y": 173,
+          "face": "up"
+        },
+        "from_furnace": {
+          "x": 515,
+          "y": 172,
+          "face": "left"
+        }
+      },
+      "entities": [
+        {
+          "id": "rear",
+          "kind": "wall",
+          "x": 26,
+          "y": 53,
+          "w": 600,
+          "h": 12
+        },
+        {
+          "id": "hall_board",
+          "kind": "prop",
+          "x": 67,
+          "y": 83,
+          "w": 140,
+          "h": 20,
+          "name": "两道门 · 同一支队伍",
+          "color": "#cba7f0"
+        },
+        {
+          "id": "mechanic",
+          "kind": "npc",
+          "x": 105,
+          "y": 117,
+          "w": 27,
+          "h": 24,
+          "name": "补给员",
+          "solid": true,
+          "sprite": "clerk",
+          "event": "guide"
+        },
+        {
+          "id": "lamp",
+          "kind": "savepoint",
+          "x": 197,
+          "y": 121,
+          "w": 24,
+          "h": 26,
+          "name": "余火灯",
+          "heal": false,
+          "entry": "lamp"
+        },
+        {
+          "id": "first_guard",
+          "kind": "enemy",
+          "x": 323,
+          "y": 145,
+          "w": 29,
+          "h": 35,
+          "name": "灯芯巡逻员",
+          "battle": "patrol",
+          "once": true,
+          "activeWhen": {
+            "not": {
+              "flag": "first_cleared"
+            }
+          }
+        },
+        {
+          "id": "stair",
+          "kind": "door",
+          "x": 478,
+          "y": 133,
+          "w": 32,
+          "h": 44,
+          "name": "余烬工房",
+          "room": "furnace",
+          "entry": "arrival",
+          "when": {
+            "flag": "first_cleared"
+          },
+          "otherwise": "need_first"
+        },
+        {
+          "id": "patrol_sign",
+          "kind": "prop",
+          "x": 315,
+          "y": 99,
+          "w": 124,
+          "h": 16,
+          "name": "巡逻员 ↘",
+          "color": "#eaa878"
+        }
+      ]
+    },
+    "furnace": {
+      "title": "02 · 余烬工房",
+      "w": 570,
+      "h": 300,
+      "style": "theatre",
+      "entries": {
+        "arrival": {
+          "x": 92,
+          "y": 171,
+          "face": "right"
+        },
+        "side": {
+          "x": 82,
+          "y": 223,
+          "face": "up"
+        }
+      },
+      "entities": [
+        {
+          "id": "furnace_wall",
+          "kind": "wall",
+          "x": 29,
+          "y": 49,
+          "w": 510,
+          "h": 15
+        },
+        {
+          "id": "furnace_sign",
+          "kind": "prop",
+          "x": 145,
+          "y": 91,
+          "w": 182,
+          "h": 21,
+          "name": "星糖和 HP 都跟着你来了",
+          "color": "#eea5bc"
+        },
+        {
+          "id": "back",
+          "kind": "door",
+          "x": 35,
+          "y": 133,
+          "w": 29,
+          "h": 42,
+          "name": "灯芯走廊",
+          "room": "hall",
+          "entry": "from_furnace"
+        },
+        {
+          "id": "latch_guard",
+          "kind": "enemy",
+          "x": 265,
+          "y": 143,
+          "w": 32,
+          "h": 36,
+          "name": "余烬门闩",
+          "battle": "latch",
+          "once": true,
+          "activeWhen": {
+            "not": {
+              "flag": "second_cleared"
+            }
+          }
+        },
+        {
+          "id": "finish",
+          "kind": "prop",
+          "x": 416,
+          "y": 128,
+          "w": 74,
+          "h": 33,
+          "name": "交班处",
+          "event": "final_line",
+          "when": {
+            "flag": "second_cleared"
+          },
+          "otherwise": "keep_trying"
+        }
+      ]
+    }
+  },
+  "events": {
+    "guide": [
+      {
+        "op": "say",
+        "pages": [
+          {
+            "text": "先在余火灯存档，再往右找巡逻员。星糖只有两颗，用掉不会自动补。",
+            "speaker": "补给员"
+          }
+        ]
+      }
+    ],
+    "first_clear": [
+      {
+        "op": "flag",
+        "id": "first_cleared",
+        "value": true
+      },
+      {
+        "op": "say",
+        "pages": [
+          "＊ 拿到了灯章和余烬袋。余烬工房的门打开了。"
+        ]
+      }
+    ],
+    "need_first": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 先让巡逻员点完名。"
+        ]
+      }
+    ],
+    "second_clear": [
+      {
+        "op": "flag",
+        "id": "second_cleared",
+        "value": true
+      },
+      {
+        "op": "say",
+        "pages": [
+          "＊ 你带着同一支队伍走完了两场战斗。"
+        ]
+      }
+    ],
+    "defeated": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 工房还没有交班。"
+        ]
+      }
+    ],
+    "retreat": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 你退回原地。消耗的道具已经记下了。"
+        ]
+      }
+    ],
+    "final_line": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 交班完成。库存清单和伤口都是真的。"
+        ]
+      }
+    ],
+    "keep_trying": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 余烬门闩还在值班。"
+        ]
+      }
+    ]
+  }
+}

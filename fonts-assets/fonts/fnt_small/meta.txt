@@ -1,0 +1,8 @@
+name=fnt_small
+source_font=fnt_small
+chapter=ch5
+png_w=128
+png_h=64
+glyphs=96
+em_size=6
+line_height=7

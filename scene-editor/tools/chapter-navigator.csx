@@ -1,0 +1,10 @@
+using System;
+using System.IO;
+using UndertaleModLib.Models;
+using UndertaleModLib.Compiler;
+EnsureDataLoaded();
+var folder=Environment.GetEnvironmentVariable("DIRECTOR_CHAPTER_TOOLS");
+var source=File.ReadAllText(Path.Combine(folder,"chapter-observe.gml"))+"\n"+File.ReadAllText(Path.Combine(folder,"chapter-nav-observe.gml"));
+var group=new CodeImportGroup(Data);
+group.QueueReplace(Data.GameObjects.ByName("obj_time").EventHandlerFor(EventType.Step,2u,Data),source);
+group.Import();

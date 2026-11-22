@@ -1,0 +1,604 @@
+{
+ "fnt_8bit": {
+  "chapters": [
+   5,
+   4,
+   3
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "3": {
+    "emSize": 12,
+    "glyphCount": 95,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_8bit_backup": {
+  "chapters": [
+   3
+  ],
+  "firstChapter": 3,
+  "meta": {
+   "3": {
+    "emSize": 12,
+    "glyphCount": 95,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_comicsans": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 10,
+    "glyphCount": 2532,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 10,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 10,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 10,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 10,
+    "glyphCount": 96,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_dotumche": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 12,
+    "glyphCount": 2533,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_ja_8bit": {
+  "chapters": [
+   5,
+   4,
+   3
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "3": {
+    "emSize": 16,
+    "glyphCount": 1604,
+    "lineHeight": 15
+   },
+   "4": {
+    "emSize": 16,
+    "glyphCount": 1819,
+    "lineHeight": 15
+   },
+   "5": {
+    "emSize": 16,
+    "glyphCount": 1819,
+    "lineHeight": 15
+   }
+  }
+ },
+ "fnt_ja_8bit_mixed": {
+  "chapters": [
+   5,
+   4,
+   3
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "3": {
+    "emSize": 20,
+    "glyphCount": 1604,
+    "lineHeight": 15
+   },
+   "4": {
+    "emSize": 20,
+    "glyphCount": 1819,
+    "lineHeight": 15
+   },
+   "5": {
+    "emSize": 20,
+    "glyphCount": 1819,
+    "lineHeight": 15
+   }
+  }
+ },
+ "fnt_ja_comicsans": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 30,
+    "glyphCount": 1709,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 30,
+    "glyphCount": 1708,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 30,
+    "glyphCount": 1819,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 30,
+    "glyphCount": 1682,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 30,
+    "glyphCount": 1780,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_ja_dotumche": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 14,
+    "glyphCount": 1316,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 14,
+    "glyphCount": 1708,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 14,
+    "glyphCount": 1604,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 14,
+    "glyphCount": 1682,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 14,
+    "glyphCount": 1780,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_ja_kakugo": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "2": {
+    "emSize": 18,
+    "glyphCount": 1708,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 18,
+    "glyphCount": 1604,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 18,
+    "glyphCount": 1682,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 18,
+    "glyphCount": 1780,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_ja_legend": {
+  "chapters": [
+   4
+  ],
+  "firstChapter": 4,
+  "meta": {
+   "4": {
+    "emSize": 16,
+    "glyphCount": 1682,
+    "lineHeight": 16
+   }
+  }
+ },
+ "fnt_ja_legend_alt": {
+  "chapters": [
+   4
+  ],
+  "firstChapter": 4,
+  "meta": {
+   "4": {
+    "emSize": 12,
+    "glyphCount": 1682,
+    "lineHeight": 16
+   }
+  }
+ },
+ "fnt_ja_main": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 14,
+    "glyphCount": 1302,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 14,
+    "glyphCount": 1708,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 14,
+    "glyphCount": 1604,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 14,
+    "glyphCount": 1682,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 14,
+    "glyphCount": 1780,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_ja_mainbig": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 28,
+    "glyphCount": 1316,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 28,
+    "glyphCount": 1708,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 28,
+    "glyphCount": 1604,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 28,
+    "glyphCount": 1682,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 28,
+    "glyphCount": 1780,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_ja_small": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 10,
+    "glyphCount": 1316,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 10,
+    "glyphCount": 1708,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 10,
+    "glyphCount": 1819,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 10,
+    "glyphCount": 1682,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 10,
+    "glyphCount": 1780,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_ja_tinynoelle": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 10,
+    "glyphCount": 1316,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 20,
+    "glyphCount": 1708,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 20,
+    "glyphCount": 1819,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 20,
+    "glyphCount": 1682,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 20,
+    "glyphCount": 1780,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_legend": {
+  "chapters": [
+   4
+  ],
+  "firstChapter": 4,
+  "meta": {
+   "4": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 16
+   }
+  }
+ },
+ "fnt_main": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 12,
+    "glyphCount": 2532,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 12,
+    "glyphCount": 96,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_mainbig": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 24,
+    "glyphCount": 2532,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 24,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 24,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 24,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 24,
+    "glyphCount": 96,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_small": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 6,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 6,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 6,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 6,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 6,
+    "glyphCount": 96,
+    "lineHeight": 0
+   }
+  }
+ },
+ "fnt_tinynoelle": {
+  "chapters": [
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "firstChapter": 5,
+  "meta": {
+   "1": {
+    "emSize": 7,
+    "glyphCount": 2518,
+    "lineHeight": 0
+   },
+   "2": {
+    "emSize": 7,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "3": {
+    "emSize": 7,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "4": {
+    "emSize": 7,
+    "glyphCount": 96,
+    "lineHeight": 0
+   },
+   "5": {
+    "emSize": 7,
+    "glyphCount": 96,
+    "lineHeight": 0
+   }
+  }
+ }
+}

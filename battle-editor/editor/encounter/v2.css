@@ -1,0 +1,462 @@
+/**
+ * editor/encounter/v2.css — V2-07 新增 UI（演員形態、時間軸總覽、作品包／可遊玩輸出）
+ *
+ * 只新增 .enc-*（形態）與 .enctl-*（時間軸）類別；工具列沿用既有 .tb-* 語彙，
+ * 避免影響既有面板樣式。
+ */
+
+/* ------------------------------------------------------------ 演員形態 */
+
+.enc-formlist {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 6px 0;
+}
+
+.enc-formrow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: #15151f;
+}
+
+.enc-formrow.is-active {
+  border-color: #7aa2ff;
+  background: #1b1b28;
+}
+
+.enc-formname {
+  min-width: 68px;
+  text-align: left;
+  font-family: "Cascadia Mono", "Consolas", "Microsoft JhengHei", monospace;
+}
+
+.enc-formtools {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.enc-formgroups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-bottom: 6px;
+}
+
+.enc-formoffset {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.enc-tag-inherited {
+  opacity: 0.72;
+  font-style: italic;
+}
+
+/* ------------------------------------------------------------ 時間軸總覽 */
+
+.enctl-root {
+  --enctl-bg: #0b0b12;
+  --enctl-card: #15151f;
+  --enctl-card-hi: #1b1b28;
+  --enctl-line: #2a2a3d;
+  --enctl-line-soft: #20202e;
+  --enctl-text: #e6e6f0;
+  --enctl-dim: #8b8ba4;
+  --enctl-dim2: #6a6a83;
+  --enctl-accent: #7aa2ff;
+  --enctl-say: #8fd3ff;
+  --enctl-attack: #ff9f68;
+  --enctl-cue: #b28cff;
+  --enctl-ok: #58d68d;
+  --enctl-warn: #ffcc66;
+  --enctl-err: #ff5f6d;
+  --enctl-mono: "Cascadia Mono", "Consolas", "Microsoft JhengHei", monospace;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  background: var(--enctl-bg);
+  color: var(--enctl-text);
+  font-size: 11.5px;
+}
+
+.enctl-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--enctl-line-soft);
+  background: #10101a;
+}
+
+.enctl-toolbar .enctl-spacer {
+  margin-left: auto;
+}
+
+.enctl-status {
+  font-family: var(--enctl-mono);
+  font-size: 10.5px;
+  color: var(--enctl-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.enctl-status.is-error {
+  color: var(--enctl-err);
+}
+
+.enctl-hint {
+  padding: 6px 10px;
+  color: var(--enctl-dim);
+  font-size: 11px;
+}
+
+.enctl-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 6px 8px 10px;
+}
+
+/* REALTEST-2 V9：時間軸分頁開著時，下方面板至少 400px（約 3.5 列）；仍可拖分隔線再拉高 */
+:root.enctl-open #enc-app {
+  grid-template-rows: var(--toolbar-h) minmax(0, 1fr) var(--splitter-h, 8px) max(var(--row-cues), min(400px, 55vh));
+}
+
+.enctl-root {
+  position: relative;
+}
+
+.enctl-scrollhint {
+  position: absolute;
+  right: 18px;
+  bottom: 6px;
+  padding: 2px 8px;
+  border-radius: 9px;
+  background: rgba(20, 20, 32, 0.92);
+  border: 1px solid #3a3a55;
+  color: #ffd84a;
+  font-size: 10.5px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.enctl-scrollhint[hidden] {
+  display: none;
+}
+
+.enctl-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 2px 2px 6px;
+  color: var(--enctl-dim);
+  font-size: 10.5px;
+}
+
+.enctl-swatch {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  margin-right: 3px;
+  vertical-align: -1px;
+}
+
+.enctl-swatch.say {
+  background: var(--enctl-say);
+}
+.enctl-swatch.attack {
+  background: var(--enctl-attack);
+}
+.enctl-swatch.cue {
+  background: var(--enctl-cue);
+}
+
+.enctl-row {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 6px;
+  align-items: stretch;
+  margin-bottom: 5px;
+  padding: 3px 4px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--enctl-card);
+  cursor: pointer;
+}
+
+.enctl-row:hover {
+  background: var(--enctl-card-hi);
+}
+
+.enctl-row.is-active {
+  border-color: var(--enctl-accent);
+  background: var(--enctl-card-hi);
+}
+
+.enctl-rowmain {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.enctl-label {
+  font-family: var(--enctl-mono);
+  font-size: 10.5px;
+  color: var(--enctl-dim);
+  line-height: 1.25;
+}
+
+.enctl-label b {
+  color: var(--enctl-text);
+  font-weight: 600;
+}
+
+.enctl-track {
+  position: relative;
+  display: flex;
+  height: 24px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #10101a;
+  border: 1px solid var(--enctl-line-soft);
+}
+
+.enctl-seg {
+  position: relative;
+  height: 100%;
+  min-width: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 9.5px;
+  color: #10101a;
+  border-right: 1px solid rgba(0, 0, 0, 0.28);
+}
+
+.enctl-seg.say {
+  background: var(--enctl-say);
+}
+
+.enctl-seg.attack {
+  background: var(--enctl-attack);
+  color: #23120a;
+}
+
+.enctl-seg.other {
+  background: var(--enctl-cue);
+  color: #150f2b;
+}
+
+.enctl-seg.empty {
+  background: transparent;
+  color: transparent;
+}
+
+.enctl-beat {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.enctl-beat.is-bar {
+  background: rgba(0, 0, 0, 0.6);
+  width: 2px;
+}
+
+.enctl-segattack {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.enctl-chips {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+  min-height: 14px;
+}
+
+.enctl-chip {
+  font-family: var(--enctl-mono);
+  font-size: 9.5px;
+  line-height: 15px;
+  padding: 0 4px;
+  border-radius: 2px;
+  background: #232336;
+  color: #c9c9e0;
+  white-space: nowrap;
+}
+
+.enctl-chip.form {
+  background: #3a2b63;
+  color: #d9c9ff;
+}
+
+.enctl-chip.act {
+  background: #1f4a38;
+  color: #b9f0d2;
+}
+
+.enctl-chip.bgm {
+  background: #4a3a1f;
+  color: #f0dfb9;
+}
+
+.enctl-chip.other {
+  background: #232336;
+}
+
+.enctl-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: var(--enctl-mono);
+  font-size: 9.5px;
+  color: var(--enctl-dim2);
+}
+
+.enctl-meta .warn {
+  color: var(--enctl-warn);
+}
+
+.enctl-meta .err {
+  color: var(--enctl-err);
+}
+
+.enctl-empty {
+  padding: 14px 8px;
+  color: var(--enctl-dim2);
+  text-align: center;
+}
+
+.enctl-totals {
+  font-family: var(--enctl-mono);
+  font-size: 10px;
+  color: var(--enctl-dim);
+  padding: 4px 2px 0;
+}
+
+/* 時間軸分頁：由 timeline.js 在 #enc-cues 加上 .is-timeline。
+   用 CSS 強制隱藏另外兩個分頁內容，避免 demo-panel 的 paint() 在 store 變更時
+   把 hidden 還原（兩邊各自維護 hidden 會互打架）。 */
+#enc-cues.is-timeline #enc-cues-body,
+#enc-cues.is-timeline #enc-demo-body {
+  display: none !important;
+}
+
+#enc-cues.is-timeline #enc-timeline-body {
+  display: flex !important;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+#enc-cues.is-timeline #enc-timeline-body[hidden] {
+  display: none !important;
+}
+
+.enctl-totals .enctl-warnings,
+.enctl-warnings {
+  color: #ffcc66;
+}
+
+.enctl-bpmlabel {
+  margin-left: auto;
+  font-family: var(--enctl-mono);
+  font-size: 10px;
+  color: var(--enctl-dim2);
+}
+
+.enctl-legend-label {
+  color: var(--enctl-dim);
+  font-size: 10.5px;
+}
+
+/* ------------------------------------------------------------ 工具列（作品包／可遊玩輸出） */
+
+/* 工具列寬度有限：作品包匯出／匯入收進「作品包 ▾」選單，整體 gap 稍微收窄。 */
+#enc-toolbar.toolbar {
+  column-gap: 2px;
+}
+
+.enc-toolbar-pack {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.enc-toolbar-pack .enc-pack-btn {
+  white-space: nowrap;
+}
+
+.enc-toolbar-pack .enc-pack-playable {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* tools/web/export-button.js 自帶 .drexport-* 樣式；這裡只收窄以免工具列爆版。 */
+.enc-toolbar-pack .drexport-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.enc-toolbar-pack .drexport-btn {
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 3px 6px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.enc-toolbar-pack .drexport-status {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10.5px;
+}
+
+.enc-pack-file {
+  display: none !important;
+}
+
+.enc-pack-import-body {
+  min-width: 300px;
+  max-width: 460px;
+}
+
+.enc-pack-import-intro {
+  margin: 0 0 6px;
+  line-height: 1.6;
+  color: var(--text, #e8e8f2);
+  word-break: break-word;
+}

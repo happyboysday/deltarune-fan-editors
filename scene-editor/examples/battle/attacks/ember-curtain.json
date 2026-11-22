@@ -1,0 +1,85 @@
+{
+  "format": "dr-battle-attack/1",
+  "meta": {
+    "name": "余火巡逻 · 纸火幕",
+    "author": "Scene Studio"
+  },
+  "settings": {
+    "duration": 3.2,
+    "seed": 28,
+    "damage": 8,
+    "invincibleFrames": 26,
+    "grazeTP": 1
+  },
+  "box": {
+    "x": 320,
+    "y": 190,
+    "w": 188,
+    "h": 148,
+    "border": 4,
+    "color": "#e8ad74",
+    "fillColor": "#120f20",
+    "fillAlpha": 1
+  },
+  "soul": {
+    "x": null,
+    "y": null,
+    "speed": 4,
+    "slowSpeed": 2,
+    "mode": "red",
+    "color": "#ff0000"
+  },
+  "bulletTypes": {
+    "fold": {
+      "sprite": "spr_spadebullet",
+      "scale": 0.5,
+      "color": "#ffddb0",
+      "hitbox": {
+        "shape": "circle",
+        "r": 6
+      },
+      "destroyOnHit": true,
+      "faceVelocity": true,
+      "clipTo": "box"
+    }
+  },
+  "timeline": [
+    {
+      "id": "stamp_in",
+      "at": 0.42,
+      "type": "emitter",
+      "duration": 2.25,
+      "interval": 0.53,
+      "count": 4,
+      "spawn": {
+        "bullet": "fold",
+        "x": "box.right + 13",
+        "y": "box.top + 19 + i*34 + sin(k*85)*9",
+        "speed": 3.5,
+        "angle": 180,
+        "life": 2.35
+      }
+    },
+    {
+      "id": "center_mark",
+      "at": 1.28,
+      "type": "emitter",
+      "duration": 1.48,
+      "interval": 0.68,
+      "count": 1,
+      "spawn": {
+        "bullet": "fold",
+        "x": "box.x",
+        "y": "box.top - 10",
+        "speed": 4.25,
+        "angle": 90,
+        "life": 1.5
+      }
+    },
+    {
+      "id": "end",
+      "at": 3.18,
+      "type": "end"
+    }
+  ]
+}

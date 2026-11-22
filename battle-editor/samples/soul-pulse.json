@@ -1,0 +1,362 @@
+{
+  "format": "dr-battle-attack/1",
+  "meta": {
+    "name": "灵魂试验：脉冲拆弹",
+    "author": "DR Battle Editor"
+  },
+  "settings": {
+    "duration": 9,
+    "seed": 44,
+    "damage": 5
+  },
+  "box": {
+    "x": 332,
+    "y": 188,
+    "w": 410,
+    "h": 250,
+    "appearance": "hidden",
+    "color": "#e9ac48"
+  },
+  "arena": {
+    "kind": "polygon",
+    "outline": true,
+    "points": [
+      {
+        "x": 127,
+        "y": 63
+      },
+      {
+        "x": 537,
+        "y": 63
+      },
+      {
+        "x": 537,
+        "y": 313
+      },
+      {
+        "x": 127,
+        "y": 313
+      }
+    ]
+  },
+  "soul": {
+    "profile": "red",
+    "x": 170,
+    "y": 186
+  },
+  "soulProfiles": {
+    "red": {
+      "appearance": {
+        "color": "#ff455d"
+      },
+      "movement": {
+        "id": "free",
+        "version": 1
+      }
+    },
+    "pulse": {
+      "appearance": {
+        "color": "#ffce45"
+      },
+      "movement": {
+        "id": "free",
+        "version": 1
+      },
+      "abilities": [
+        {
+          "id": "dash",
+          "version": 1,
+          "params": {
+            "speed": 13,
+            "durationFrames": 6,
+            "cooldownFrames": 21
+          }
+        },
+        {
+          "id": "shoot",
+          "version": 1,
+          "params": {
+            "speed": 17,
+            "cooldownFrames": 8
+          }
+        }
+      ]
+    }
+  },
+  "bulletTypes": {
+    "glass": {
+      "sprite": "spr_starbullet_test",
+      "color": "#ffbf5b",
+      "scale": 1.2,
+      "shootable": true,
+      "clipTo": "arena",
+      "hitbox": {
+        "shape": "circle",
+        "r": 7
+      }
+    },
+    "solid": {
+      "sprite": "spr_starbullet_test",
+      "color": "#80b5ff",
+      "scale": 1.4,
+      "clipTo": "arena",
+      "hitbox": {
+        "shape": "rect",
+        "w": 9,
+        "h": 9
+      }
+    },
+    "edge": {
+      "sprite": "spr_starbullet_test",
+      "color": "#635269",
+      "scale": 0.43,
+      "decor": true
+    }
+  },
+  "timeline": [
+    {
+      "id": "lamp-0",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "edge",
+      "x": 147,
+      "y": 80,
+      "speed": 0
+    },
+    {
+      "id": "lamp-1",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "edge",
+      "x": 515,
+      "y": 80,
+      "speed": 0
+    },
+    {
+      "id": "lamp-2",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "edge",
+      "x": 147,
+      "y": 297,
+      "speed": 0
+    },
+    {
+      "id": "lamp-3",
+      "at": 0,
+      "type": "spawn",
+      "bullet": "edge",
+      "x": 515,
+      "y": 297,
+      "speed": 0
+    },
+    {
+      "id": "start",
+      "at": 0.15,
+      "type": "sfx",
+      "sound": "snd_menumove"
+    },
+    {
+      "id": "pulse",
+      "at": 1.15,
+      "type": "soulProfile",
+      "profile": "pulse"
+    },
+    {
+      "id": "pulse-sound",
+      "at": 1.15,
+      "type": "sfx",
+      "sound": "snd_select"
+    },
+    {
+      "id": "break-0",
+      "at": 1.35,
+      "type": "spawn",
+      "bullet": "glass",
+      "x": 312,
+      "y": 186,
+      "speed": 0,
+      "life": 6
+    },
+    {
+      "id": "break-1",
+      "at": 1.35,
+      "type": "spawn",
+      "bullet": "glass",
+      "x": 370,
+      "y": 186,
+      "speed": 0,
+      "life": 6
+    },
+    {
+      "id": "break-2",
+      "at": 1.35,
+      "type": "spawn",
+      "bullet": "glass",
+      "x": 432,
+      "y": 186,
+      "speed": 0,
+      "life": 6
+    },
+    {
+      "id": "break-3",
+      "at": 1.35,
+      "type": "spawn",
+      "bullet": "glass",
+      "x": 490,
+      "y": 186,
+      "speed": 0,
+      "life": 6
+    },
+    {
+      "id": "avoid-0",
+      "at": 1.35,
+      "type": "spawn",
+      "bullet": "solid",
+      "x": 292,
+      "y": 124,
+      "speed": 0,
+      "life": 6,
+      "rotation": 45,
+      "angularVel": 1
+    },
+    {
+      "id": "avoid-1",
+      "at": 1.35,
+      "type": "spawn",
+      "bullet": "solid",
+      "x": 376,
+      "y": 124,
+      "speed": 0,
+      "life": 6,
+      "rotation": 45,
+      "angularVel": 1
+    },
+    {
+      "id": "avoid-2",
+      "at": 1.35,
+      "type": "spawn",
+      "bullet": "solid",
+      "x": 460,
+      "y": 124,
+      "speed": 0,
+      "life": 6,
+      "rotation": 45,
+      "angularVel": 1
+    },
+    {
+      "id": "lower-0",
+      "at": 3.2,
+      "type": "spawn",
+      "bullet": "glass",
+      "x": 340,
+      "y": 249,
+      "speed": 0,
+      "life": 5
+    },
+    {
+      "id": "lower-1",
+      "at": 3.2,
+      "type": "spawn",
+      "bullet": "glass",
+      "x": 420,
+      "y": 249,
+      "speed": 0,
+      "life": 5
+    },
+    {
+      "id": "lower-2",
+      "at": 3.2,
+      "type": "spawn",
+      "bullet": "glass",
+      "x": 490,
+      "y": 249,
+      "speed": 0,
+      "life": 5
+    },
+    {
+      "id": "danger",
+      "at": 3.15,
+      "type": "spawn",
+      "bullet": "solid",
+      "x": 418,
+      "y": 223,
+      "speed": 0.55,
+      "angle": 270,
+      "life": 5,
+      "angularVel": 1
+    },
+    {
+      "id": "left-0",
+      "at": 5.1,
+      "type": "spawn",
+      "bullet": "glass",
+      "x": 230,
+      "y": 249,
+      "speed": 0,
+      "life": 3.7
+    },
+    {
+      "id": "left-1",
+      "at": 5.1,
+      "type": "spawn",
+      "bullet": "glass",
+      "x": 280,
+      "y": 249,
+      "speed": 0,
+      "life": 3.7
+    },
+    {
+      "id": "left-2",
+      "at": 5.1,
+      "type": "spawn",
+      "bullet": "glass",
+      "x": 330,
+      "y": 249,
+      "speed": 0,
+      "life": 3.7
+    },
+    {
+      "id": "cool",
+      "at": 5.5,
+      "type": "soulAppearance",
+      "appearance": {
+        "color": "#f59450"
+      }
+    },
+    {
+      "id": "last-0",
+      "at": 6.65,
+      "type": "spawn",
+      "bullet": "solid",
+      "x": 338,
+      "y": 201,
+      "speed": 0.7,
+      "angle": 270,
+      "life": 2,
+      "angularVel": 1.8
+    },
+    {
+      "id": "last-1",
+      "at": 6.65,
+      "type": "spawn",
+      "bullet": "solid",
+      "x": 455,
+      "y": 201,
+      "speed": 0.7,
+      "angle": 270,
+      "life": 2,
+      "angularVel": 1.8
+    },
+    {
+      "id": "finish",
+      "at": 8.6,
+      "type": "sfx",
+      "sound": "snd_menumove"
+    }
+  ],
+  "demo": {
+    "mode": "inputs",
+    "inputs": "v2:[[0,[],[]],[7,[\"right\"],[]],[21,[],[]],[38,[\"shoot\"],[\"shoot\"]],[57,[\"right\",\"shoot\"],[\"dash\"]],[64,[\"shoot\"],[]],[87,[\"down\"],[]],[102,[],[]],[104,[\"right\",\"shoot\"],[\"shoot\"]],[123,[\"shoot\"],[]],[151,[\"left\",\"shoot\"],[\"dash\"]],[157,[\"shoot\"],[]],[178,[\"shoot\"],[]],[186,[\"up\"],[]],[210,[],[]],[223,[\"right\"],[\"dash\"]],[229,[],[]],[269,[],[]]]"
+  }
+}

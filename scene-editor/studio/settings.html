@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设置 · 场景编辑器 V1.0</title><link rel="stylesheet" href="/studio/pages.css"></head>
+<body>
+<header class="top"><div class="brand"><span class="logo">✦</span><div><small>DELTARUNE DIRECTOR</small><strong>场景编辑器 <em>V1.0</em></strong></div></div>
+<nav><a href="/" id="returnEditor">← 返回编辑器</a><a href="/studio/settings.html" aria-current="page">设置</a><a href="/studio/plugins.html">插件管理</a></nav></header>
+<main>
+<div class="page-head">
+  <div><h1 id="heading">设置</h1><p class="lead">素材与数据目录、端口和插件开关。路径和端口在下次启动时生效。</p></div>
+  <div class="meta"><span id="data" class="chip mono"></span><span id="version" class="chip"></span></div>
+</div>
+<section id="welcome" class="hero" hidden>
+  <h2>欢迎使用场景编辑器 V1.0</h2>
+  <p>编辑器本身不附带任何官方素材。先告诉它素材放在哪里：可以一键自动检测，也可以逐项填写。没有的素材留空即可，相关功能会自动停用并说明原因。</p>
+  <ol class="steps"><li><b>1</b><span>点「自动检测」查找素材</span></li><li><b>2</b><span>检查并修改下面的路径</span></li><li><b>3</b><span>完成引导并保存</span></li></ol>
+</section>
+<p id="warning" class="banner warn" role="alert" hidden></p>
+<form id="settings">
+  <section class="card" id="paths">
+    <div class="card-head"><div><h2>数据路径与端口</h2><p>由命令行指定的项目已锁定，只能在启动参数里修改。清空一项即恢复默认值。</p></div>
+      <button type="button" id="detect" class="primary">自动检测</button></div>
+    <div id="fields" class="fields"></div>
+  </section>
+  <section class="card">
+    <div class="card-head"><div><h2>插件</h2><p>内置插件始终启用。安装、卸载和查看依赖请到 <a href="/studio/plugins.html">插件管理</a>。</p></div></div>
+    <div id="plugins" class="toggles"></div>
+  </section>
+  <section class="card">
+    <div class="card-head"><div><h2>功能可用性</h2><p>按当前已生效的设置检查。缺少素材的功能在编辑器里显示为停用，悬停可看原因。</p></div></div>
+    <ul id="capabilities" class="caps"></ul>
+  </section>
+  <div class="actionbar">
+    <label class="check"><input id="firstRun" type="checkbox">已完成首次引导</label>
+    <p id="status" role="status"></p>
+    <div class="actions"><button type="submit" id="save">保存</button><button type="button" id="restart" class="primary">保存并重启</button></div>
+  </div>
+</form>
+</main>
+<script type="module" src="/studio/settings.mjs"></script>
+</body>
+</html>

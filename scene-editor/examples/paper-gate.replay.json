@@ -1,0 +1,19 @@
+[
+  {
+    "n": 62,
+    "hold": [
+      "right"
+    ],
+    "mark": "碰到哨兵"
+  },
+  {
+    "n": 1,
+    "battle": "gate_guard",
+    "battleResult": "spared",
+    "mark": "接收饶恕"
+  },
+  {
+    "n": 20,
+    "mark": "场景分支发放值班单"
+  }
+]

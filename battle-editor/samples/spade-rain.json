@@ -1,0 +1,101 @@
+{
+  "format": "dr-battle-attack/1",
+  "meta": { "name": "黑桃雨", "author": "DR Battle Editor" },
+  "settings": {
+    "duration": 10.0,
+    "seed": 1,
+    "damage": 12,
+    "invincibleFrames": 30,
+    "grazeTP": 1.0,
+    "background": "spr_battlebg_0",
+    "bgm": null
+  },
+  "box": { "x": 320, "y": 190, "w": 150, "h": 165, "rotation": 0, "border": 3, "color": "#00c000" },
+  "soul": { "x": null, "y": null, "speed": 4, "slowSpeed": 2, "mode": "red", "color": "#ff0000" },
+  "demo": {
+    "mode": "path",
+    "fallback": "bot",
+    "path": [
+      { "t": 0, "x": 320, "y": 190 },
+      { "t": 3.3, "x": 304, "y": 254 },
+      { "t": 4.2, "x": 392, "y": 268 },
+      { "t": 5.2, "x": 364, "y": 266 },
+      { "t": 5.9, "x": 374, "y": 254 },
+      { "t": 6.8, "x": 374, "y": 240 },
+      { "t": 7.2, "x": 392, "y": 262 },
+      { "t": 7.7, "x": 386, "y": 268 },
+      { "t": 8.2, "x": 360, "y": 266 },
+      { "t": 8.7, "x": 376, "y": 260, "slow": true },
+      { "t": 9.9, "x": 340, "y": 235 }
+    ]
+  },
+  "party": [
+    { "name": "Kris", "hp": 90, "maxHp": 90, "color": "#00ffff", "icon": null },
+    { "name": "Susie", "hp": 110, "maxHp": 110, "color": "#ff00ff", "icon": null },
+    { "name": "Ralsei", "hp": 70, "maxHp": 70, "color": "#00ff00", "icon": null }
+  ],
+  "enemies": [
+    { "sprite": "spr_hathyx_idle", "x": 505, "y": 196, "scale": 2, "frameRate": 4 },
+    { "sprite": "spr_jigsawry_idle", "x": 540, "y": 268, "scale": 2, "frameRate": 6 }
+  ],
+  "bulletTypes": {
+    "spade": {
+      "sprite": "spr_spadebullet",
+      "frameRate": 0,
+      "scale": 0.55,
+      "color": null,
+      "hitbox": { "shape": "circle", "r": 6 },
+      "damage": null,
+      "grazeable": true,
+      "destroyOnHit": true,
+      "faceVelocity": true,
+      "offscreen": "destroy",
+      "maskToBox": false
+    }
+  },
+  "timeline": [
+    {
+      "id": "ev_rain_a",
+      "at": 0.4,
+      "type": "emitter",
+      "label": "黑桃雨（由上而下）",
+      "duration": 8.4,
+      "interval": 0.16,
+      "count": 2,
+      "spawn": {
+        "bullet": "spade",
+        "x": "rand(box.left + 8, box.right - 8)",
+        "y": "box.top - 18",
+        "speed": "rand(2.2, 3.6)",
+        "angle": "90 + rand(-12, 12)",
+        "rotation": "rand(0, 360)",
+        "accel": 0.012,
+        "scale": 0.55,
+        "alpha": 1
+      }
+    },
+    {
+      "id": "ev_rain_edge",
+      "at": 2.6,
+      "type": "emitter",
+      "label": "黑桃雨（兩側斜射）",
+      "duration": 5.6,
+      "interval": 0.34,
+      "count": 1,
+      "spawn": {
+        "bullet": "spade",
+        "x": "box.left - 10",
+        "y": "rand(box.top, box.bottom)",
+        "speed": 3.2,
+        "angle": "rand(-28, 28)",
+        "rotation": 0,
+        "scale": 0.5,
+        "life": 2.4
+      }
+    },
+    { "id": "ev_shake", "at": 4.2, "type": "shake", "label": "落雷震動", "duration": 0.5, "amount": 4 },
+    { "id": "ev_sfx", "at": 4.2, "type": "sfx", "label": "音效", "sound": "snd_hurt1" },
+    { "id": "ev_clear", "at": 9.0, "type": "clear", "label": "清場", "fade": 0.4 },
+    { "id": "ev_end", "at": 9.9, "type": "end", "label": "回合結束" }
+  ]
+}

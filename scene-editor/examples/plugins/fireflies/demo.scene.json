@@ -1,0 +1,14 @@
+{
+  "format":"deltarune-scene/1","id":"fireflies-demo","title":"萤火小径",
+  "plugins":[{"id":"fireflies","minVersion":"1.0.0"}],
+  "viewport":{"w":320,"h":180},"start":{"room":"garden","entry":"start"},
+  "rooms":{"garden":{"title":"夜间花园","mode":"fireflies.collect","style":"garden","w":320,"h":180,
+    "entries":{"start":{"x":36,"y":96,"face":"right"}},"timeLimit":300,"onCollected":"finish",
+    "navScript":[{"tick":0,"hold":["right"]},{"tick":95,"hold":[]}],
+    "entities":[
+      {"id":"light1","kind":"fireflies.light","x":80,"y":90,"w":12,"h":12,"reach":16},
+      {"id":"light2","kind":"fireflies.light","x":156,"y":90,"w":12,"h":12,"reach":16},
+      {"id":"light3","kind":"fireflies.light","x":232,"y":90,"w":12,"h":12,"reach":16}
+    ]}},
+  "events":{"finish":[{"op":"fireflies.finish","flag":"gardenLit"}]}
+}

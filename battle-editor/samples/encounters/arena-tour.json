@@ -1,0 +1,45 @@
+{
+  "format": "dr-battle-encounter/1",
+  "meta": { "name": "战斗区域试验场", "author": "DR Battle Editor" },
+  "actors": {
+    "kris": {
+      "kind": "party",
+      "anims": { "idle": { "sprite": "spr_krisb_idle", "fps": 5 }, "defend": { "sprite": "spr_krisb_defend", "fps": 8 } }
+    },
+    "guide": {
+      "kind": "enemy", "x": 516, "y": 284,
+      "anims": { "idle": { "sprite": "spr_diamondm_idle", "fps": 5 } }
+    }
+  },
+  "party": [
+    { "id": "kris", "actor": "kris", "name": "Kris", "hp": 90, "maxHp": 90, "color": "#00ffff", "commands": ["defend"] }
+  ],
+  "enemies": [
+    { "id": "guide", "actor": "guide", "name": "试验场管理员", "hp": 50, "maxHp": 50 }
+  ],
+  "hooks": {
+    "intro": [
+      { "cmd": "say", "text": { "zh": "* 第一段没有小绿框。\n* 选防御，然后试着走到舞台另一边。", "en": "* No green box in the first round.\n* Defend, then try crossing the stage." } }
+    ]
+  },
+  "turns": [
+    {
+      "id": "open-stage",
+      "attack": "arena-stage",
+      "end": [
+        { "cmd": "say", "text": { "zh": "* 下一段试试 L 形墙。\n* 蓝弹按房间裁剪，橙弹只穿过棱镜窗。", "en": "* Try the L-shaped wall next.\n* Blue shots clip to the room. Orange shots clip to the prism." } }
+      ]
+    },
+    {
+      "id": "prism-room",
+      "attack": "arena-corner",
+      "end": [{ "cmd": "end", "result": "victory" }]
+    }
+  ],
+  "demo": {
+    "turns": [
+      { "turn": 1, "choices": [{ "member": "kris", "command": "defend" }], "dodge": "path" },
+      { "turn": 2, "choices": [{ "member": "kris", "command": "defend" }], "dodge": "path" }
+    ]
+  }
+}

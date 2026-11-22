@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "dr-battle": {
+      "command": "node",
+      "args": ["battle-editor/tools/agent/mcp-server.mjs"],
+      "env": {
+        "DR_MCP_QUIET": "1"
+      }
+    }
+  }
+}

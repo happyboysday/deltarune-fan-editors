@@ -1,0 +1,320 @@
+{
+  "format": "dr-battle-encounter/1",
+  "meta": { "name": "Rudinn遭遇", "author": "DR Battle Editor" },
+  "settings": {
+    "seed": 7,
+    "bgm": "battle",
+    "background": "spr_battlebg_0",
+    "introText": "* Rudinn挡住了去路！",
+    "canFlee": false
+  },
+  "actors": {
+    "kris": {
+      "kind": "party",
+      "x": 96,
+      "y": 140,
+      "anims": {
+        "idle": { "sprite": "spr_krisb_idle", "fps": 5, "loop": true },
+        "attack": { "sprite": "spr_krisb_attack", "fps": 15, "loop": false, "then": "idle" },
+        "act": { "sprite": "spr_krisb_act", "fps": 10, "loop": false, "then": "idle" },
+        "item": { "sprite": "spr_krisb_item", "fps": 10, "loop": false, "then": "idle" },
+        "spare": { "sprite": "spr_krisb_idle", "fps": 5, "loop": false },
+        "defend": { "sprite": "spr_krisb_defend", "fps": 8, "loop": false },
+        "hurt": { "sprite": "spr_krisb_hurt", "fps": 12, "loop": false, "then": "idle" },
+        "down": { "sprite": "spr_krisb_defeat", "fps": 1, "loop": false },
+        "victory": { "sprite": "spr_krisb_victory", "fps": 8, "loop": false }
+      }
+    },
+    "susie": {
+      "kind": "party",
+      "x": 104,
+      "y": 230,
+      "anims": {
+        "idle": { "sprite": "spr_susieb_idle", "fps": 4, "loop": true },
+        "attack": { "sprite": "spr_susieb_attack", "fps": 15, "loop": false, "then": "idle" },
+        "act": { "sprite": "spr_susieb_act", "fps": 10, "loop": false, "then": "idle" },
+        "magic": { "sprite": "spr_susieb_spell", "fps": 12, "loop": false, "then": "idle" },
+        "item": { "sprite": "spr_susieb_item", "fps": 10, "loop": false, "then": "idle" },
+        "spare": { "sprite": "spr_susieb_idle", "fps": 4, "loop": false },
+        "defend": { "sprite": "spr_susieb_defend", "fps": 8, "loop": false },
+        "hurt": { "sprite": "spr_susieb_hurt", "fps": 12, "loop": false, "then": "idle" },
+        "down": { "sprite": "spr_susieb_defeat", "fps": 1, "loop": false },
+        "victory": { "sprite": "spr_susieb_victory", "fps": 10, "loop": false }
+      }
+    },
+    "ralsei": {
+      "kind": "party",
+      "x": 100,
+      "y": 322,
+      "anims": {
+        "idle": { "sprite": "spr_ralseib_idle", "fps": 4, "loop": true },
+        "attack": { "sprite": "spr_ralseib_attack", "fps": 15, "loop": false, "then": "idle" },
+        "act": { "sprite": "spr_ralseib_act", "fps": 10, "loop": false, "then": "idle" },
+        "magic": { "sprite": "spr_ralseib_spell", "fps": 12, "loop": false, "then": "idle" },
+        "item": { "sprite": "spr_ralseib_item", "fps": 10, "loop": false, "then": "idle" },
+        "spare": { "sprite": "spr_ralseib_idle", "fps": 4, "loop": false },
+        "defend": { "sprite": "spr_ralseib_defend", "fps": 8, "loop": false },
+        "hurt": { "sprite": "spr_ralseib_shock_enemy", "fps": 6, "loop": false, "then": "idle" },
+        "down": { "sprite": "spr_ralseib_defeat", "fps": 1, "loop": false },
+        "victory": { "sprite": "spr_ralseib_victory", "fps": 8, "loop": false }
+      }
+    },
+    "rudinn": {
+      "kind": "enemy",
+      "x": 500,
+      "y": 270,
+      "anims": {
+        "idle": { "sprite": "spr_diamondm_idle", "fps": 5, "loop": true },
+        "hurt": { "sprite": "spr_diamondm_hurt", "fps": 1, "loop": false, "then": "idle" },
+        "spared": { "sprite": "spr_diamondm_spared", "fps": 6, "loop": false },
+        "defeat": { "sprite": "spr_diamondm_hurt", "fps": 1, "loop": false },
+        "happy": { "sprite": "spr_diamondm_spared", "fps": 8, "loop": true }
+      }
+    }
+  },
+  "party": [
+    {
+      "id": "kris",
+      "actor": "kris",
+      "name": "Kris",
+      "hp": 90,
+      "maxHp": 90,
+      "atk": 10,
+      "def": 2,
+      "magic": 0,
+      "color": "#00ffff",
+      "commands": ["fight", "act", "item", "spare", "defend"]
+    },
+    {
+      "id": "susie",
+      "actor": "susie",
+      "name": "Susie",
+      "hp": 110,
+      "maxHp": 110,
+      "atk": 14,
+      "def": 2,
+      "magic": 0,
+      "color": "#ff00ff",
+      "commands": ["fight", "act", "item", "spare", "defend"]
+    },
+    {
+      "id": "ralsei",
+      "actor": "ralsei",
+      "name": "Ralsei",
+      "hp": 70,
+      "maxHp": 70,
+      "atk": 8,
+      "def": 4,
+      "magic": 12,
+      "color": "#00ff00",
+      "commands": ["fight", "magic", "item", "spare", "defend"],
+      "spells": [
+        {
+          "id": "pacify",
+          "name": "Pacify",
+          "tp": 32,
+          "target": "enemy",
+          "cues": [
+            { "cmd": "anim", "actor": "ralsei", "anim": "magic" },
+            { "cmd": "say", "speaker": "Ralsei", "portrait": "spr_face_r_nohat", "text": "* 我为你唱一首安抚的歌。" },
+            { "cmd": "mercy", "enemy": "rudinn", "amount": 25 },
+            { "cmd": "anim", "actor": "rudinn", "anim": "happy" }
+          ]
+        }
+      ]
+    }
+  ],
+  "enemies": [
+    {
+      "id": "rudinn",
+      "actor": "rudinn",
+      "name": "Rudinn",
+      "hp": 120,
+      "maxHp": 120,
+      "atk": 5,
+      "def": 0,
+      "mercy": 0,
+      "spareAt": 100,
+      "tired": false,
+      "acts": [
+        {
+          "id": "check",
+          "name": "Check",
+          "text": "* RUDINN——攻击 5 防御 0\n* 菱形的家伙，浑身亮闪闪的。",
+          "cues": []
+        },
+        {
+          "id": "compliment",
+          "name": "Compliment",
+          "party": ["kris"],
+          "mercy": 40,
+          "cues": [
+            { "cmd": "say", "speaker": "Kris", "portrait": "spr_headkris", "text": "* 你的光泽……真好看。" },
+            { "cmd": "anim", "actor": "rudinn", "anim": "happy" },
+            { "cmd": "set", "var": "praised", "value": 1, "op": "add" }
+          ]
+        },
+        {
+          "id": "xaction",
+          "name": "X-Action",
+          "text": "* Susie的特殊行动。",
+          "party": ["susie"],
+          "mercy": 35,
+          "cues": [
+            { "cmd": "anim", "actor": "susie", "anim": "act" },
+            {
+              "cmd": "say",
+              "speaker": "Susie",
+              "portrait": "spr_face_s0",
+              "text": "* 喂，你这颗亮晶晶的石头。\n* 转个圈给我看看。"
+            },
+            {
+              "cmd": "if",
+              "cond": "var.praised >= 1",
+              "then": [
+                { "cmd": "anim", "actor": "rudinn", "anim": "happy" },
+                { "cmd": "say", "speaker": "Rudinn", "text": "* Rudinn开心地转了一圈！" },
+                { "cmd": "mercy", "enemy": "rudinn", "amount": 10 }
+              ],
+              "else": [
+                { "cmd": "anim", "actor": "rudinn", "anim": "idle" },
+                { "cmd": "say", "speaker": "Rudinn", "text": "* Rudinn有点困惑，但还是转了半圈。" }
+              ]
+            }
+          ]
+        }
+      ],
+      "onHurt": [
+        { "cmd": "shake", "amount": 2, "duration": 0.2 },
+        { "cmd": "sfx", "sound": "snd_hurt1" }
+      ],
+      "onSpare": [
+        { "cmd": "anim", "actor": "rudinn", "anim": "spared" },
+        { "cmd": "flash", "color": "#ffff00", "duration": 0.3 }
+      ],
+      "onDefeat": [
+        { "cmd": "anim", "actor": "rudinn", "anim": "defeat" },
+        { "cmd": "sfx", "sound": "snd_enemy_defeat" }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "darkburger",
+      "name": "Dark Burger",
+      "count": 2,
+      "heal": 70,
+      "target": "party",
+      "text": "* Kris吃下了黑暗汉堡。"
+    },
+    {
+      "id": "manual",
+      "name": "Manual",
+      "count": 1,
+      "heal": 0,
+      "target": "party",
+      "text": "* 没有人有时间读说明书。"
+    }
+  ],
+  "turns": [
+    {
+      "id": "t1",
+      "flavor": "* Rudinn在闪闪发光。",
+      "talk": [
+        { "actor": "rudinn", "text": "要来点\n闪光吗？" }
+      ],
+      "attack": "spade-rain",
+      "start": [],
+      "end": []
+    },
+    {
+      "id": "t2",
+      "flavor": "* Rudinn的光芒更刺眼了。",
+      "talk": [
+        { "actor": "rudinn", "text": "还没完呢！\n看我转圈圈！" }
+      ],
+      "attack": "ring-burst",
+      "start": [
+        { "cmd": "anim", "actor": "rudinn", "anim": "happy" }
+      ],
+      "end": []
+    },
+    {
+      "id": "t3",
+      "flavor": "* Rudinn看起来有点累了。",
+      "talk": [
+        { "actor": "rudinn", "text": "呼……\n你们真难缠。" }
+      ],
+      "attack": "box-shrink-aim",
+      "start": [],
+      "end": [
+        { "cmd": "anim", "actor": "rudinn", "anim": "idle" }
+      ]
+    }
+  ],
+  "turnOrder": "loop-last",
+  "hooks": {
+    "intro": [
+      { "cmd": "bgm", "track": "battle" },
+      { "cmd": "sfx", "sound": "snd_battleenter" },
+      { "cmd": "say", "text": "* Rudinn挡住了去路！", "speed": 2 },
+      { "cmd": "bubble", "actor": "rudinn", "text": "嘿嘿，\n准备好了吗？", "wait": 2.0 }
+    ],
+    "victory": [
+      { "cmd": "bgm", "track": "fanfare" },
+      { "cmd": "anim", "actor": "rudinn", "anim": "defeat" },
+      { "cmd": "say", "speaker": "Susie", "portrait": "spr_face_s0", "text": "* 搞定。收工。" }
+    ],
+    "spared": [
+      { "cmd": "bgm", "track": null },
+      { "cmd": "anim", "actor": "rudinn", "anim": "spared" },
+      { "cmd": "say", "text": "* 你饶恕了Rudinn。" },
+      { "cmd": "bubble", "actor": "rudinn", "text": "谢啦！\n下次一起闪！", "wait": 2.0 }
+    ],
+    "defeat": [
+      { "cmd": "bgm", "track": "gameover_short" },
+      { "cmd": "say", "text": "* 队伍倒下了……" }
+    ],
+    "flee": [
+      { "cmd": "say", "text": "* 你逃跑了。" }
+    ]
+  },
+  "demo": {
+    "text": { "auto": true, "delay": 0.5 },
+    "menuDelay": 6,
+    "turns": [
+      {
+        "turn": 1,
+        "choices": [
+          { "member": "kris", "command": "act", "target": "rudinn", "option": "Compliment" },
+          { "member": "susie", "command": "act", "target": "rudinn", "option": "X-Action" },
+          { "member": "ralsei", "command": "defend" }
+        ],
+        "fight": "perfect",
+        "dodge": "path"
+      },
+      {
+        "turn": 2,
+        "choices": [
+          { "member": "kris", "command": "act", "target": "rudinn", "option": "Compliment" },
+          { "member": "susie", "command": "defend" },
+          { "member": "ralsei", "command": "defend" }
+        ],
+        "fight": "perfect",
+        "dodge": "path"
+      },
+      {
+        "turn": 3,
+        "choices": [
+          { "member": "kris", "command": "spare", "target": "rudinn" },
+          { "member": "susie", "command": "defend" },
+          { "member": "ralsei", "command": "defend" }
+        ],
+        "fight": "perfect",
+        "dodge": "path"
+      }
+    ],
+    "default": { "choices": "defend", "fight": "good", "dodge": "path" }
+  },
+  "vars": { "praised": 0 }
+}

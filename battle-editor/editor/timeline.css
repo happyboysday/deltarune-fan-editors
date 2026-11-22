@@ -1,0 +1,331 @@
+/* ==========================================================================
+ * editor/timeline.css — ED2：時間軸面板樣式
+ * 由 index.html 以 <link> 引入（若沒有，timeline.js mount 時會自行注入）。
+ * 只作用在 .tl-root 之下，避免污染其他面板。
+ * ========================================================================== */
+
+#timeline .panel-body,
+#timeline-body {
+  overflow: hidden;
+  padding: 0;
+  min-height: 0;
+}
+
+.tl-root {
+  --tl-bg: #08080d;
+  --tl-bg-alt: #0d0d16;
+  --tl-line: #22223a;
+  --tl-text: #d7d9e6;
+  --tl-dim: #8d8ea8;
+  --tl-accent: #ff5c7a;
+  --tl-select: #ffffff;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--tl-bg);
+  color: var(--tl-text);
+  font-family: "Courier New", Consolas, "Microsoft JhengHei", monospace;
+  font-size: 11px;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.tl-root *,
+.tl-root *::before,
+.tl-root *::after {
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------- 工具列 */
+
+.tl-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  height: 26px;
+  padding: 0 8px;
+  background: var(--tl-bg-alt);
+  border-bottom: 1px solid var(--tl-line);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tl-btn {
+  appearance: none;
+  height: 19px;
+  padding: 0 8px;
+  border: 1px solid #33334e;
+  border-radius: 3px;
+  background: #16161f;
+  color: var(--tl-text);
+  font: inherit;
+  font-size: 11px;
+  line-height: 17px;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.tl-btn:hover {
+  background: #20202e;
+  border-color: #4a4a6d;
+}
+
+.tl-btn:active {
+  background: #2a2a3d;
+}
+
+.tl-btn:focus-visible {
+  outline: 1px solid #4cc9f0;
+  outline-offset: 1px;
+}
+
+.tl-btn-icon {
+  width: 22px;
+  padding: 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 15px;
+}
+
+.tl-sep {
+  flex: 0 0 auto;
+  width: 1px;
+  height: 14px;
+  background: var(--tl-line);
+  margin: 0 2px;
+}
+
+.tl-time {
+  flex: 0 0 auto;
+  color: #ffd93d;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.tl-zoom {
+  flex: 0 0 auto;
+  color: var(--tl-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-hint {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+  color: #4a4b62;
+  font-size: 10px;
+}
+
+/* ------------------------------------------------------------ 尺／軌道 */
+
+.tl-rulerwrap {
+  position: relative;
+  flex: 0 0 auto;
+  height: 34px;
+  min-height: 34px;
+  background: var(--tl-bg-alt);
+  border-bottom: 1px solid var(--tl-line);
+}
+
+.tl-trackswrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--tl-bg);
+  /* B16：捲軸加寬（≥12px）並提高對比，讓人看得出「下面還有東西」 */
+  scrollbar-width: auto;
+  scrollbar-color: #565680 #101019;
+}
+
+.tl-trackswrap::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+.tl-trackswrap::-webkit-scrollbar-track {
+  background: #101019;
+  border-left: 1px solid #22223a;
+}
+
+.tl-trackswrap::-webkit-scrollbar-thumb {
+  background: #4a4a6d;
+  border: 3px solid #101019;
+  border-radius: 7px;
+}
+
+.tl-trackswrap::-webkit-scrollbar-thumb:hover {
+  background: #6a6a98;
+}
+
+.tl-trackswrap::-webkit-scrollbar-thumb:active {
+  background: #8888b8;
+}
+
+/* B16：內容超出時在軌道區底部顯示淡出漸層（純視覺提示，不吃滑鼠事件） */
+.tl-scrollfade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30px;
+  z-index: 20;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(8, 8, 13, 0.96) 0%,
+    rgba(8, 8, 13, 0.72) 45%,
+    rgba(8, 8, 13, 0) 100%
+  );
+}
+
+.tl-scrollfade::after {
+  content: "\25BE";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  transform: translateX(-50%);
+  font-size: 12px;
+  line-height: 1;
+  color: #8d8ea8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  animation: tl-fade-nudge 1.4s ease-in-out infinite;
+}
+
+@keyframes tl-fade-nudge {
+  0%, 100% { transform: translate(-50%, 0); opacity: 0.65; }
+  50% { transform: translate(-50%, 3px); opacity: 1; }
+}
+
+.tl-ruler,
+.tl-tracks {
+  display: block;
+  position: relative;
+  left: 0;
+  top: 0;
+  touch-action: none;
+  image-rendering: pixelated;
+}
+
+.tl-ruler {
+  cursor: ew-resize;
+}
+
+.tl-tracks {
+  cursor: crosshair;
+}
+
+/* -------------------------------------------------------- 新增事件選單 */
+
+.tl-menu {
+  position: absolute;
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+  min-width: 178px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 3px;
+  background: #10101b;
+  border: 1px solid #3a3a58;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+  outline: none;
+}
+
+.tl-menu.open {
+  display: flex;
+}
+
+/* B9：選單以點擊點為錨，方位（上／下）由 timeline.js 的 placeTimelineMenu 決定 */
+.tl-menu[data-placement="above"] {
+  transform-origin: bottom left;
+}
+
+.tl-menu[data-placement="below"] {
+  transform-origin: top left;
+}
+
+.tl-menu-item {
+  appearance: none;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 7px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--tl-text);
+  font: inherit;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tl-menu-item:hover,
+.tl-menu-item:focus-visible {
+  background: #222234;
+  outline: none;
+}
+
+.tl-dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  transform: translateY(-1px);
+}
+
+.tl-menu-name {
+  flex: 0 0 auto;
+  color: #e7e8f2;
+}
+
+/* B10：事件類型 id（JSON 識別字）以較小、較暗的字顯示在名稱後方 */
+.tl-menu-id {
+  flex: 0 0 auto;
+  color: #6d6f92;
+  font-family: var(--font-mono, "Courier New", monospace);
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  transform: translateY(-0.5px);
+}
+
+.tl-menu-sub {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #565777;
+  font-size: 10px;
+  text-align: right;
+}
+
+/* ------------------------------------------------------------ 無障礙／其他 */
+
+.tl-root:focus-visible {
+  outline: 1px solid rgba(76, 201, 240, 0.4);
+  outline-offset: -1px;
+}
+
+@media (max-height: 220px) {
+  .tl-hint { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-menu-item { transition: none; }
+  .tl-scrollfade::after { animation: none; }
+}

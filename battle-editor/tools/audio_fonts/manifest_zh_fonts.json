@@ -1,0 +1,346 @@
+{
+ "format": "dr-battle-zh-font-manifest/1",
+ "patch": "DELTARUNE V260809 简体中文补丁",
+ "count": 7,
+ "bytes": 8048918,
+ "sourceZip": "DELTARUNE_V260809_中文字体.zip",
+ "sourceDir": "assets-official\\03-zh-fonts",
+ "fonts": {
+  "fnt_main@zh": {
+   "lang": "zh",
+   "base": "fnt_main",
+   "sourceFont": "fnt_main",
+   "sourceChapter": "chapter5",
+   "patch": "DELTARUNE V260809 简体中文补丁",
+   "role": "主對白／戰鬥 UI 文字",
+   "note": "DELTARUNE 戰鬥訊息與選單最常用字體；補丁擴充到 3,272 漢字。",
+   "image": "fonts/fnt_main@zh/glyphs.png",
+   "glyphs": "fonts/fnt_main@zh/glyphs.json",
+   "size": 12,
+   "emSize": 12.0,
+   "lineHeight": 16,
+   "lineHeightBase": 16,
+   "glyphCount": 3580,
+   "hanCount": 3272,
+   "imageW": 862,
+   "imageH": 851,
+   "bold": false,
+   "italic": false,
+   "coverage": {
+    "simp": {
+     "sample": 3755,
+     "hit": 2921,
+     "pct": 77.8,
+     "missSample": "癌蔼隘鞍氨胺敖懊澳捌笆跋耙坝佰稗梆镑褒雹豹鲍狈苯泵蓖毖痹敝卞彪膘彬斌滨摈丙秉炳箔"
+    },
+    "trad": {
+     "sample": 5401,
+     "hit": 2091,
+     "pct": 38.7,
+     "missSample": "乙叉孑孓尢川巳廾弓尹亢仄內冗刈勻卅卞夭屯廿弔戶曰爻丙丕丘仕仞冉冊凸匝仟卉卮叵叱叻"
+    },
+    "spec": {
+     "sample": 514,
+     "hit": 325,
+     "pct": 63.2,
+     "missSample": "§∈≥丟並亂佔併個側傳傷優內函別則動匯區協參員啟單圍執報塊實寬對導屬帶幀幾庫強彈"
+    }
+   }
+  },
+  "fnt_mainbig@zh": {
+   "lang": "zh",
+   "base": "fnt_mainbig",
+   "sourceFont": "fnt_mainbig",
+   "sourceChapter": "chapter5",
+   "patch": "DELTARUNE V260809 简体中文补丁",
+   "role": "大字標題／敵人台詞強調",
+   "note": "放大版主字體。",
+   "image": "fonts/fnt_mainbig@zh/glyphs.png",
+   "glyphs": "fonts/fnt_mainbig@zh/glyphs.json",
+   "size": 24,
+   "emSize": 24.0,
+   "lineHeight": 32,
+   "lineHeightBase": 32,
+   "glyphCount": 3580,
+   "hanCount": 3272,
+   "imageW": 1579,
+   "imageH": 1591,
+   "bold": false,
+   "italic": false,
+   "coverage": {
+    "simp": {
+     "sample": 3755,
+     "hit": 2921,
+     "pct": 77.8,
+     "missSample": "癌蔼隘鞍氨胺敖懊澳捌笆跋耙坝佰稗梆镑褒雹豹鲍狈苯泵蓖毖痹敝卞彪膘彬斌滨摈丙秉炳箔"
+    },
+    "trad": {
+     "sample": 5401,
+     "hit": 2091,
+     "pct": 38.7,
+     "missSample": "乙叉孑孓尢川巳廾弓尹亢仄內冗刈勻卅卞夭屯廿弔戶曰爻丙丕丘仕仞冉冊凸匝仟卉卮叵叱叻"
+    },
+    "spec": {
+     "sample": 514,
+     "hit": 325,
+     "pct": 63.2,
+     "missSample": "§∈≥丟並亂佔併個側傳傷優內函別則動匯區協參員啟單圍執報塊實寬對導屬帶幀幾庫強彈"
+    }
+   }
+  },
+  "fnt_comicsans@zh": {
+   "lang": "zh",
+   "base": "fnt_comicsans",
+   "sourceFont": "fnt_comicsans",
+   "sourceChapter": "chapter5",
+   "patch": "DELTARUNE V260809 简体中文补丁",
+   "role": "Comic Sans 風格台詞（Sans／Papyrus 等）",
+   "note": "補丁版本為粗體。",
+   "image": "fonts/fnt_comicsans@zh/glyphs.png",
+   "glyphs": "fonts/fnt_comicsans@zh/glyphs.json",
+   "size": 10,
+   "emSize": 10.0,
+   "lineHeight": 20,
+   "lineHeightBase": 20,
+   "glyphCount": 3580,
+   "hanCount": 3272,
+   "imageW": 942,
+   "imageH": 949,
+   "bold": true,
+   "italic": false,
+   "coverage": {
+    "simp": {
+     "sample": 3755,
+     "hit": 2921,
+     "pct": 77.8,
+     "missSample": "癌蔼隘鞍氨胺敖懊澳捌笆跋耙坝佰稗梆镑褒雹豹鲍狈苯泵蓖毖痹敝卞彪膘彬斌滨摈丙秉炳箔"
+    },
+    "trad": {
+     "sample": 5401,
+     "hit": 2091,
+     "pct": 38.7,
+     "missSample": "乙叉孑孓尢川巳廾弓尹亢仄內冗刈勻卅卞夭屯廿弔戶曰爻丙丕丘仕仞冉冊凸匝仟卉卮叵叱叻"
+    },
+    "spec": {
+     "sample": 514,
+     "hit": 325,
+     "pct": 63.2,
+     "missSample": "§∈≥丟並亂佔併個側傳傷優內函別則動匯區協參員啟單圍執報塊實寬對導屬帶幀幾庫強彈"
+    }
+   }
+  },
+  "fnt_dotumche@zh": {
+   "lang": "zh",
+   "base": "fnt_dotumche",
+   "sourceFont": "fnt_dotumche",
+   "sourceChapter": "chapter5",
+   "patch": "DELTARUNE V260809 简体中文补丁",
+   "role": "小字／Note 與選單輔助文字",
+   "note": "DotumChe 風格。",
+   "image": "fonts/fnt_dotumche@zh/glyphs.png",
+   "glyphs": "fonts/fnt_dotumche@zh/glyphs.json",
+   "size": 12,
+   "emSize": 12.0,
+   "lineHeight": 16,
+   "lineHeightBase": 16,
+   "glyphCount": 3580,
+   "hanCount": 3272,
+   "imageW": 916,
+   "imageH": 915,
+   "bold": true,
+   "italic": false,
+   "coverage": {
+    "simp": {
+     "sample": 3755,
+     "hit": 2921,
+     "pct": 77.8,
+     "missSample": "癌蔼隘鞍氨胺敖懊澳捌笆跋耙坝佰稗梆镑褒雹豹鲍狈苯泵蓖毖痹敝卞彪膘彬斌滨摈丙秉炳箔"
+    },
+    "trad": {
+     "sample": 5401,
+     "hit": 2091,
+     "pct": 38.7,
+     "missSample": "乙叉孑孓尢川巳廾弓尹亢仄內冗刈勻卅卞夭屯廿弔戶曰爻丙丕丘仕仞冉冊凸匝仟卉卮叵叱叻"
+    },
+    "spec": {
+     "sample": 514,
+     "hit": 325,
+     "pct": 63.2,
+     "missSample": "§∈≥丟並亂佔併個側傳傷優內函別則動匯區協參員啟單圍執報塊實寬對導屬帶幀幾庫強彈"
+    }
+   }
+  },
+  "fnt_tinynoelle@zh": {
+   "lang": "zh",
+   "base": "fnt_tinynoelle",
+   "sourceFont": "fnt_tinynoelle",
+   "sourceChapter": "chapter5",
+   "patch": "DELTARUNE V260809 简体中文补丁",
+   "role": "極小字（Noelle 風格）",
+   "note": "最小尺寸字體，僅適合短標籤。",
+   "image": "fonts/fnt_tinynoelle@zh/glyphs.png",
+   "glyphs": "fonts/fnt_tinynoelle@zh/glyphs.json",
+   "size": 7,
+   "emSize": 7.0,
+   "lineHeight": 9,
+   "lineHeightBase": 9,
+   "glyphCount": 3580,
+   "hanCount": 3272,
+   "imageW": 592,
+   "imageH": 590,
+   "bold": false,
+   "italic": false,
+   "coverage": {
+    "simp": {
+     "sample": 3755,
+     "hit": 2921,
+     "pct": 77.8,
+     "missSample": "癌蔼隘鞍氨胺敖懊澳捌笆跋耙坝佰稗梆镑褒雹豹鲍狈苯泵蓖毖痹敝卞彪膘彬斌滨摈丙秉炳箔"
+    },
+    "trad": {
+     "sample": 5401,
+     "hit": 2091,
+     "pct": 38.7,
+     "missSample": "乙叉孑孓尢川巳廾弓尹亢仄內冗刈勻卅卞夭屯廿弔戶曰爻丙丕丘仕仞冉冊凸匝仟卉卮叵叱叻"
+    },
+    "spec": {
+     "sample": 514,
+     "hit": 325,
+     "pct": 63.2,
+     "missSample": "§∈≥丟並亂佔併個側傳傷優內函別則動匯區協參員啟單圍執報塊實寬對導屬帶幀幾庫強彈"
+    }
+   }
+  },
+  "fnt_8bit@zh": {
+   "lang": "zh",
+   "base": "fnt_8bit",
+   "sourceFont": "fnt_8bit",
+   "sourceChapter": "chapter5",
+   "patch": "DELTARUNE V260809 简体中文补丁",
+   "role": "8-bit 像素風格標題（CH3/CH4/CH5 介面）",
+   "note": "chapter5 版本為 Press Start。",
+   "image": "fonts/fnt_8bit@zh/glyphs.png",
+   "glyphs": "fonts/fnt_8bit@zh/glyphs.json",
+   "size": 12,
+   "emSize": 12.0,
+   "lineHeight": 16,
+   "lineHeightBase": 16,
+   "glyphCount": 3580,
+   "hanCount": 3272,
+   "imageW": 1301,
+   "imageH": 1301,
+   "bold": false,
+   "italic": false,
+   "coverage": {
+    "simp": {
+     "sample": 3755,
+     "hit": 2921,
+     "pct": 77.8,
+     "missSample": "癌蔼隘鞍氨胺敖懊澳捌笆跋耙坝佰稗梆镑褒雹豹鲍狈苯泵蓖毖痹敝卞彪膘彬斌滨摈丙秉炳箔"
+    },
+    "trad": {
+     "sample": 5401,
+     "hit": 2091,
+     "pct": 38.7,
+     "missSample": "乙叉孑孓尢川巳廾弓尹亢仄內冗刈勻卅卞夭屯廿弔戶曰爻丙丕丘仕仞冉冊凸匝仟卉卮叵叱叻"
+    },
+    "spec": {
+     "sample": 514,
+     "hit": 325,
+     "pct": 63.2,
+     "missSample": "§∈≥丟並亂佔併個側傳傷優內函別則動匯區協參員啟單圍執報塊實寬對導屬帶幀幾庫強彈"
+    }
+   }
+  },
+  "fnt_legend@zh": {
+   "lang": "zh",
+   "base": "fnt_legend",
+   "sourceFont": "fnt_legend",
+   "sourceChapter": "chapter4",
+   "patch": "DELTARUNE V260809 简体中文补丁",
+   "role": "CH4 傳說／旁白字體（MixSerifCondense）",
+   "note": "只在 chapter4 存在。",
+   "image": "fonts/fnt_legend@zh/glyphs.png",
+   "glyphs": "fonts/fnt_legend@zh/glyphs.json",
+   "size": 12,
+   "emSize": 12.0,
+   "lineHeight": 16,
+   "lineHeightBase": 16,
+   "glyphCount": 3580,
+   "hanCount": 3272,
+   "imageW": 772,
+   "imageH": 784,
+   "bold": false,
+   "italic": false,
+   "coverage": {
+    "simp": {
+     "sample": 3755,
+     "hit": 2921,
+     "pct": 77.8,
+     "missSample": "癌蔼隘鞍氨胺敖懊澳捌笆跋耙坝佰稗梆镑褒雹豹鲍狈苯泵蓖毖痹敝卞彪膘彬斌滨摈丙秉炳箔"
+    },
+    "trad": {
+     "sample": 5401,
+     "hit": 2091,
+     "pct": 38.7,
+     "missSample": "乙叉孑孓尢川巳廾弓尹亢仄內冗刈勻卅卞夭屯廿弔戶曰爻丙丕丘仕仞冉冊凸匝仟卉卮叵叱叻"
+    },
+    "spec": {
+     "sample": 514,
+     "hit": 325,
+     "pct": 63.2,
+     "missSample": "§∈≥丟並亂佔併個側傳傷優內函別則動匯區協參員啟單圍執報塊實寬對導屬帶幀幾庫強彈"
+    }
+   }
+  }
+ },
+ "otf": {
+  "kind": "otf",
+  "file": "fonts/DTM.otf",
+  "lang": "zh",
+  "family": "Determination Sans SimSun Regular",
+  "hanCount": 27484,
+  "bytes": 4338424,
+  "sfnt": "4f54544f",
+  "cmapCodepoints": 28652,
+  "cmapHan": 20902,
+  "coverage": {
+   "simp": {
+    "sample": 3755,
+    "hit": 3755,
+    "pct": 100.0,
+    "missSample": ""
+   },
+   "trad": {
+    "sample": 5401,
+    "hit": 5401,
+    "pct": 100.0,
+    "missSample": ""
+   },
+   "spec": {
+    "sample": 514,
+    "hit": 514,
+    "pct": 100.0,
+    "missSample": ""
+   }
+  },
+  "note": "補丁安裝器內嵌的 OpenType 字體，涵蓋基本與擴展 A 漢字共 27,484 個映射；用於點陣字庫缺字時以 fillText 退回。"
+ },
+ "coverageSets": {
+  "simp": {
+   "id": "gb2312_level1",
+   "label": "GB2312 一級漢字",
+   "sample": 3755
+  },
+  "trad": {
+   "id": "big5_level1",
+   "label": "Big5 常用字",
+   "sample": 5401
+  },
+  "spec": {
+   "id": "spec_md",
+   "label": "SPEC.md 非 ASCII 字元",
+   "sample": 514
+  }
+ }
+}

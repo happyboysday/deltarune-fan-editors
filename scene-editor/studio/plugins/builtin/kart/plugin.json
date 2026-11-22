@@ -1,0 +1,17 @@
+{
+  "id": "kart",
+  "name": "伪 3D 赛车",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "description": "伪 3D 赛车玩法与绘制",
+  "author": "Scene Studio",
+  "runtime": "runtime.mjs",
+  "provides": {
+    "modes": [
+      "kart"
+    ],
+    "entities": [],
+    "actions": []
+  },
+  "dependencies": []
+}

@@ -1,0 +1,1848 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DR 遭遇試玩 — encounter-play.html</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<style>
+  :root {
+    --ink: #d8d2ff;
+    --dim: #7f79a6;
+    --line: #2a2240;
+    --gold: #ffd24a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #05030a;
+    color: var(--ink);
+    font-family: "Courier New", "Consolas", monospace;
+    overflow: hidden;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  #stage {
+    position: relative;
+    line-height: 0;
+    border: 2px solid var(--line);
+    box-shadow: 0 0 0 1px #000, 0 12px 48px rgba(96, 48, 168, 0.28);
+    background: #000;
+  }
+  #game {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: #000;
+  }
+  #hud {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #9af7c0;
+    text-shadow: 0 1px 0 #000, 0 0 6px rgba(0, 0, 0, 0.9);
+    text-align: right;
+    pointer-events: none;
+    white-space: pre;
+    opacity: 0.92;
+  }
+  #banner {
+    position: absolute;
+    left: 40px;
+    top: 8px;
+    max-width: 46%;
+    padding: 5px 8px;
+    border: 1px solid rgba(122, 92, 220, 0.55);
+    background: rgba(8, 4, 18, 0.82);
+    color: #cfc2ff;
+    font-size: 11px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    pointer-events: none;
+  }
+  #paused {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(4, 2, 10, 0.62);
+    color: var(--gold);
+    font-size: 28px;
+    letter-spacing: 4px;
+    text-shadow: 0 2px 0 #000;
+    pointer-events: none;
+  }
+  /* SPEC-AUTOPLAY §4：畫布外的自動演示工具列（狀態只在頁面上，不畫進遊戲畫面） */
+  #toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 96vw;
+    font-size: 12px;
+    color: var(--ink);
+    user-select: none;
+  }
+  #toolbar button,
+  #toolbar select {
+    font: inherit;
+    font-size: 12px;
+    color: var(--ink);
+    background: #171129;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 2px 8px;
+    cursor: pointer;
+  }
+  #toolbar button:hover:not(:disabled),
+  #toolbar select:hover { border-color: #5b4b8a; }
+  #toolbar button:disabled { opacity: 0.45; cursor: default; }
+  #auto-status {
+    color: #9af7c0;
+    min-width: 12ch;
+    text-shadow: 0 1px 0 #000;
+  }
+  #auto-warn { color: #ffd9a0; max-width: 92vw; text-align: center; }
+  #auto-warn[hidden] { display: none; }
+
+  /* &chrome=0：只留畫布（錄影用） */
+  body.chrome-hidden #toolbar,
+  body.chrome-hidden #help,
+  body.chrome-hidden #hud,
+  body.chrome-hidden #banner,
+  body.chrome-hidden #paused { display: none !important; }
+  body.chrome-hidden #stage { border-color: transparent; box-shadow: none; }
+  /* V2-10 錄影 UI：錄影中紅點/時間/大小；?chrome=0 時整組隱藏但功能照常 */
+  body.chrome-hidden #vidrec-group,
+  body.chrome-hidden #vidrec-note,
+  body.chrome-hidden #vidrec-throttle { display: none !important; }
+
+  #help {
+    font-size: 11px;
+    color: var(--dim);
+    text-align: center;
+    line-height: 1.7;
+    max-width: 92vw;
+  }
+  #help b { color: #b9a6ff; font-weight: 600; }
+  #help .sep { color: #3b3158; padding: 0 2px; }
+  #help a { color: #9a86e8; text-decoration: none; }
+  #help a:hover { text-decoration: underline; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="game" width="640" height="480"></canvas>
+    <div id="hud">…</div>
+    <div id="banner" hidden></div>
+    <div id="paused" hidden>暫停</div>
+  </div>
+  <div id="toolbar">
+    <button id="auto-toggle" type="button" title="快捷鍵 P">自動：關</button>
+    <select id="auto-mode" title="自動演示模式">
+      <option value="demo">腳本</option>
+      <option value="bot">AI</option>
+      <option value="off">關</option>
+    </select>
+    <span id="auto-status"></span>
+    <button id="auto-restart" type="button" title="從頭重播（腳本模式時間軸對齊）">從頭重播</button>
+  </div>
+  <div id="auto-warn" hidden></div>
+  <div id="help">
+    <b>方向鍵 / WASD</b> 移動選項<span class="sep">・</span>
+    <b>Z / Enter</b> 確認<span class="sep">・</span>
+    <b>X / Shift</b> 取消<span class="sep">・</span>
+    <b>L</b> 語言 <span id="lang-label">zh</span><span class="sep">・</span>
+    <b>H</b> hitbox<span class="sep">・</span>
+    <b>R</b> 重來<span class="sep">・</span>
+    <b>M</b> 靜音<span class="sep">・</span>
+    <b>P</b> 自動<span class="sep">・</span>
+    <b>V</b> 錄影<span class="sep">・</span>
+    <b>Esc</b> 暫停
+  </div>
+  <script type="module">
+    /* =========================================================================
+     * encounter-play.html — 遭遇戰試玩頁（E2 擁有，SPEC-P2 §8）
+     *
+     * 正式路徑（E1/FL 的引擎）：
+     *   import { createEncounter } from './engine/encounter/index.js'
+     *   讀 ?encounter=<url>（相對 encounter-play.html），createEncounter({canvas,assets})
+     *   → enc.load(json) → enc.play()
+     *   渲染由 encounter/index.js 自己呼叫 E2 的 render-encounter.js（它會動態 import），
+     *   本頁只處理：素材/音效初始化、HUD、L/H/R/M/P 快捷鍵、錯誤橫幅。
+     *
+     * 假資料模式（E1/FL 尚未完成時的視覺自測）：
+     *   ?mock=1              跑內建假 state 序列，涵蓋 §5 每個 phase
+     *   ?phase=<id>          從指定場景開始（intro/menu/list-enemy/act/magic/item/
+     *                        party/spare/defend/resolve/talk/attack/turnend/
+     *                        victory/spared/defeat/flee）
+     *   ?frames=N            先推進 N 幀（headless 截圖用）
+     *
+     * 自動演示（SPEC-AUTOPLAY §4）：
+     *   ?autoplay=demo|bot   開頁即啟動（demo = 作品腳本；bot = 全程 AI）
+     *   &chrome=0            隱藏頁面 UI，只留畫布（錄影用）
+     *   &record=1            開頁即錄影（WebM，含遊戲音訊）；遭遇 result 出現後再錄 1 秒自動停止並下載
+     *   &recscale=1|2|3      錄影輸出倍率（最近鄰放大；V2-10）
+     *   工具列「自動」按鈕 + 模式選單；快捷鍵 P 切換。開啟時人類方向鍵 / Z / X 一律忽略。
+     *   腳本模式切換時從第 0 幀重來（時間軸對齊）；AI 模式從目前幀接手。
+     *
+     * 共用參數：?scale=1..6、?lang=zh|en、?hit=1、?bg=<sprite>
+     * ========================================================================= */
+
+    import {
+      createEncounterRenderer,
+      ENCOUNTER_BUTTON_SPRITES,
+      LOGICAL_WIDTH,
+      LOGICAL_HEIGHT,
+      computeFitScale,
+    } from './engine/render-encounter.js';
+    import { collectAttackRefs } from './engine/encounter/attack-refs.js';
+    import { createInput } from './engine/input.js';
+    import { AVATAR_SPRITES, PARTY_IDLE_SPRITES } from './engine/render-hud.js';
+    import { createAudio } from './engine/audio.js';
+    import { loadAssets } from './engine/assets.js';
+    import { createAutopilot } from './engine/autoplay/index.js';
+    import { winTextbox } from './engine/encounter/text.js';
+    import { mountRecorderUi } from './tools/web/recorder-ui.js';
+
+    const SIM_FPS = 30;
+    const params = new URLSearchParams(location.search);
+    const mockParam = params.get('mock') === '1' || params.get('mock') === 'true';
+    const encounterParam = params.get('encounter');
+    // 編輯器用 ?file=<名稱>；遭遇頁的正式參數是 ?encounter=。只給 ?file= 時當成別名並提示（REALTEST-2 V1）
+    const fileParam = params.get('file');
+    const phaseParam = params.get('phase');
+    const scaleParam = Number(params.get('scale'));
+    const bgParam = params.get('bg');
+    const autoplayParam = params.get('autoplay');
+    const autoStartMode = autoplayParam === 'bot' ? 'bot' : autoplayParam === 'demo' ? 'demo' : null;
+    const chromeHidden = params.get('chrome') === '0';
+    // V2-10 頁內錄影：?record=1 開頁即錄、?recscale=1|2|3 倍率
+    const autoVideoRecord = params.get('record') === '1' || params.get('record') === 'true';
+    const videoScaleParam = Math.max(1, Math.min(3, Math.floor(Number(params.get('recscale')) || 1)));
+
+    const canvas = document.getElementById('game');
+    const hudEl = document.getElementById('hud');
+    const bannerEl = document.getElementById('banner');
+    const pausedEl = document.getElementById('paused');
+    const langLabelEl = document.getElementById('lang-label');
+    const toolbarEl = document.getElementById('toolbar');
+    const autoToggleEl = document.getElementById('auto-toggle');
+    const autoModeEl = document.getElementById('auto-mode');
+    const autoStatusEl = document.getElementById('auto-status');
+    const autoWarnEl = document.getElementById('auto-warn');
+    const autoRestartEl = document.getElementById('auto-restart');
+    if (chromeHidden) document.body.classList.add('chrome-hidden');
+
+    /* ------------------------------------------------------------ 狀態變數 */
+
+    let renderer = null;
+    let assets = null;
+    let audio = null;
+    let enc = null;              // E1 的相遇引擎實例（正式路徑）
+    let input = null;            // mock 模式用
+    let mock = null;             // 假 state 產生器
+    let useMock = mockParam;
+    let mode = 'boot';           // boot | encounter | mock | error
+    let loadError = null;        // 遭遇檔載入失敗時的說明（mode === 'error'）
+    let loadedEncounterUrl = null;
+    let paused = false;
+    let destroyed = false;
+    let currentScale = 1;
+    let showHitboxes = params.get('hit') === '1';
+    let muted = false;
+    let lang = params.get('lang') === 'en' ? 'en' : 'zh';
+    try {
+      const saved = localStorage.getItem('dr-lang');
+      if (!params.get('lang') && (saved === 'zh' || saved === 'en')) lang = saved;
+    } catch (_err) {
+      /* 無 localStorage */
+    }
+    let rafId = 0;
+    let lastTime = 0;
+    let acc = 0;
+    let fps = 0;
+    let fpsFrames = 0;
+    let fpsClock = 0;
+    let banner = '';
+    // V2-10 頁內錄影（canvas → WebM；與「錄製 demo inputs」無關）
+    let videoRec = null;
+
+    /* 全域錯誤可視化：一眼看到哪個模組爆了 */
+    window.addEventListener('error', (event) => {
+      setBanner('執行期錯誤：' + ((event && event.message) || '未知錯誤'));
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+      const reason = event && event.reason;
+      setBanner('未處理的 Promise 錯誤：' + ((reason && reason.message) || String(reason)));
+    });
+
+    function setBanner(text) {
+      banner = text || '';
+      if (!banner) {
+        bannerEl.hidden = true;
+        bannerEl.textContent = '';
+        return;
+      }
+      bannerEl.hidden = false;
+      bannerEl.textContent = banner;
+    }
+
+    const UI_TEXT = {
+      zh: { pause: '暂停', langName: 'zh', hint: '方向鍵選項，Z 確認，X 取消' },
+      en: { pause: 'PAUSE', langName: 'en', hint: 'Arrows to choose, Z confirm, X cancel' },
+    };
+    function ui(key) {
+      const table = UI_TEXT[lang === 'en' ? 'en' : 'zh'];
+      return Object.prototype.hasOwnProperty.call(table, key) ? table[key] : key;
+    }
+    function syncLangUi() {
+      if (langLabelEl) langLabelEl.textContent = ui('langName');
+      if (!pausedEl.hidden) pausedEl.textContent = ui('pause');
+    }
+
+    /* -------------------------------------------------------------- 縮放 */
+
+    function applyScale() {
+      const scale =
+        Number.isFinite(scaleParam) && scaleParam >= 1
+          ? Math.max(1, Math.min(6, Math.floor(scaleParam)))
+          : computeFitScale(window.innerWidth - 24, window.innerHeight - 92, 5);
+      currentScale = scale;
+      if (renderer) renderer.resize(scale);
+      canvas.style.width = LOGICAL_WIDTH * scale + 'px';
+      canvas.style.height = LOGICAL_HEIGHT * scale + 'px';
+    }
+
+    /* =====================================================================
+     * 假資料：涵蓋 SPEC-P2 §5 每一個欄位的 state 序列
+     * ===================================================================== */
+
+    /* SPEC-LAYOUT §3：隊員腳底 y（渲染器會優先用 state.layout.partyFeet） */
+    const MOCK_PARTY_FEET = { 1: [240], 2: [190, 298], 3: [140, 230, 322], 4: [120, 190, 260, 330] };
+
+    const MOCK_ACTORS = [
+      { id: 'kris', kind: 'party', sprite: 'spr_krisb_idle', x: 100, y: 140, frames: 6 },
+      { id: 'susie', kind: 'party', sprite: 'spr_susieb_idle', x: 100, y: 230, frames: 4 },
+      { id: 'ralsei', kind: 'party', sprite: 'spr_ralseib_idle', x: 100, y: 322, frames: 5 },
+      // SPEC-LAYOUT §4：敵人中心 x 約 505、腳底 y 約 270
+      { id: 'rudinn', kind: 'enemy', sprite: 'spr_bakesale_rudinn', x: 505, y: 270, frames: 2, spriteH: 83 },
+      { id: 'hathy', kind: 'enemy', sprite: 'spr_hathyx_idle', x: 560, y: 300, frames: 4, spriteH: 48 },
+    ];
+
+    /** 場景清單：id / 提示 / 是否要玩家確認才前進 / 自動前進幀數 */
+    const MOCK_SCENES = [
+      { id: 'intro', hold: true, auto: 150 },
+      { id: 'menu', hold: true },
+      { id: 'list-enemy', hold: true },
+      { id: 'list-act', hold: true },
+      { id: 'list-magic', hold: true },
+      { id: 'list-item', hold: true },
+      { id: 'list-party', hold: true },
+      { id: 'list-spare', hold: true },
+      { id: 'defend', hold: true },
+      { id: 'resolve', auto: 110 },
+      { id: 'talk', auto: 130 },
+      { id: 'attack', auto: 210 },
+      { id: 'turnend', hold: true },
+      { id: 'victory', hold: true },
+      { id: 'spared', hold: true },
+      { id: 'defeat', hold: true },
+      { id: 'flee', hold: true },
+    ];
+
+    // 參考幀 02/06：Kris 這種沒有 MAGIC 的隊員只有 5 顆按鈕（FIGHT/ACT/ITEM/SPARE/DEFEND）
+    const MOCK_BUTTONS = [
+      { id: 'fight' },
+      { id: 'act' },
+      { id: 'item' },
+      { id: 'spare' },
+      { id: 'defend' },
+    ];
+
+    function makeMock(renderer) {
+      const scenes = MOCK_SCENES;
+      let sceneIndex = Math.max(
+        0,
+        scenes.findIndex((s) => s.id === (phaseParam || 'intro')),
+      );
+      let frame = 0;
+      let sceneFrames = 0;
+      let cursor = 0;
+      let page = 0;
+      let member = 0;
+      const party = [
+        { id: 'kris', name: 'Kris', hp: 90, maxHp: 90, color: '#00ffff', down: false, defending: false, action: null },
+        { id: 'susie', name: 'Susie', hp: 110, maxHp: 110, color: '#c000c0', down: false, defending: false, action: null },
+        { id: 'ralsei', name: 'Ralsei', hp: 70, maxHp: 70, color: '#00ff00', down: false, defending: false, action: null },
+      ];
+      const enemies = [
+        { id: 'rudinn', name: 'Rudinn', hp: 96, maxHp: 120, mercy: 35, spareable: false, removed: false },
+        { id: 'hathy', name: 'Hathy', hp: 54, maxHp: 80, mercy: 100, spareable: true, removed: false },
+      ];
+      let tp = 62;
+      let boxAnim = 0;
+      let fade = { color: '#000000', alpha: 0 };
+      let flash = { color: '#ffffff', alpha: 0 };
+      let numbers = [];
+      let shake = { x: 0, y: 0 };
+
+      // 彈幕回合
+      const bullets = [];
+      let nextBulletId = 1;
+      let soulX = 320;
+      let soulY = 152;
+      let boxW = 150;
+      let boxH = 150;
+      let boxRot = 0;
+
+      function scene() {
+        return scenes[sceneIndex] || scenes[0];
+      }
+
+      function setScene(index) {
+        sceneIndex = Math.max(0, Math.min(scenes.length - 1, index));
+        sceneFrames = 0;
+        cursor = 0;
+        page = 0;
+        numbers = [];
+        flash = { color: '#ffffff', alpha: 0 };
+        fade = { color: '#000000', alpha: 0 };
+        bullets.length = 0;
+        boxAnim = 0;
+        boxW = 150;
+        boxH = 150;
+        boxRot = 0;
+        soulX = 320;
+        soulY = 152;
+        for (const p of party) {
+          p.action = null;
+          p.defending = false;
+        }
+        if (scene().id === 'attack') boxAnim = 0;
+        if (scene().id === 'defend') {
+          for (const p of party) p.action = 'defend';
+          party[0].defending = true;
+        }
+        if (scene().id === 'turnend') {
+          for (const p of party) p.action = 'fight';
+        }
+      }
+
+      function next() {
+        setScene(sceneIndex + 1);
+      }
+
+      function prev() {
+        setScene(sceneIndex - 1);
+      }
+
+      /* ---------------------------------------------------------- 各場景 */
+
+      function listFor(id) {
+        switch (id) {
+          case 'list-enemy':
+            return {
+              kind: 'enemy',
+              title: '',
+              items: enemies
+                .filter((e) => !e.removed)
+                .map((e) => ({
+                  label: e.name,
+                  sub: '',
+                  enabled: true,
+                  hpPct: Math.round((e.hp / e.maxHp) * 100),
+                  mercy: e.mercy,
+                })),
+            };
+          case 'list-act':
+            return {
+              kind: 'act',
+              title: '',
+              items: [
+                { label: 'Check', sub: '', enabled: true },
+                { label: 'Compliment', sub: '', enabled: true },
+                { label: 'X-Action', sub: 'Susie', enabled: true },
+                { label: 'Threaten', sub: 'Susie', enabled: true },
+                { label: 'Praise', sub: 'Ralsei', enabled: true },
+                { label: 'Sing', sub: 'Ralsei', enabled: false },
+              ],
+            };
+          case 'list-magic':
+            return {
+              kind: 'magic',
+              title: '',
+              items: [
+                { label: 'Pacify', sub: '32%', enabled: tp >= 32 },
+                { label: 'Heal Prayer', sub: '32%', enabled: tp >= 32 },
+                { label: 'Rude Buster', sub: '40%', enabled: tp >= 40 },
+                { label: 'Fluffy Guard', sub: '16%', enabled: tp >= 16 },
+              ],
+            };
+          case 'list-item':
+            return {
+              kind: 'item',
+              title: '',
+              items: [
+                { label: 'Dark Burger', sub: '×2', enabled: true },
+                { label: 'Manual', sub: '×1', enabled: true },
+                { label: 'Sponge Cake', sub: '×3', enabled: true },
+                { label: 'Glow Ring', sub: '×1', enabled: true },
+                { label: 'Broken Key', sub: '', enabled: false },
+              ],
+            };
+          case 'list-party':
+            return {
+              kind: 'party',
+              title: 'DARK BURGER →',
+              items: party.map((p) => ({
+                label: p.name,
+                sub: p.down ? '' : Math.round(p.hp) + '/' + p.maxHp,
+                enabled: !p.down,
+              })),
+            };
+          case 'list-spare':
+            return {
+              kind: 'enemy',
+              title: '',
+              items: enemies
+                .filter((e) => !e.removed)
+                .map((e) => ({
+                  label: e.name,
+                  sub: '',
+                  enabled: true,
+                  hpPct: Math.round((e.hp / e.maxHp) * 100),
+                  mercy: e.mercy,
+                })),
+            };
+          default:
+            return null;
+        }
+      }
+
+      function sceneName() {
+        const id = scene().id;
+        if (id.startsWith('list-')) return 'menu';
+        if (id === 'defend') return 'menu';
+        if (id === 'talk') return 'enemyTalk';
+        if (id === 'turnend') return 'turnEnd';
+        if (id === 'resolve') return 'resolve';
+        return id;
+      }
+
+      function menuFor(id) {
+        // 場景 → 選單（§5 menu）
+        if (id === 'menu' || id === 'defend') {
+          const actionByScene = id === 'defend' ? 5 : cursor;
+          return {
+            member,
+            buttons: MOCK_BUTTONS.map((b, i) => ({
+              id: b.id,
+              enabled: i !== 2 || true,
+            })),
+            cursor: actionByScene,
+            list: null,
+          };
+        }
+        if (id.startsWith('list-')) {
+          const list = listFor(id);
+          if (!list) return { member, buttons: MOCK_BUTTONS.map((b) => ({ id: b.id, enabled: true })), cursor, list: null };
+          return {
+            member,
+            buttons: MOCK_BUTTONS.map((b) => ({ id: b.id, enabled: true })),
+            cursor: cursor,
+            list: {
+              kind: list.kind,
+              title: list.title || '',
+              items: list.items,
+              cursor: Math.min(cursor, Math.max(0, list.items.length - 1)),
+              page,
+            },
+          };
+        }
+        return null;
+      }
+
+      function fightState() {
+        return {
+          bars: [
+            { member: 0, color: '#00ffff', x: 210 + (sceneFrames % 40) * 4, targetX: 330, result: null },
+            { member: 1, color: '#c000c0', x: 250, targetX: 250, result: 'perfect' },
+            { member: 2, color: '#00ff00', x: 500, targetX: 380, result: 'miss' },
+          ],
+        };
+      }
+
+      function textboxFor(id) {
+        if (id === 'victory' || id === 'spared') return winTextbox(lang);
+        if (id === 'intro') {
+          const full = '* 鲁丁挡住了去路！\n* 你感觉到一股闪烁的敌意。';
+          const visible = Math.min(full.length, 6 + sceneFrames * 1.2);
+          return {
+            lines: [
+              { text: '* 鲁丁挡住了去路！', color: '#ffffff' },
+              { text: '* 你感觉到一股闪烁的敌意。', color: '#ffe08a' },
+            ],
+            visibleChars: Math.floor(visible),
+            done: visible >= full.length,
+            speaker: null,
+            portrait: null,
+          };
+        }
+        if (id === 'turnend') {
+          return {
+            lines: [{ text: '* 鲁丁在闪闪发光。', color: '#ffffff' }],
+            visibleChars: 99,
+            done: true,
+            speaker: null,
+            portrait: null,
+          };
+        }
+        if (id === 'list-magic') {
+          return {
+            lines: [{ text: '* 选择要使用的魔法。（TP 62%）', color: '#c8b8ff' }],
+            visibleChars: 99,
+            done: true,
+            speaker: null,
+            portrait: null,
+          };
+        }
+        if (id === 'list-act') {
+          return {
+            lines: [{ text: '* 你观察着鲁丁。', color: '#ffffff' }],
+            visibleChars: 99,
+            done: true,
+            speaker: 'Ralsei',
+            portrait: 'spr_ralseib_act',
+          };
+        }
+        if (id === 'attack') {
+          return null;
+        }
+        return {
+          lines: [{ text: '* 你要怎么做？', color: '#ffffff' }],
+          visibleChars: 99,
+          done: true,
+          speaker: null,
+          portrait: null,
+        };
+      }
+
+      function bubblesFor(id) {
+        if (id !== 'talk') return [];
+        const full = '要来点\n闪光吗？';
+        return [
+          {
+            actor: 'rudinn',
+            x: 0,
+            y: 0,
+            side: 'left',
+            lines: [
+              { text: '要来点', color: '#000000' },
+              { text: '闪光吗？', color: '#000000' },
+            ],
+            visibleChars: Math.min(full.length, Math.floor(sceneFrames * 0.9)),
+            done: sceneFrames * 0.9 >= full.length,
+          },
+        ];
+      }
+
+      /**
+       * 彈幕回合的狀態推進（只由 tick() 呼叫）。
+       * 刻意不放在 battleFor()/getState() 裡：getState() 必須是純讀取，
+       * 否則暫停時（頁面仍會呼叫 getState() 更新 HUD）子彈會繼續老化而被清空。
+       */
+      function updateBattle() {
+        boxAnim = Math.min(1, sceneFrames / 10);
+        // 靈魂
+        const ins = input ? input.read() : { dx: 0, dy: 0, slow: false };
+        const speed = ins.slow ? 2.2 : 4;
+        soulX += ins.dx * speed;
+        soulY += ins.dy * speed;
+        const halfW = Math.max(10, (boxW * boxAnim) / 2 - 8);
+        const halfH = Math.max(10, (boxH * boxAnim) / 2 - 8);
+        soulX = Math.max(321 - halfW, Math.min(321 + halfW, soulX));
+        soulY = Math.max(190 - halfH, Math.min(190 + halfH, soulY));
+        boxRot = Math.sin(sceneFrames * 0.03) * 4;
+        // SPEC-LAYOUT §5：外框 x246–396 / y107–272 → 中心 (321,190)、150×165
+        boxW = 150;
+        boxH = 165;
+
+        // 子彈：從框外環狀往框心飛（才會一直有子彈在框內可看）
+        if (sceneFrames % 10 === 0) {
+          const k = sceneFrames / 10;
+          for (let i = 0; i < 6; i += 1) {
+            const ang = i * 60 + k * 17;
+            const rad = 105;
+            const rad2 = (ang * Math.PI) / 180;
+            bullets.push({
+              id: nextBulletId++,
+              sprite: 'spr_spadebullet',
+              x: 321 + Math.cos(rad2) * rad,
+              y: 190 + Math.sin(rad2) * rad,
+              angle: ang + 180,
+              speed: 2.1,
+              rotation: ang,
+              scale: 0.75,
+              alpha: 1,
+              color: null,
+              maskToBox: true,
+              frame: 0,
+              age: 0,
+              hitbox: { shape: 'circle', r: 5 },
+            });
+          }
+        }
+        if (sceneFrames % 26 === 0) {
+          bullets.push({
+            id: nextBulletId++,
+            sprite: 'spr_starbullet_test',
+            x: 250 + ((sceneFrames * 7) % 140),
+            y: 60,
+            angle: 90,
+            speed: 2.4,
+            rotation: 0,
+            scale: 1,
+            alpha: 1,
+            color: '#ffd24a',
+            maskToBox: true,
+            frame: 0,
+            age: 0,
+            hitbox: { shape: 'circle', r: 6 },
+          });
+        }
+        for (const b of bullets) {
+          b.x += Math.cos((b.angle * Math.PI) / 180) * b.speed;
+          b.y += Math.sin((b.angle * Math.PI) / 180) * b.speed;
+          b.age += 1;
+        }
+        // 存活太久或飛太遠的移除
+        for (let i = bullets.length - 1; i >= 0; i -= 1) {
+          const b = bullets[i];
+          if (b.age > 90 || Math.abs(b.x - 321) > 210 || Math.abs(b.y - 190) > 200) bullets.splice(i, 1);
+        }
+      }
+
+      function battleFor(id) {
+        if (id !== 'attack') return null;
+        const grazing = sceneFrames % 60 > 30;
+        return {
+          box: { x: 321, y: 190, w: boxW, h: boxH, rotation: boxRot, border: 3, color: '#00c000' },
+          soul: {
+            x: soulX,
+            y: soulY,
+            mode: 'red',
+            color: '#ff0000',
+            invFrames: 0,
+            grazing,
+            visible: true,
+          },
+          bullets: bullets.slice(),
+          shake: shake,
+          sfxQueue: [],
+        };
+      }
+
+      function getState() {
+        const id = scene().id;
+        frame += 0;
+        if (id === 'attack') {
+          // 參考幀 01：戰鬥中 TP 約 16–37%；留 26 起跳比較像實機（原本 62 太滿）
+          tp = Math.min(100, 26 + sceneFrames * 0.1);
+        }
+        if (id === 'resolve') {
+          shake = { x: Math.sin(sceneFrames * 0.9) * 2, y: 0 };
+          if (sceneFrames % 18 === 0) {
+            const enemy = enemies[sceneFrames % 2];
+            numbers.push({
+              x: 480,
+              y: 150,
+              text: '-' + (24 + (sceneFrames % 30)),
+              color: '#ff4040',
+              age: 0,
+            });
+          }
+        }
+        if (id === 'turnend' || id === 'victory' || id === 'spared' || id === 'defeat') {
+          slowNumbers();
+        } else {
+          slowNumbers();
+        }
+
+        const state = {
+          frame,
+          lang,
+          phase: sceneName(),
+          turn: Math.min(2, Math.floor(sceneIndex / 4)),
+          actors: MOCK_ACTORS.map((a) => ({
+            id: a.id,
+            kind: a.kind,
+            sprite: a.sprite,
+            frame: Math.floor(frame / Math.max(1, Math.round(30 / 6))) % a.frames,
+            x: a.x,
+            y: a.y,
+            flip: false,
+            alpha: 1,
+            scale: 1,
+            layer: a.kind === 'enemy' ? 0 : 1,
+            visible: true,
+            // SPEC-LAYOUT §8：泡泡對齊頭部需要精靈原始高度
+            spriteH: a.spriteH || 40,
+            hurtShake: id === 'resolve' ? Math.max(0, 1 - sceneFrames / 20) : 0,
+          })),
+          party: party.map((p) => ({
+            id: p.id,
+            name: p.name,
+            hp: ['victory', 'spared'].includes(id) ? p.hp : p.hp,
+            maxHp: p.maxHp,
+            color: p.color,
+            down: id === 'defeat' ? true : p.down,
+            defending: p.defending,
+            action: id === 'defend' ? 'defend' : p.action,
+          })),
+          enemies: enemies.map((e) => ({ ...e })),
+          tp: Math.round(tp),
+          textbox: textboxFor(id),
+          bubbles: bubblesFor(id),
+          menu: menuFor(id),
+          fight: id === 'resolve' ? fightState() : null,
+          numbers,
+          battle: battleFor(id),
+          boxAnim: id === 'attack' ? boxAnim : 0,
+          // SPEC-LAYOUT §5：展開時由 ±90 度收斂到 0（E1 的 world.boxAnimRotation）
+          boxAnimRotation: id === 'attack' ? Math.round(90 * (1 - boxAnim) * 1000) / 1000 : 0,
+          // SPEC-LAYOUT §1/§3/§7：版面常數（E1 的 getState 也提供同一組）
+          layout: {
+            partyFeet: MOCK_PARTY_FEET[party.length] || MOCK_PARTY_FEET[3],
+            panelTop: 365,
+            textTop: 405,
+          },
+          fade:
+            id === 'flee'
+              ? { color: '#000000', alpha: Math.min(0.85, sceneFrames / 40) }
+              : { color: '#000000', alpha: 0 },
+          flash:
+            id === 'victory'
+              ? { color: '#ffffa0', alpha: Math.max(0, 0.55 - sceneFrames / 40) }
+              : id === 'defeat'
+                ? { color: '#400000', alpha: Math.max(0, 0.5 - sceneFrames / 40) }
+                : { color: '#ffffff', alpha: 0 },
+          result: ['victory', 'spared', 'defeat', 'flee'].includes(id) ? id : null,
+        };
+        return state;
+      }
+
+      function slowNumbers() {
+        for (let i = numbers.length - 1; i >= 0; i -= 1) {
+          numbers[i].age += 1;
+          if (numbers[i].age > 34) numbers.splice(i, 1);
+        }
+      }
+
+      function tick() {
+        frame += 1;
+        sceneFrames += 1;
+        if (input) {
+          const p = input.snapshot ? input.snapshot() : null;
+          const press = p ? p.press : [];
+          const held = p ? p.hold : {};
+          if (press.includes('confirm')) {
+            if (scene().id.startsWith('list-')) {
+              // 清單內確認 → 下一場景
+              next();
+            } else if (scene().id === 'menu' || scene().id === 'defend') {
+              next();
+            } else {
+              next();
+            }
+            if (input.clearPresses) input.clearPresses();
+            return;
+          }
+          if (press.includes('cancel')) {
+            prev();
+            if (input.clearPresses) input.clearPresses();
+            return;
+          }
+          const list = listFor(scene().id);
+          const max = list ? Math.max(0, list.items.length - 1) : MOCK_BUTTONS.length - 1;
+          if (press.includes('down') || press.includes('right')) cursor = Math.min(max, cursor + 1);
+          if (press.includes('up') || press.includes('left')) cursor = Math.max(0, cursor - 1);
+          if (press.length && input.clearPresses) input.clearPresses();
+        }
+        const sc = scene();
+        if (!sc.hold && sc.auto && sceneFrames >= sc.auto) next();
+        // 場景狀態推進（getState() 保持純讀取，暫停時畫面/子彈都凍住）
+        if (scene().id === 'attack') updateBattle();
+        // 清掉附帶按鍵（避免 justPressed 累積）
+        if (input && input.read) input.read();
+      }
+
+      function reset() {
+        setScene(Math.max(0, scenes.findIndex((s) => s.id === (phaseParam || 'intro'))));
+        frame = 0;
+        for (const p of party) {
+          p.hp = p.maxHp;
+          p.down = false;
+        }
+        tp = 62;
+      }
+
+      setScene(sceneIndex);
+
+      return {
+        getState,
+        tick,
+        reset,
+        sceneId: () => scene().id,
+        sceneIndex: () => sceneIndex,
+        sceneCount: scenes.length,
+        setSceneById(id) {
+          const i = scenes.findIndex((s) => s.id === id);
+          if (i >= 0) setScene(i);
+        },
+        get cursor() {
+          return cursor;
+        },
+        scenes: scenes.map((s) => s.id),
+      };
+    }
+
+    /* ================================================================ 主流程 */
+
+    function engineOwnsDraw() {
+      // 遭遇引擎（engine/encounter/index.js）自己跑 rAF 並呼叫 renderer.draw()
+      return mode === 'encounter' && !!enc && !mock;
+    }
+
+    function readState() {
+      if (mock) return mock.getState();
+      if (enc && typeof enc.getState === 'function') {
+        try {
+          return enc.getState();
+        } catch (err) {
+          console.warn('[encounter-play] getState 失敗：', err);
+        }
+      }
+      return null;
+    }
+
+    function drawFrame() {
+      if (mode === 'error') {
+        // 載入失敗：停在錯誤畫面，不要偷偷換成別的遭遇或假資料（REALTEST-2 V1）
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.fillStyle = '#000';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        showHud(null);
+        return;
+      }
+      const state = readState();
+      if (!engineOwnsDraw()) {
+        if (renderer) {
+          renderer.draw(state, {
+            showHitboxes,
+            scale: currentScale,
+            lang,
+            background: currentBackground,
+          });
+        }
+      }
+      showHud(state);
+    }
+
+    let currentBackground = null;
+
+    function showHud(state) {
+      const st = state || {};
+      const modeText = mode === 'mock' ? '假資料' : mode === 'encounter' ? '引擎' : mode === 'error' ? '載入失敗' : '未啟動';
+      const phase = st.phase || '-';
+      const sceneId = mock ? '  ' + mock.sceneId() + ' (' + (mock.sceneIndex() + 1) + '/' + mock.sceneCount + ')' : '';
+      hudEl.textContent =
+        'FPS ' + fps.toFixed(0) + '  幀 ' + Math.floor(Number(st.frame) || 0) + '\n' +
+        modeText + '  ' + phase + sceneId + '  Scale ×' + currentScale +
+        '  Lang ' + lang.toUpperCase() + '  Hitbox ' + (showHitboxes ? 'ON' : 'OFF') +
+        (paused ? '  暫停' : '');
+    }
+
+    function setPaused(value) {
+      paused = value === true;
+      pausedEl.hidden = !paused;
+      pausedEl.textContent = ui('pause');
+      if (enc) {
+        try {
+          if (paused) {
+            if (typeof enc.pause === 'function') enc.pause();
+          } else if (typeof enc.play === 'function' && !autoEnabled) {
+            // 自動演示時引擎必須保持 pause：步進由頁面逐幀餵 pilot.input
+            enc.play();
+          }
+        } catch (err) {
+          console.warn('[encounter-play] 切換暫停失敗：', err);
+        }
+      }
+      acc = 0;
+    }
+
+    function restart() {
+      setPaused(false);
+      if (mock) {
+        mock.reset();
+      } else if (enc) {
+        try {
+          if (typeof enc.reset === 'function') enc.reset();
+          // 自動演示：頁面接手步進，引擎保持 pause（見 syncEngineRunning）
+          if (typeof enc.play === 'function' && !autoEnabled) enc.play();
+        } catch (err) {
+          console.warn('[encounter-play] 重來失敗：', err);
+        }
+      }
+      drawFrame();
+    }
+
+    /* ======================================== 自動演示（SPEC-AUTOPLAY §4） */
+
+    /** 目前的自動演示：{ mode: 'demo'|'bot', pilot } */
+    let auto = null;
+    let autoEnabled = false;
+    let autoMessage = '';
+    /** 開啟自動演示前的橫幅（關閉時還原） */
+    let bannerBeforeAuto = '';
+    /** PDF 頁面載入的遭遇 JSON（createAutopilot 需要它解析選單 id / demo.turns） */
+    let loadedEncounterJson = null;
+    /** 攻擊名 → 攻擊 JSON（resolveAttackDoc 必須同步，所以先預載） */
+    const attackCache = new Map();
+    /** 攻擊名 → Promise<json|null>（避免重複抓同一個檔） */
+    const attackFetchCache = new Map();
+    let lastUiSync = 0;
+
+    /**
+     * 取攻擊檔（快取）。候選順序與編輯器預覽一致：
+     * 使用者作品（/api/attacks → attacks/），再找 samples。
+     */
+    let worksAttackNamesPromise = null;
+    /** 作品裡的攻擊名稱（GET api/attacks）；拿不到回 null。 */
+    function worksAttackNames() {
+      if (!worksAttackNamesPromise) {
+        worksAttackNamesPromise = (async () => {
+          try {
+            const data = await fetchJson('api/attacks');
+            const items = Array.isArray(data) ? data : data && (data.items || data.attacks);
+            if (!Array.isArray(items)) return null;
+            const names = new Set();
+            for (const item of items) {
+              const raw = typeof item === 'string' ? item : item && item.name;
+              if (typeof raw === 'string' && raw) names.add(raw.replace(/\.json$/i, ''));
+            }
+            return names;
+          } catch (_err) {
+            return null;
+          }
+        })();
+      }
+      return worksAttackNamesPromise;
+    }
+
+    function fetchAttackDoc(name) {
+      const key = String(name);
+      if (attackFetchCache.has(key)) return attackFetchCache.get(key);
+      const promise = (async () => {
+        // 先問一次作品清單：名字不在作品裡就直接找 samples/，避免每支範例攻擊各打兩個 404
+        // （--works 模式的 6 條紅字，REALTEST-2 V8）。清單拿不到（純靜態主機）時維持舊的逐一嘗試。
+        const works = await worksAttackNames();
+        const candidates = [];
+        if (!works || works.has(key)) {
+          candidates.push('api/attacks/' + encodeURIComponent(key) + '.json');
+          if (!works) candidates.push('attacks/' + encodeURIComponent(key) + '.json');
+        }
+        candidates.push('samples/' + key + '.json');
+        if (!works) candidates.push('samples/attacks/' + key + '.json');
+        for (const url of candidates) {
+          try {
+            const doc = await fetchJson(url);
+            attackCache.set(key, doc);
+            return doc;
+          } catch (_err) {
+            /* 換下一個候選 */
+          }
+        }
+        return null;
+      })();
+      attackFetchCache.set(key, promise);
+      return promise;
+    }
+
+    /** 預先載入這場遭遇引用到的所有攻擊（resolveAttackDoc 才能同步）。 */
+    async function preloadAttacks(doc) {
+      const names = [...collectAttackRefs(doc)];
+      await Promise.all(names.map((name) => fetchAttackDoc(name)));
+      return names;
+    }
+
+    async function preloadEncounterArt(doc) {
+      if (!assets) return;
+      const attacks = await preloadAttacks(doc);
+      const sprites = new Set(['spr_heart', 'spr_tplogo', ...ENCOUNTER_BUTTON_SPRITES,
+        ...Object.values(AVATAR_SPRITES), ...Object.values(PARTY_IDLE_SPRITES)]);
+      function collect(value) {
+        if (typeof value === 'string') {
+          if (assets.sprite(value)) sprites.add(value);
+        } else if (value && typeof value === 'object') {
+          for (const child of Object.values(value)) collect(child);
+        }
+      }
+      collect(doc);
+      collect(bgParam);
+      for (const name of attacks) collect(attackCache.get(name));
+      await assets.preload([...sprites]);
+    }
+
+    /** createAutopilot 的 resolveAttackDoc：同步回傳攻擊 JSON（內嵌攻擊直接由 pilot 自己處理）。 */
+    function resolveAttackDocSync(name) {
+      if (typeof name !== 'string') return null;
+      return attackCache.get(name) || null;
+    }
+
+    function autoModeLabel(modeName) {
+      return modeName === 'bot' ? 'AI' : modeName === 'demo' ? '腳本' : '關';
+    }
+
+    function pageOwnsSteps() {
+      return mode === 'encounter' && !!enc && !mock && autoEnabled === true;
+    }
+
+    /** 自動演示 / 錄製時由 page 步進 → 引擎必須停止自己的 tick（仍會在 step 內 draw）。 */
+    function syncEngineRunning() {
+      if (!enc || mode !== 'encounter') return;
+      try {
+        if (autoEnabled || paused || enc.result) {
+          if (typeof enc.pause === 'function') enc.pause();
+        } else if (typeof enc.play === 'function') {
+          enc.play();
+        }
+      } catch (err) {
+        console.warn('[encounter-play] 切換引擎步進失敗：', err);
+      }
+    }
+
+    function showAutoWarnings(warnings) {
+      if (!autoWarnEl) return;
+      const list = Array.isArray(warnings) ? warnings.filter((item) => typeof item === 'string' && item) : [];
+      if (list.length === 0) {
+        autoWarnEl.hidden = true;
+        autoWarnEl.textContent = '';
+        return;
+      }
+      autoWarnEl.hidden = false;
+      autoWarnEl.textContent = '自動演示提示：' + list.slice(0, 3).join('；');
+    }
+
+    /** 畫布外狀態列：AUTO · 腳本/AI · 回合 N · 步驟 · 躲避模式 · 幀 N */
+    function syncAutoplayUi(force = false) {
+      const now = typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+      if (!force && now - lastUiSync < 100) return;
+      lastUiSync = now;
+      if (autoToggleEl) autoToggleEl.textContent = '自動：' + autoModeLabel(autoEnabled ? auto.mode : 'off');
+      if (autoModeEl && document.activeElement !== autoModeEl) {
+        autoModeEl.value = autoEnabled ? auto.mode : 'off';
+      }
+      if (!autoStatusEl) return;
+      if (!autoEnabled) {
+        autoStatusEl.textContent = '';
+        return;
+      }
+      const info = auto && auto.pilot && typeof auto.pilot.describe === 'function' ? auto.pilot.describe() : {};
+      const state = readState() || {};
+      const turn = Number.isFinite(Number(info.turn)) ? Number(info.turn) : Math.round(Number(state.turn) || 0) + 1;
+      // AI 模式沒有作品腳本 → pilot 的 dodge 是 null，UI 顯示 bot 才不會像壞掉
+      const dodge = info.dodge ? String(info.dodge) : auto.mode === 'bot' ? 'bot' : '-';
+      const step = info.step ? String(info.step) : '-';
+      const frame = Math.round(Number(state.frame) || 0);
+      autoStatusEl.textContent =
+        'AUTO · ' + autoModeLabel(auto.mode) + ' · 回合 ' + turn + ' · ' + step + ' · 躲避 ' + dodge +
+        ' · 幀 ' + frame + (autoMessage ? ' · ' + autoMessage : '');
+    }
+
+    /**
+     * 開關自動演示。
+     *  - demo（作品腳本）：時間軸 / 選單節奏都要從第 0 幀對齊 → 一律重來。
+     *  - bot（全程 AI）：反應式 → 只 reset pilot，從目前幀接手。
+     * @param {'demo'|'bot'|'off'} nextMode
+     * @param {{restart?:boolean}} [options]
+     */
+    async function setAutoplay(nextMode, options = {}) {
+      const next = nextMode === 'bot' ? 'bot' : nextMode === 'demo' ? 'demo' : 'off';
+      if (useMock || mode === 'mock') {
+        autoEnabled = false;
+        auto = null;
+        setBanner('假資料模式（?mock=1）沒有真的遭遇檔，無法自動演示。');
+        syncAutoplayUi(true);
+        return 'off';
+      }
+      if (next === 'off') {
+        autoEnabled = false;
+        auto = null;
+        autoMessage = '';
+        showAutoWarnings([]);
+        setBanner(bannerBeforeAuto || '');
+        bannerBeforeAuto = '';
+        syncEngineRunning();
+        syncAutoplayUi(true);
+        return 'off';
+      }
+      if (!enc || mode !== 'encounter' || !loadedEncounterJson) {
+        setBanner('遭遇尚未載入完成，無法自動演示。');
+        syncAutoplayUi(true);
+        return 'off';
+      }
+      if (autoEnabled) {
+        // 已經開著 → 只切 pilot，不需要重建（但模式不同就重建）
+        autoEnabled = false;
+        auto = null;
+      }
+      await preloadAttacks(loadedEncounterJson);
+      const pilot = createAutopilot({
+        kind: 'encounter',
+        doc: loadedEncounterJson,
+        mode: next,
+        resolveAttackDoc: resolveAttackDocSync,
+      });
+      auto = { mode: next, pilot };
+      autoEnabled = true;
+      autoMessage = '';
+      try {
+        await pilot.ready;
+      } catch (_err) {
+        /* ready 失敗只會讓 pilot 退化為不按鍵，warnings 會說明 */
+      }
+      showAutoWarnings(pilot.warnings);
+      const atEnd = Boolean(enc.result || (readState() || {}).result);
+      // 腳本模式（含 demo 選單節奏）必須從第 0 幀對齊；AI 模式接手目前進度。
+      if (next === 'demo' || options.restart === true || atEnd) restart();
+      else if (typeof pilot.reset === 'function') pilot.reset();
+      syncEngineRunning();
+      syncAutoplayUi(true);
+      bannerBeforeAuto = bannerBeforeAuto || banner;
+      setBanner(
+        next === 'bot'
+          ? '自動演示（AI）：人類方向鍵與 Z/X 已忽略；P 關閉、R 重來、Esc 暫停。'
+          : '自動演示（腳本）：人類方向鍵與 Z/X 已忽略；P 關閉、R 重來、Esc 暫停。',
+      );
+      return next;
+    }
+
+    /** P 鍵 / 按鈕切換：開 → 關；關 → 選單上的模式（預設腳本）。 */
+    function toggleAutoplay() {
+      if (autoEnabled) {
+        void setAutoplay('off');
+        return 'off';
+      }
+      const pick = autoModeEl && autoModeEl.value === 'bot' ? 'bot' : 'demo';
+      void setAutoplay(pick);
+      return pick;
+    }
+
+    /**
+     * 由頁面推進一個遭遇幀：每幀都先取 pilot.input，再交給引擎 step。
+     * 這是「即時時鐘驅動」的引擎在自動演示下的唯一正確步進方式。
+     */
+    function advanceEncounterFrame() {
+      if (!enc || mode !== 'encounter' || mock) return false;
+      if (enc.result) return false;
+      const state = readState();
+      if (!state) return false;
+      let formatted = null;
+      if (autoEnabled && auto && auto.pilot) {
+        try {
+          formatted = auto.pilot.input(state, state.frame);
+        } catch (err) {
+          console.warn('[encounter-play] pilot.input 失敗：', err);
+          formatted = { press: [], hold: {} };
+        }
+      } else {
+        return false;
+      }
+      try {
+        enc.step(1, formatted);
+      } catch (err) {
+        console.error('[encounter-play] step 失敗：', err);
+        return false;
+      }
+      const after = readState();
+      if (after && after.result) autoMessage = '完成（' + after.result + '）';
+      syncAutoplayUi();
+      return true;
+    }
+
+    function bindAutoplayControls() {
+      if (autoToggleEl) {
+        autoToggleEl.addEventListener('click', () => {
+          toggleAutoplay();
+          autoToggleEl.blur();
+        });
+      }
+      if (autoModeEl) {
+        autoModeEl.addEventListener('change', () => {
+          const next = autoModeEl.value === 'bot' ? 'bot' : autoModeEl.value === 'demo' ? 'demo' : 'off';
+          void setAutoplay(next);
+          autoModeEl.blur();
+        });
+      }
+      if (autoRestartEl) {
+        autoRestartEl.addEventListener('click', () => {
+          if (autoEnabled && auto && typeof auto.pilot.reset === 'function') auto.pilot.reset();
+          autoMessage = '';
+          restart();
+          autoRestartEl.blur();
+        });
+      }
+      syncAutoplayUi(true);
+    }
+
+    /* ================================================== 頁內錄影（V2-10） */
+
+    /**
+     * 把 canvas 錄成 WebM（含 engine/audio.js 的音訊）。
+     * 快捷鍵 V（與 P 自動演示不同鍵）；?record=1 開頁自動錄，遭遇 result 出現後
+     * 再錄 1 秒自動停止並下載。?chrome=0 時 UI 隱藏但錄影照常。
+     */
+    function videoTitle() {
+      const meta = loadedEncounterJson && loadedEncounterJson.meta;
+      if (meta && typeof meta === 'object') return meta.name || meta.title || '';
+      if (enc && enc.encounter && enc.encounter.meta) return enc.encounter.meta.name || '';
+      return '';
+    }
+
+    function mountVideoRecorder() {
+      if (videoRec || !canvas) return videoRec;
+      videoRec = mountRecorderUi({
+        canvas,
+        audio,
+        toolbar: toolbarEl,
+        getTitle: videoTitle,
+        getEnded: () => {
+          const state = readState();
+          return Boolean((enc && enc.result) || (state && state.result));
+        },
+        autoRecord: autoVideoRecord,
+        autoStopDelayMs: 1000,
+        scale: videoScaleParam,
+        fps: SIM_FPS,
+        chromeHidden,
+        onFinished: (result) => {
+          if (!result || !result.blob) {
+            setBanner('錄影失敗：瀏覽器沒有產生 WebM');
+            return;
+          }
+          setBanner(
+            '錄影完成：' + result.filename + '（' + (result.bytes / 1024).toFixed(0) + ' KB）' +
+              (result.downloaded ? '，已開始下載。' : '，可按工具列「⬇ 再次下載」。'),
+          );
+        },
+      });
+      return videoRec;
+    }
+
+    /** 錄影狀態（給測試 / 除錯用；沒掛上時回 null）。 */
+    function videoSnapshot() {
+      if (!videoRec) return null;
+      const snap = videoRec.getSnapshot();
+      return Object.assign(snap, { filename: videoRec.getFilename(), audioWarning: videoRec.getAudioWarning() });
+    }
+
+    /**
+     * 自動演示開啟時忽略人類的方向鍵 / Z / X（SPEC-AUTOPLAY §4）。
+     *
+     * 遭遇引擎自己監聽 window keydown 並把按鍵排進 pendingPresses；頁面在自動演示時
+     * 傳外部輸入給 step()，那條路徑不會消耗 pendingPresses → 按鍵會堆積到關閉自動演示
+     * 的那一幀一次爆開。因此在捕獲階段攔掉「遊戲按鍵」，只放行頁面自己的熱鍵
+     * （P 自動演示、R 重來、Esc 暫停、L/H/M）。
+     */
+    const AUTO_PASS_KEYS = new Set(['p', 'r', 'l', 'h', 'm', 'v', 'escape']);
+    function onKeyCapture(event) {
+      if (!autoEnabled || !event) return;
+      const key = typeof event.key === 'string' ? event.key.toLowerCase() : '';
+      if (AUTO_PASS_KEYS.has(key)) return;
+      event.stopImmediatePropagation();
+      event.preventDefault();
+    }
+    window.addEventListener('keydown', onKeyCapture, { capture: true });
+
+    /* ------------------------------------------------------------ 熱鍵 */
+
+    function onKey(event) {
+      if (!event || event.defaultPrevented) return;
+      const target = event.target;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+      const key = typeof event.key === 'string' ? event.key.toLowerCase() : '';
+      const code = event.code || '';
+
+      if (key === 'l') {
+        lang = lang === 'zh' ? 'en' : 'zh';
+        try {
+          localStorage.setItem('dr-lang', lang);
+        } catch (_err) {
+          /* 忽略 */
+        }
+        if (enc && typeof enc.setOptions === 'function') {
+          try {
+            enc.setOptions({ lang, showHitboxes, muted, scale: currentScale });
+          } catch (_err) {
+            /* 忽略 */
+          }
+        }
+        syncLangUi();
+        drawFrame();
+        event.preventDefault();
+        return;
+      }
+      if (key === 'h') {
+        showHitboxes = !showHitboxes;
+        if (enc && typeof enc.setOptions === 'function') {
+          try {
+            enc.setOptions({ showHitboxes });
+          } catch (_err) {
+            /* 忽略 */
+          }
+        }
+        drawFrame();
+        event.preventDefault();
+        return;
+      }
+      if (key === 'm') {
+        muted = !muted;
+        if (audio) audio.setMuted(muted);
+        if (enc && typeof enc.setOptions === 'function') {
+          try {
+            enc.setOptions({ muted });
+          } catch (_err) {
+            /* 忽略 */
+          }
+        }
+        event.preventDefault();
+        return;
+      }
+      if (key === 'r') {
+        restart();
+        event.preventDefault();
+        return;
+      }
+      if (key === 'p') {
+        // 自動演示：開 / 關（暫停改用 Esc，避免搶同一鍵）
+        toggleAutoplay();
+        event.preventDefault();
+        return;
+      }
+      if (key === 'escape' || code === 'Escape') {
+        setPaused(!paused);
+        event.preventDefault();
+        return;
+      }
+      // 假資料模式：左右鍵可換場景（除錯用）
+      if (mode === 'mock' && mock && !paused) {
+        if (key === ']') {
+          mock.setSceneById(mock.scenes[Math.min(mock.scenes.length - 1, mock.sceneIndex() + 1)]);
+          drawFrame();
+          event.preventDefault();
+          return;
+        }
+        if (key === '[') {
+          mock.setSceneById(mock.scenes[Math.max(0, mock.sceneIndex() - 1)]);
+          drawFrame();
+          event.preventDefault();
+        }
+      }
+    }
+
+    /* ------------------------------------------------------------ 迴圈 */
+
+    function loop(now) {
+      if (destroyed) return;
+      rafId = requestAnimationFrame(loop);
+      if (!lastTime) lastTime = now;
+      let dt = now - lastTime;
+      lastTime = now;
+      if (!(dt >= 0)) dt = 0;
+      if (dt > 250) dt = 250;
+
+      fpsFrames += 1;
+      fpsClock += dt;
+      if (fpsClock >= 500) {
+        fps = (fpsFrames * 1000) / fpsClock;
+        fpsFrames = 0;
+        fpsClock = 0;
+      }
+
+      if (engineOwnsDraw()) {
+        // 遭遇引擎自己步進並繪製；本頁只更新 HUD（FPS / 幀 / phase）。
+        // 自動演示時改由頁面逐幀餵 pilot.input（engine 已 pause，見 syncEngineRunning）。
+        if (!paused && pageOwnsSteps()) {
+          acc += dt;
+          const stepMs = 1000 / SIM_FPS;
+          let guard = 0;
+          while (acc >= stepMs && guard < 4) {
+            acc -= stepMs;
+            guard += 1;
+            if (!advanceEncounterFrame()) break;
+          }
+        } else {
+          acc = 0;
+        }
+        showHud(readState());
+        syncAutoplayUi();
+      } else {
+        acc += dt;
+        const stepMs = 1000 / SIM_FPS;
+        let guard = 0;
+        while (acc >= stepMs && guard < 4) {
+          acc -= stepMs;
+          guard += 1;
+          if (!paused) {
+            if (mock) mock.tick();
+          }
+        }
+        drawFrame();
+      }
+    }
+
+    /* ------------------------------------------------------------ 啟動 */
+
+    async function fetchJson(url) {
+      const response = await fetch(url, { cache: 'no-cache' });
+      if (!response.ok) throw new Error('HTTP ' + response.status + '（' + url + '）');
+      return response.json();
+    }
+
+    async function startMock(reason) {
+      mode = 'mock';
+      useMock = true;
+      input = createInput(window);
+      mock = makeMock(renderer);
+      // reason：為什麼落到假資料模式（引擎匯入失敗等）——保留在第一行，不要被模式說明蓋掉
+      setBanner(
+        (reason ? reason + '\n' : '') +
+          '假資料模式（?mock=1）：不需要 E1/FL 的遭遇核心，用來驗證 §5 各 phase 的渲染。\n' +
+          '[' + ' / ' + '] 切換場景；' + ui('hint'),
+      );
+    }
+
+    /**
+     * ?encounter= 的候選 URL（REALTEST-2 V1）：
+     * - 含 '/' 或以 .json 結尾 → 照原樣 fetch（tools/agent/render.mjs 給的相對路徑）
+     * - 純名稱（例如 bellwright）→ 作品 API → encounters/ → samples/encounters/
+     */
+    function encounterCandidates(param) {
+      const raw = String(param || '').trim();
+      if (!raw) return [];
+      if (raw.includes('/') || /\.json$/i.test(raw)) return [raw];
+      const name = encodeURIComponent(raw);
+      return ['api/encounters/' + name + '.json', 'encounters/' + name + '.json', 'samples/encounters/' + name + '.json'];
+    }
+
+    async function fetchEncounterDoc(param) {
+      const urls = encounterCandidates(param);
+      const failures = [];
+      for (const url of urls) {
+        try {
+          const doc = await fetchJson(url);
+          return { doc, url, failures };
+        } catch (err) {
+          failures.push((err && err.message) || String(err));
+        }
+      }
+      return { doc: null, url: null, failures };
+    }
+
+    function showLoadError(requested, failures) {
+      mode = 'error';
+      loadError = {
+        requested,
+        failures,
+        usage: '?encounter=<名稱>（例如 ?encounter=rudinn）或 ?encounter=api/encounters/<名稱>.json',
+      };
+      console.error('[encounter-play] 遭遇檔載入失敗：', loadError);
+      setBanner(
+        '遭遇檔載入失敗：' + requested + '\n' +
+          failures.map((f) => '  · ' + f).join('\n') + '\n' +
+          '用法：' + loadError.usage + '\n' +
+          '（不會自動改用內建範例或假資料；要看假資料請用 ?mock=1）',
+      );
+    }
+
+    async function startEncounter() {
+      let mod = null;
+      try {
+        mod = await import('./engine/encounter/index.js');
+      } catch (err) {
+        mod = null;
+        mod = { importError: (err && err.message) || String(err) };
+      }
+      if (!mod || typeof mod.createEncounter !== 'function') {
+        await startMock(
+          mod && mod.importError
+            ? '遭遇引擎尚未就緒（engine/encounter/index.js 匯入失敗）：' + mod.importError + '，已切換到假資料模式。'
+            : 'engine/encounter/index.js 沒有匯出 createEncounter，已切換到假資料模式。',
+        );
+        return;
+      }
+
+      mode = 'encounter';
+      enc = mod.createEncounter({
+        canvas,
+        assets,
+        mode: 'play',
+        audio,
+        // SPEC-P2 §1：turns[].attack 是攻擊檔名——與編輯器預覽同順序：
+        // 使用者作品（/api/attacks → attacks/），再找 samples。
+        // 走同一個快取：自動演示的 resolveAttackDoc（同步）與引擎共用一次抓取。
+        resolveAttack: async (name) => fetchAttackDoc(name),
+      });
+
+      try {
+        enc.setOptions({ lang, showHitboxes, muted, scale: currentScale });
+      } catch (_err) {
+        /* 忽略 */
+      }
+
+      // 遭遇檔
+      let note = '';
+      let requested = encounterParam;
+      if (!requested && fileParam) {
+        requested = fileParam;
+        note = '遭遇頁的參數是 ?encounter=（?file= 是編輯器用的）；已把 ?file=' + fileParam + ' 當成 ?encounter=' + fileParam + '。';
+      } else if (!requested) {
+        requested = 'samples/encounters/rudinn.json';
+        note = '未指定 ?encounter=，使用內建範例 samples/encounters/rudinn.json。用法：?encounter=<名稱> 或 ?encounter=api/encounters/<名稱>.json';
+      }
+      const fetched = await fetchEncounterDoc(requested);
+      if (!fetched.doc) {
+        showLoadError(requested, fetched.failures);
+        enc = null;
+        drawFrame();
+        return;
+      }
+      const encounterJson = fetched.doc;
+      loadedEncounterUrl = fetched.url;
+      const loadedName = encounterJson && encounterJson.meta && encounterJson.meta.name;
+      console.info('[encounter-play] 已載入遭遇：' + fetched.url + (loadedName ? '（' + loadedName + '）' : ''));
+
+      await preloadEncounterArt(encounterJson);
+      const result = await enc.load(encounterJson);
+      if (result && result.errors && result.errors.length) {
+        console.warn('[encounter-play] 驗證警告：', result.errors);
+        note = (note ? note + '\n' : '') + '遭遇檔有 ' + result.errors.length + ' 個驗證警告（詳見 console）。';
+      }
+      if (note) setBanner(note);
+      // 背景（SPEC-P2 §1 settings.background）：§5 state 沒有這個欄位，
+      // 由 play 頁把 encounter.settings.background 交給渲染器的 options.background。
+      const settings = (enc.encounter && enc.encounter.settings) || {};
+      currentBackground = bgParam || settings.background || null;
+      loadedEncounterJson = encounterJson;
+
+      enc.on('error', (payload) => {
+        console.warn('[encounter-play] 引擎 error 事件：', payload);
+        setBanner('引擎錯誤：' + (payload && payload.message ? payload.message : String(payload)));
+      });
+      enc.on('end', () => {
+        // 自動演示中由頁面自己收尾（不要另外 pause 造成與 pilot 的狀態打架）
+        if (!autoEnabled) setPaused(true);
+        syncAutoplayUi(true);
+      });
+
+      if (typeof enc.play === 'function') enc.play();
+      // 自動演示：先把攻擊檔預載進快取，等 pilot.ready 後才開始（?autoplay=demo|bot）
+      if (autoStartMode) await setAutoplay(autoStartMode);
+      else syncAutoplayUi(true);
+    }
+
+    async function boot() {
+      applyScale();
+
+      // 1) 素材
+      try {
+        assets = await loadAssets('assets/index.json');
+      } catch (_err) {
+        assets = null;
+      }
+      if (assets && assets.error) {
+        setBanner('素材索引載入失敗：' + assets.error.message + '\n（sprite 以洋紅佔位方塊顯示）');
+      }
+      if (assets && typeof assets.preloadFonts === 'function') {
+        try {
+          await assets.preloadFonts(['fnt_main', 'fnt_mainbig', 'fnt_small', 'fnt_main@zh', 'fnt_mainbig@zh', 'DTM']);
+        } catch (_err) {
+          /* drawText 會沿退回鏈降級 */
+        }
+      }
+
+      // 2) 音效
+      audio = createAudio(assets);
+      window.addEventListener('pointerdown', () => audio && audio.unlock(), { passive: true, once: true });
+      window.addEventListener('keydown', () => audio && audio.unlock(), { passive: true, once: true });
+      if (muted) audio.setMuted(true);
+
+      // 3) 渲染器
+      renderer = createEncounterRenderer(canvas, assets);
+      applyScale();
+
+      // 4) 模式
+      if (mockParam) await startMock();
+      else await startEncounter();
+
+      // 假資料沒有遭遇引擎；正式試玩由引擎控制同一個播放器。
+      if (useMock && bgParam !== 'none' && params.has('bgm')) {
+        audio.playBgm(params.get('bgm'), { fade: 0.35 });
+      }
+
+      window.addEventListener('resize', () => {
+        applyScale();
+        drawFrame();
+      });
+      window.addEventListener('keydown', onKey);
+      syncLangUi();
+      if (!banner) setBanner(ui('hint'));
+
+      // 6) 自測：?frames=N 先推進 N 幀（headless 截圖用）
+      const preFrames = Math.max(0, Math.min(9000, Math.floor(Number(params.get('frames')) || 0)));
+      for (let i = 0; i < preFrames; i += 1) {
+        if (mock) mock.tick();
+        else if (autoEnabled) {
+          if (!advanceEncounterFrame()) break;
+        } else if (enc && typeof enc.step === 'function') {
+          try {
+            enc.step(1);
+          } catch (_err) {
+            break;
+          }
+        }
+      }
+      drawFrame();
+
+      // 7) 除錯把手
+      window.__drEncounterPlay = {
+        getState: readState,
+        draw: drawFrame,
+        /** 推進 n 幀：自動演示時逐幀餵 pilot.input，否則交給引擎自己 step。 */
+        tick: (n = 1) => {
+          const count = Math.max(0, Math.round(Number(n) || 0));
+          for (let i = 0; i < count; i += 1) {
+            if (mock) mock.tick();
+            else if (autoEnabled) {
+              if (!advanceEncounterFrame()) break;
+            } else if (enc && typeof enc.step === 'function') {
+              const state = readState();
+              if (state && state.result) break;
+              enc.step(1);
+            }
+          }
+          const state = readState();
+          if (state && state.result) autoMessage = '完成（' + state.result + '）';
+          drawFrame();
+        },
+        isMock: () => useMock,
+        mode: () => mode,
+        loadError: () => loadError,
+        encounterUrl: () => loadedEncounterUrl,
+        scene: () => (mock ? mock.sceneId() : null),
+        setScene: (id) => {
+          if (mock) {
+            mock.setSceneById(id);
+            drawFrame();
+          }
+        },
+        scenes: () => (mock ? mock.scenes : []),
+        scale: () => currentScale,
+        background: () => currentBackground,
+        // 除錯/自測用：直接改真實世界的 TP（world 有 setter），並把實例暴露給截圖腳本
+        setTp: (value) => {
+          if (enc && enc.world && enc.world.tp !== undefined) enc.world.tp = value;
+          drawFrame();
+        },
+        renderer: () => renderer,
+        assets: () => assets,
+        battle: () => enc,
+        // SPEC-AUTOPLAY §4：給自動化用的自動演示把手
+        autoplay: {
+          /** 設定模式：'demo' | 'bot' | 'off'（回傳 Promise<實際模式>）。 */
+          set: (nextMode, options) => setAutoplay(nextMode, options),
+          /** 目前模式（'demo' | 'bot' | 'off'）。 */
+          get: () => (autoEnabled && auto ? auto.mode : 'off'),
+          /** pilot 的狀態摘要（SPEC §3 describe）。 */
+          describe: () => (auto && auto.pilot && typeof auto.pilot.describe === 'function' ? auto.pilot.describe() : null),
+          /** 目前狀態列文字（headless 驗證用）。 */
+          status: () => (autoStatusEl ? autoStatusEl.textContent : ''),
+          /** 提示訊息（找不到選項 / 卡住脫困等）。 */
+          warnings: () => (autoWarnEl && !autoWarnEl.hidden ? autoWarnEl.textContent : ''),
+          /** 已預載的攻擊名（resolveAttackDoc 快取）。 */
+          attacks: () => [...attackCache.keys()],
+          /** 工具列（給 UI 測試點按鈕用）。 */
+          toolbar: { toggle: () => toggleAutoplay(), mode: (nextMode) => setAutoplay(nextMode) },
+        },
+        // V2-10 頁內錄影：狀態 / 手動開關 / 節流偵測（CDP 驗證用）
+        video: {
+          /** {state, recording, elapsed, bytes, filename, scale, throttle, hasBlob}；沒掛 UI 時 null。 */
+          snapshot: () => videoSnapshot(),
+          /** 開始 / 停止錄影（停止回傳 Promise<{blob, filename, bytes, downloaded}>）。 */
+          record: (on) => {
+            if (!videoRec) return on === false ? null : false;
+            if (on === false || (on === undefined && videoRec.isRecording())) return videoRec.stop();
+            return videoRec.autoStart() || videoRec.start();
+          },
+          /** 目前錄影倍率。 */
+          scale: () => (videoRec ? videoRec.getScale() : 0),
+          /** 設定倍率（1|2|3）。 */
+          setScale: (value) => (videoRec ? videoRec.setScale(value) : 0),
+          /** 錄完的結果（測試用）。 */
+          results: () => (videoRec ? videoRec.getResults() : []),
+          /** 節流偵測狀態（DD12）。 */
+          throttle: () => (videoRec ? videoRec.throttle.state() : null),
+          /** 測試用：模擬頁面被節流 / 恢復。 */
+          simulateThrottle: (values) => (videoRec ? videoRec.throttle.simulate(values) : null),
+        },
+      };
+
+      bindAutoplayControls();
+      // V2-10 頁內錄影 UI（?record=1 才自動開始；手動按 ⏺ 或 V 隨時可錄）
+      mountVideoRecorder();
+      if (autoVideoRecord && videoRec) {
+        try {
+          videoRec.autoStart();
+        } catch (err) {
+          console.warn('[encounter-play] 自動錄影失敗：', err);
+        }
+      }
+      lastTime = 0;
+      rafId = requestAnimationFrame(loop);
+      drawFrame();
+    }
+
+    window.addEventListener('beforeunload', () => {
+      destroyed = true;
+      if (rafId) cancelAnimationFrame(rafId);
+      if (renderer) renderer.destroy();
+      if (audio) audio.destroy();
+      if (input) input.destroy();
+      if (enc && typeof enc.destroy === 'function') enc.destroy();
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('keydown', onKeyCapture, { capture: true });
+    });
+
+    boot().catch((err) => {
+      console.error('[encounter-play] 啟動失敗：', err);
+      setBanner('啟動失敗：' + ((err && err.message) || err));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+{
+  "format": "dr-battle-encounter/1",
+  "meta": {
+    "name": "第二关 · 余烬门闩",
+    "author": "Scene Studio"
+  },
+  "settings": {
+    "soulFlight": "classic",
+    "canFlee": true,
+    "bgm": "battle",
+    "seed": 83,
+    "hudLayout": "classic",
+    "introText": {
+      "zh": "* 灯芯巡逻员举起点名纸。",
+      "en": "* A wick patrol raises the roll sheet."
+    }
+  },
+  "actors": {
+    "kris": {
+      "kind": "party",
+      "x": 120,
+      "y": 219,
+      "anims": {
+        "idle": {
+          "sprite": "spr_krisb_idle",
+          "fps": 5
+        },
+        "attack": {
+          "sprite": "spr_krisb_attack",
+          "fps": 15,
+          "loop": false,
+          "then": "idle"
+        },
+        "defend": {
+          "sprite": "spr_krisb_defend",
+          "fps": 8
+        },
+        "down": {
+          "sprite": "spr_krisb_defeat",
+          "fps": 1
+        },
+        "victory": {
+          "sprite": "spr_krisb_victory",
+          "fps": 8
+        }
+      }
+    },
+    "guard": {
+      "kind": "enemy",
+      "x": 517,
+      "y": 250,
+      "anims": {
+        "idle": {
+          "sprite": "spr_diamondm_idle",
+          "fps": 5
+        },
+        "hurt": {
+          "sprite": "spr_diamondm_hurt",
+          "fps": 6,
+          "loop": false,
+          "then": "idle"
+        },
+        "spared": {
+          "sprite": "spr_diamondm_spared",
+          "fps": 6,
+          "loop": false
+        },
+        "defeat": {
+          "sprite": "spr_diamondm_hurt",
+          "fps": 1
+        }
+      }
+    }
+  },
+  "party": [
+    {
+      "id": "guest",
+      "actor": "kris",
+      "name": "Kris",
+      "hp": 99,
+      "maxHp": 99,
+      "atk": 28,
+      "def": 0,
+      "color": "#00ffff",
+      "commands": [
+        "fight",
+        "act",
+        "item",
+        "spare",
+        "defend"
+      ]
+    }
+  ],
+  "enemies": [
+    {
+      "id": "guard",
+      "actor": "guard",
+      "name": "余烬门闩",
+      "hp": 20,
+      "maxHp": 20,
+      "atk": 8,
+      "def": 0,
+      "mercy": 0,
+      "spareAt": 100,
+      "acts": [
+        {
+          "id": "greet",
+          "name": "打招呼",
+          "mercy": 100,
+          "text": {
+            "zh": "* 你拍掉了制服上的火星。",
+            "en": "* You brush sparks off the uniform."
+          }
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "id": "hot_paper",
+      "flavor": {
+        "zh": "* 门闩把纸火幕拨到了高档。",
+        "en": "* The latch sets the paper curtain to HIGH."
+      },
+      "attack": "ember-furnace"
+    }
+  ],
+  "hooks": {
+    "victory": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 门闩承认自己把档位拨错了。",
+          "en": "* The latch admits the setting was too high."
+        }
+      }
+    ],
+    "spared": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 门闩决定请一天假。",
+          "en": "* The latch takes a day off."
+        }
+      }
+    ],
+    "defeat": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 热气把最后一页点着了。",
+          "en": "* The heat catches the last page."
+        }
+      }
+    ],
+    "flee": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 你离开了余烬门闩。",
+          "en": "* You leave the ember latch."
+        }
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "tonic",
+      "name": "星糖",
+      "count": 0,
+      "heal": 13
+    },
+    {
+      "id": "badge",
+      "name": "灯章",
+      "count": 0,
+      "heal": 5
+    }
+  ]
+}

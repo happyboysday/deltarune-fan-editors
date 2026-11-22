@@ -1,0 +1,136 @@
+{
+  "format": "dr-battle-attack/1",
+  "meta": { "name": "框縮放 + 瞄準彈", "author": "DR Battle Editor" },
+  "settings": {
+    "duration": 9.0,
+    "seed": 42,
+    "damage": 10,
+    "invincibleFrames": 30,
+    "grazeTP": 1.2,
+    "background": "spr_battlebg_0",
+    "bgm": null
+  },
+  "box": { "x": 320, "y": 190, "w": 150, "h": 165, "rotation": 0, "border": 3, "color": "#00c000" },
+  "soul": { "x": null, "y": null, "speed": 4, "slowSpeed": 2, "mode": "red", "color": "#ff0000" },
+  "demo": {
+    "mode": "path",
+    "fallback": "bot",
+    "path": [
+      { "t": 0, "x": 320, "y": 190 },
+      { "t": 2.2, "x": 270, "y": 140 },
+      { "t": 5, "x": 325, "y": 130 },
+      { "t": 5.6, "x": 370, "y": 130 },
+      { "t": 5.8, "x": 390, "y": 140 },
+      { "t": 6, "x": 400, "y": 160 },
+      { "t": 7.2, "x": 310, "y": 250 },
+      { "t": 8.4, "x": 250, "y": 270 },
+      { "t": 8.9, "x": 275, "y": 245 }
+    ]
+  },
+  "party": [
+    { "name": "Kris", "hp": 90, "maxHp": 90, "color": "#00ffff", "icon": null },
+    { "name": "Susie", "hp": 110, "maxHp": 110, "color": "#ff00ff", "icon": null }
+  ],
+  "enemies": [
+    { "sprite": "spr_ponman_idle", "x": 500, "y": 196, "scale": 2, "frameRate": 4 },
+    { "sprite": "spr_hathyx_idle", "x": 536, "y": 262, "scale": 1.5, "frameRate": 4 }
+  ],
+  "bulletTypes": {
+    "eye": {
+      "sprite": "spr_ponman_eyebullet",
+      "frameRate": 0,
+      "scale": 1.4,
+      "color": null,
+      "hitbox": { "shape": "circle", "r": 5 },
+      "damage": null,
+      "grazeable": true,
+      "destroyOnHit": true,
+      "faceVelocity": false,
+      "offscreen": "destroy",
+      "maskToBox": false
+    }
+  },
+  "timeline": [
+    {
+      "id": "ev_box_shrink",
+      "at": 0.2,
+      "type": "box",
+      "label": "框縮小（quadInOut）",
+      "duration": 1.2,
+      "ease": "quadInOut",
+      "to": { "x": 320, "y": 190, "w": 110, "h": 110 }
+    },
+    { "id": "ev_sfx_warn", "at": 1.4, "type": "sfx", "label": "警示音", "sound": "snd_buzzerwrong" },
+    {
+      "id": "ev_aim_0",
+      "at": 1.5,
+      "type": "emitter",
+      "label": "瞄準靈魂（每 0.3 秒一發）",
+      "duration": 2.7,
+      "interval": 0.3,
+      "count": 1,
+      "spawn": {
+        "bullet": "eye",
+        "x": 500,
+        "y": 196,
+        "speed": 2.6,
+        "angle": "aim(500, 196)",
+        "rotation": 0,
+        "scale": 1.4,
+        "life": 3.0
+      }
+    },
+    {
+      "id": "ev_box_move",
+      "at": 4.4,
+      "type": "box",
+      "label": "框右移放大（backOut）",
+      "duration": 1.0,
+      "ease": "backOut",
+      "to": { "x": 372, "y": 190, "w": 146, "h": 130 }
+    },
+    {
+      "id": "ev_aim_1",
+      "at": 5.4,
+      "type": "emitter",
+      "label": "瞄準彈（雙發）",
+      "duration": 2.0,
+      "interval": 0.4,
+      "count": 2,
+      "spawn": {
+        "bullet": "eye",
+        "x": "box.left + box.w * (0.25 + i * 0.5)",
+        "y": "box.top - 14",
+        "speed": "rand(2.0, 3.4)",
+        "angle": "aim(536, 262)",
+        "scale": 1.2,
+        "life": 2.6
+      }
+    },
+    {
+      "id": "ev_spread",
+      "at": 6.0,
+      "type": "spawn",
+      "label": "扇形瞄準彈",
+      "bullet": "eye",
+      "count": 5,
+      "x": 500,
+      "y": 196,
+      "speed": 2.2,
+      "angle": "aim(545, 200) + (i - 2) * 9",
+      "rotation": 0,
+      "scale": 1.1
+    },
+    {
+      "id": "ev_box_restore",
+      "at": 7.4,
+      "type": "box",
+      "label": "框復原（sineInOut）",
+      "duration": 1.0,
+      "ease": "sineInOut",
+      "to": { "x": 320, "y": 190, "w": 150, "h": 165, "rotation": 0 }
+    },
+    { "id": "ev_clear", "at": 8.3, "type": "clear", "label": "清場", "fade": 0.3 },
+    { "id": "ev_end", "at": 8.9, "type": "end", "label": "回合結束" }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "format": "dr-battle-samples/1",
+  "samples": [
+    {
+      "file": "spade-rain.json",
+      "name": "黑桃雨",
+      "description": "emitter + rand：黑桃從戰鬥框上方與兩側持續落下，含震動、音效與清場。",
+      "duration": 10.0
+    },
+    {
+      "file": "ring-burst.json",
+      "name": "環形彈幕",
+      "description": "count + i 角度公式：多層環形與螺旋彈幕，搭配戰鬥框縮放。",
+      "duration": 9.0
+    },
+    {
+      "file": "box-shrink-aim.json",
+      "name": "框縮放 + 瞄準彈",
+      "description": "box 事件補間 + aim(x,y) 瞄準靈魂的追蹤彈。",
+      "duration": 9.0
+    },
+    {
+      "file": "sine-wave.json",
+      "name": "正弦波彈",
+      "description": "pathX/pathY 每幀表達式：以 sin(age …) 產生正弦波與雙向擺動彈幕。",
+      "duration": 10.0
+    },
+    {
+      "file": "arena-stage.json",
+      "name": "无框躲避：风向标",
+      "description": "隐藏旧战斗框，灵魂能在整块舞台移动。两边的弹幕只在舞台上显示。",
+      "duration": 8
+    },
+    {
+      "file": "arena-corner.json",
+      "name": "异形房间：棱镜窗",
+      "description": "L 形房间挡住灵魂。蓝弹按房间裁剪，橙弹按另一块斜边区域裁剪。",
+      "duration": 8
+    },
+    { "file": "soul-pulse.json", "name": "灵魂试验：脉冲拆弹", "description": "换色后按 V 冲刺，按 B 击破金弹。", "duration": 9 },
+    { "file": "soul-racer.json", "name": "灵魂试验：失控弯道", "description": "↑ 油门，↓ 刹车，← → 转向；体验惯性和 L 形墙。", "duration": 10 }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+ "format": "dr-zh-fonts-rules/1",
+ "zipName": "DELTARUNE_V260809_中文字体.zip",
+ "sourceNote": "簡體中文補丁 V260809 的點陣字庫（游戏内位图字体/）+ DTM.otf。每個 fnt 取最新章版本（chapter5 > chapter4 > chapter3 > chapter2 > chapter1 > main），轉成 dr-battle-font/1 放 assets/fonts/<out>/。",
+ "bitmapRoot": "游戏内位图字体",
+ "chapterOrder": ["chapter5", "chapter4", "chapter3", "chapter2", "chapter1", "main"],
+ "otf": {
+  "name": "DTM",
+  "src": "DTM.otf",
+  "file": "fonts/DTM.otf",
+  "family": "Determination Sans SimSun Regular",
+  "hanCount": 27484,
+  "note": "補丁安裝器內嵌的 OpenType 字體，涵蓋基本與擴展 A 漢字共 27,484 個映射；用於點陣字庫缺字時以 fillText 退回。"
+ },
+ "fonts": [
+  {
+   "name": "fnt_main",
+   "out": "fnt_main@zh",
+   "base": "fnt_main",
+   "role": "主對白／戰鬥 UI 文字",
+   "note": "DELTARUNE 戰鬥訊息與選單最常用字體；補丁擴充到 3,272 漢字。"
+  },
+  {
+   "name": "fnt_mainbig",
+   "out": "fnt_mainbig@zh",
+   "base": "fnt_mainbig",
+   "role": "大字標題／敵人台詞強調",
+   "note": "放大版主字體。"
+  },
+  {
+   "name": "fnt_comicsans",
+   "out": "fnt_comicsans@zh",
+   "base": "fnt_comicsans",
+   "role": "Comic Sans 風格台詞（Sans／Papyrus 等）",
+   "note": "補丁版本為粗體。"
+  },
+  {
+   "name": "fnt_dotumche",
+   "out": "fnt_dotumche@zh",
+   "base": "fnt_dotumche",
+   "role": "小字／Note 與選單輔助文字",
+   "note": "DotumChe 風格。"
+  },
+  {
+   "name": "fnt_tinynoelle",
+   "out": "fnt_tinynoelle@zh",
+   "base": "fnt_tinynoelle",
+   "role": "極小字（Noelle 風格）",
+   "note": "最小尺寸字體，僅適合短標籤。"
+  },
+  {
+   "name": "fnt_8bit",
+   "out": "fnt_8bit@zh",
+   "base": "fnt_8bit",
+   "role": "8-bit 像素風格標題（CH3/CH4/CH5 介面）",
+   "note": "chapter5 版本為 Press Start。"
+  },
+  {
+   "name": "fnt_legend",
+   "out": "fnt_legend@zh",
+   "base": "fnt_legend",
+   "role": "CH4 傳說／旁白字體（MixSerifCondense）",
+   "note": "只在 chapter4 存在。"
+  }
+ ],
+ "normalize": {
+  "rgbFill": [255, 255, 255],
+  "note": "來源 PNG 的 RGB 在字形區是白色、透明區是黑色；輸出一律改成 RGB 全白 + 原 alpha，與 assets/fonts/fnt_main 等英文字體格式一致（字形只存在於 alpha 通道）。"
+ },
+ "coverageSets": {
+  "simp_common": {
+   "id": "gb2312_level1",
+   "label": "GB2312 一級漢字（3,755）",
+   "note": "GB2312 區位 16–55 區（0xB0A1–0xD7F9）。"
+  },
+  "trad_common": {
+   "id": "big5_level1",
+   "label": "Big5 常用字（5,401）",
+   "note": "Big5 0xA440–0xC67E。"
+  },
+  "spec": {
+   "id": "spec_md",
+   "label": "SPEC.md 內出現的非 ASCII 字元",
+   "note": "實際文件用字，偏向繁體。"
+  }
+ }
+}

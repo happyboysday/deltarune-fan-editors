@@ -1,0 +1,431 @@
+{
+  "format": "deltarune-scene/1",
+  "id": "paper-gate",
+  "title": "纸门值班室",
+  "viewport": {
+    "w": 480,
+    "h": 300
+  },
+  "start": {
+    "room": "hall",
+    "entry": "start"
+  },
+  "player": {
+    "sprite": "walker",
+    "radius": 6,
+    "reach": 23,
+    "speed": 2.8
+  },
+  "assets": {
+    "walker": {
+      "ticks": 5,
+      "anchor": "feet",
+      "idle_down": "/studio/art/walker-down-0.png",
+      "walk_down": [
+        "/studio/art/walker-down-0.png",
+        "/studio/art/walker-down-1.png",
+        "/studio/art/walker-down-0.png",
+        "/studio/art/walker-down-2.png"
+      ],
+      "idle_left": "/studio/art/walker-left-0.png",
+      "walk_left": [
+        "/studio/art/walker-left-0.png",
+        "/studio/art/walker-left-1.png",
+        "/studio/art/walker-left-0.png",
+        "/studio/art/walker-left-2.png"
+      ],
+      "idle_right": "/studio/art/walker-right-0.png",
+      "walk_right": [
+        "/studio/art/walker-right-0.png",
+        "/studio/art/walker-right-1.png",
+        "/studio/art/walker-right-0.png",
+        "/studio/art/walker-right-2.png"
+      ],
+      "idle_up": "/studio/art/walker-up-0.png",
+      "walk_up": [
+        "/studio/art/walker-up-0.png",
+        "/studio/art/walker-up-1.png",
+        "/studio/art/walker-up-0.png",
+        "/studio/art/walker-up-2.png"
+      ]
+    },
+    "clerk": "/studio/art/foreman.png",
+    "face": "/studio/art/foreman-face.png",
+    "lamp": {
+      "frames": [
+        "/studio/art/lantern-0.png",
+        "/studio/art/lantern-1.png"
+      ],
+      "ticks": 12
+    }
+  },
+  "battles": {
+    "gate_guard": {
+      "encounter": "paper-guard",
+      "source": "workspace",
+      "lang": "zh",
+      "resultFlag": "gate_result",
+      "on": {
+        "victory": "paper_victory",
+        "spared": "paper_spared",
+        "defeat": "paper_defeat",
+        "flee": "paper_flee"
+      }
+    }
+  },
+  "rooms": {
+    "hall": {
+      "title": "01 · 纸门值班室",
+      "w": 620,
+      "h": 320,
+      "style": "workshop",
+      "entries": {
+        "start": {
+          "x": 132,
+          "y": 178,
+          "face": "up"
+        },
+        "return": {
+          "x": 474,
+          "y": 168,
+          "face": "left"
+        }
+      },
+      "entities": [
+        {
+          "id": "wall_rear",
+          "kind": "wall",
+          "x": 30,
+          "y": 52,
+          "w": 560,
+          "h": 15
+        },
+        {
+          "id": "wall_counter",
+          "kind": "wall",
+          "x": 22,
+          "y": 113,
+          "w": 65,
+          "h": 24
+        },
+        {
+          "id": "sign",
+          "kind": "prop",
+          "x": 90,
+          "y": 76,
+          "w": 116,
+          "h": 18,
+          "name": "纸门值班室",
+          "color": "#caaff0"
+        },
+        {
+          "id": "sign_guard",
+          "kind": "prop",
+          "x": 271,
+          "y": 81,
+          "w": 139,
+          "h": 18,
+          "name": "折纸哨兵 →",
+          "color": "#ecac83"
+        },
+        {
+          "id": "clerk",
+          "kind": "npc",
+          "name": "值班员",
+          "x": 119,
+          "y": 122,
+          "w": 24,
+          "h": 23,
+          "solid": true,
+          "event": "desk",
+          "sprite": "clerk"
+        },
+        {
+          "id": "paper_guard",
+          "kind": "enemy",
+          "x": 307,
+          "y": 141,
+          "w": 28,
+          "h": 34,
+          "name": "折纸哨兵",
+          "battle": "gate_guard",
+          "auto": true,
+          "once": true,
+          "color": "#e0a886",
+          "activeWhen": {
+            "not": {
+              "flag": "gate_open",
+              "is": true
+            }
+          }
+        },
+        {
+          "id": "fence_a",
+          "kind": "wall",
+          "x": 406,
+          "y": 68,
+          "w": 14,
+          "h": 71
+        },
+        {
+          "id": "fence_b",
+          "kind": "wall",
+          "x": 406,
+          "y": 169,
+          "w": 14,
+          "h": 86
+        },
+        {
+          "id": "exit_gate",
+          "kind": "door",
+          "x": 449,
+          "y": 133,
+          "w": 30,
+          "h": 36,
+          "name": "档案室",
+          "room": "archive",
+          "entry": "start",
+          "when": {
+            "flag": "gate_open",
+            "is": true
+          },
+          "otherwise": "locked"
+        },
+        {
+          "id": "left_lamp",
+          "kind": "prop",
+          "x": 44,
+          "y": 90,
+          "w": 14,
+          "h": 12,
+          "sprite": "lamp"
+        },
+        {
+          "id": "right_lamp",
+          "kind": "prop",
+          "x": 449,
+          "y": 107,
+          "w": 14,
+          "h": 12,
+          "sprite": "lamp",
+          "hidden": true
+        }
+      ]
+    },
+    "archive": {
+      "title": "02 · 已结案",
+      "w": 480,
+      "h": 300,
+      "style": "garden",
+      "entries": {
+        "start": {
+          "x": 86,
+          "y": 170,
+          "face": "right"
+        }
+      },
+      "onEnter": "receipt",
+      "entities": [
+        {
+          "id": "files",
+          "kind": "prop",
+          "x": 221,
+          "y": 115,
+          "w": 145,
+          "h": 27,
+          "name": "通过记录 · 纸门",
+          "color": "#90d4aa"
+        },
+        {
+          "id": "back",
+          "kind": "door",
+          "x": 28,
+          "y": 151,
+          "w": 24,
+          "h": 33,
+          "name": "值班室",
+          "room": "hall",
+          "entry": "return"
+        }
+      ]
+    }
+  },
+  "events": {
+    "desk": [
+      {
+        "op": "branch",
+        "if": {
+          "flag": "gate_open",
+          "is": true
+        },
+        "then": [
+          {
+            "op": "say",
+            "pages": [
+              {
+                "speaker": "值班员",
+                "text": "我看过记录了。那扇门现在归你管。"
+              }
+            ]
+          }
+        ],
+        "else": [
+          {
+            "op": "say",
+            "pages": [
+              {
+                "speaker": "值班员",
+                "text": "右边的哨兵正在加班。你可以过去碰它，也可以在这里按铃。"
+              }
+            ]
+          },
+          {
+            "op": "choose",
+            "question": "现在叫来折纸哨兵吗？",
+            "options": [
+              {
+                "text": "按铃，开始值班测试",
+                "actions": [
+                  {
+                    "op": "battle",
+                    "battle": "gate_guard"
+                  }
+                ]
+              },
+              {
+                "text": "我自己去找它",
+                "actions": [
+                  {
+                    "op": "say",
+                    "pages": [
+                      {
+                        "speaker": "值班员",
+                        "text": "那就往右走。带一点耐心，纸会割手。"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "branch",
+            "if": {
+              "flag": "gate_open",
+              "is": true
+            },
+            "then": [
+              {
+                "op": "say",
+                "pages": [
+                  {
+                    "speaker": "值班员",
+                    "text": "我把这次的结案方式记在值班单上了。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "paper_victory": [
+      {
+        "op": "flag",
+        "id": "gate_open",
+        "value": true
+      },
+      {
+        "op": "show",
+        "actor": "right_lamp",
+        "value": true
+      },
+      {
+        "op": "item",
+        "id": "通行纸",
+        "delta": 1
+      },
+      {
+        "op": "say",
+        "pages": [
+          "＊ 折痕留在地上。你拾起一张通行纸。"
+        ]
+      }
+    ],
+    "paper_spared": [
+      {
+        "op": "flag",
+        "id": "gate_open",
+        "value": true
+      },
+      {
+        "op": "show",
+        "actor": "right_lamp",
+        "value": true
+      },
+      {
+        "op": "item",
+        "id": "盖章值班单",
+        "delta": 1
+      },
+      {
+        "op": "say",
+        "pages": [
+          "＊ 哨兵盖上了「准时下班」的章，门灯亮了。"
+        ]
+      }
+    ],
+    "paper_defeat": [
+      {
+        "op": "say",
+        "pages": [
+          {
+            "speaker": "值班员",
+            "text": "还在值班室。纸片已扫干净，你可以再试。"
+          }
+        ]
+      }
+    ],
+    "paper_flee": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 你回到原地。哨兵依然站在岗上。"
+        ]
+      }
+    ],
+    "locked": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 档案室没收到值班单。先找折纸哨兵。"
+        ]
+      }
+    ],
+    "receipt": [
+      {
+        "op": "branch",
+        "if": {
+          "flag": "gate_result",
+          "is": "spared"
+        },
+        "then": [
+          {
+            "op": "say",
+            "pages": [
+              "＊ 档案写着：哨兵平安下班。"
+            ]
+          }
+        ],
+        "else": [
+          {
+            "op": "say",
+            "pages": [
+              "＊ 档案写着：障碍已清除。"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

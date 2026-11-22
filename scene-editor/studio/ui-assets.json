@@ -1,0 +1,49 @@
+{
+  "fonts": [
+    "fnt_main", "fnt_mainbig", "fnt_dotumche", "fnt_comicsans",
+    "fnt_tinynoelle", "fnt_8bit", "fnt_legend"
+  ],
+  "sprites": {
+    "spr_textbox_top": 1,
+    "spr_textbox_left": 1,
+    "spr_textbox_topleft": 8,
+    "spr_heart": 2,
+    "spr_heartsmall": 1,
+    "spr_heartsmall_white": 1,
+    "spr_heartbreak": 1,
+    "spr_heartshards": 4,
+    "IMAGE_SOUL_BLUR": 1,
+    "spr_gameoverbg_neo": 1,
+    "spr_arrow_9x9": 1,
+    "spr_kris_sword_jump_down": 1,
+    "spr_susier_wall": 1,
+    "spr_krisb_attack": 7,
+    "spr_susieb_attack": 6,
+    "spr_ralseib_battleintro": 9,
+    "spr_darkitembt": 3,
+    "spr_darkequipbt": 3,
+    "spr_darktechbt": 3,
+    "spr_darkconfigbt": 3,
+    "spr_darkmenudesc": 5,
+    "spr_headkris": 1,
+    "spr_headsusie": 1,
+    "spr_headralsei": 1,
+    "spr_headnoelle": 1,
+    "spr_bnamekris": 1,
+    "spr_bnamesusie": 1,
+    "spr_bnameralsei": 1,
+    "spr_bnamenoelle": 1,
+    "spr_hpname": 1,
+    "spr_hpslash": 1,
+    "spr_numbersfontsmall": 12
+  },
+  "sounds": [
+    "snd_text", "snd_txtsus", "snd_txtral", "snd_txtnoe", "snd_txtnoe_echo",
+    "snd_txttor", "snd_txtasg", "snd_txtber", "snd_txtsans", "snd_txtlan",
+    "snd_txtq_2", "snd_txtspam2", "snd_dadtxt", "snd_txtrud", "snd_txtal",
+    "snd_flowery_voicenoise_1", "snd_flowery_voicenoise_2", "snd_flowery_voicenoise_3",
+    "snd_select", "snd_menumove", "snd_smallswing", "snd_power", "snd_save", "snd_error",
+    "snd_break1", "snd_break2", "snd_hurt1", "snd_dtrans_lw",
+    "rhythm_battle_snare", "snd_guitarpickup1", "snd_guitarerror", "snd_tensionhorn"
+  ]
+}

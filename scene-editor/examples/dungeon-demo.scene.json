@@ -1,0 +1,2788 @@
+{
+  "format": "deltarune-scene/1",
+  "id": "dungeon-demo",
+  "title": "暮色断崖 · 城顶星光",
+  "viewport": {
+    "w": 640,
+    "h": 480
+  },
+  "start": {
+    "room": "cliff",
+    "entry": "start"
+  },
+  "player": {
+    "fighter": "kris"
+  },
+  "assets": {
+    "kris_idle": {
+      "frames": [
+        "/official/animations/Kris/idle/spr_kris_plat_idle/frame_000.png",
+        "/official/animations/Kris/idle/spr_kris_plat_idle/frame_001.png",
+        "/official/animations/Kris/idle/spr_kris_plat_idle/frame_002.png"
+      ],
+      "ticks": 4,
+      "loop": true,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        -7,
+        0
+      ]
+    },
+    "kris_walk": {
+      "frames": [
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_000.png",
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_001.png",
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_002.png",
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_003.png",
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_004.png",
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_005.png"
+      ],
+      "ticks": 4,
+      "loop": true,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        -4.5,
+        0
+      ]
+    },
+    "kris_run": {
+      "frames": [
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_000.png",
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_001.png",
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_002.png",
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_003.png",
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_004.png",
+        "/official/animations/Kris/walk/spr_kris_plat_run/frame_005.png"
+      ],
+      "ticks": 2,
+      "loop": true,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        -4.5,
+        0
+      ]
+    },
+    "kris_turn": {
+      "frames": [
+        "/official/sprites/ch5/all_sprites/spr_kris_plat_turn.png"
+      ],
+      "ticks": 2,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        3.5,
+        0
+      ]
+    },
+    "kris_jump": {
+      "frames": [
+        "/official/animations/Kris/fall/spr_kris_jump_up/frame_000.png",
+        "/official/animations/Kris/fall/spr_kris_jump_up/frame_001.png",
+        "/official/animations/Kris/fall/spr_kris_jump_up/frame_002.png"
+      ],
+      "ticks": 4,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        -8,
+        3
+      ]
+    },
+    "kris_fall": {
+      "frames": [
+        "/official/animations/Kris/fall/spr_kris_jump_down/frame_000.png",
+        "/official/animations/Kris/fall/spr_kris_jump_down/frame_001.png",
+        "/official/animations/Kris/fall/spr_kris_jump_down/frame_002.png"
+      ],
+      "ticks": 4,
+      "loop": true,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        -4,
+        7
+      ]
+    },
+    "kris_land": {
+      "frames": [
+        "/official/animations/Kris/misc/spr_kris_plat_land/frame_000.png",
+        "/official/animations/Kris/misc/spr_kris_plat_land/frame_001.png"
+      ],
+      "ticks": 4,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        -9,
+        1
+      ]
+    },
+    "kris_hurt": {
+      "frames": [
+        "/official/sprites/ch5/all_sprites/spr_kris_plat_hurt_ground.png"
+      ],
+      "ticks": 4,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        4,
+        2
+      ]
+    },
+    "kris_down": {
+      "frames": [
+        "/official/sprites/ch5/all_sprites/spr_kris_fallen_dark.png"
+      ],
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "kris_hurt_air": {
+      "frames": [
+        "/official/sprites/ch5/all_sprites/spr_kris_plat_hurt_air.png"
+      ],
+      "ticks": 4,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        7,
+        2
+      ]
+    },
+    "kris_climb": {
+      "frames": [
+        "/official/animations/Kris/fall/spr_kris_plat_climb/frame_000.png",
+        "/official/animations/Kris/fall/spr_kris_plat_climb/frame_001.png",
+        "/official/animations/Kris/fall/spr_kris_plat_climb/frame_002.png",
+        "/official/animations/Kris/fall/spr_kris_plat_climb/frame_003.png",
+        "/official/animations/Kris/fall/spr_kris_plat_climb/frame_004.png",
+        "/official/animations/Kris/fall/spr_kris_plat_climb/frame_005.png"
+      ],
+      "ticks": 4,
+      "loop": true,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        0.5,
+        3
+      ]
+    },
+    "kris_clash": {
+      "frames": [
+        "/official/animations/Kris/misc/spr_kris_plat_clash/frame_000.png",
+        "/official/animations/Kris/misc/spr_kris_plat_clash/frame_001.png"
+      ],
+      "ticks": 3,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        0,
+        2
+      ]
+    },
+    "kris_pose": {
+      "frames": [
+        "/official/sprites/ch5/all_sprites/spr_kris_plat_pose.png"
+      ],
+      "ticks": 4,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        0.5,
+        0
+      ]
+    },
+    "kris_air_land": {
+      "frames": [
+        "/official/animations/Kris/attack/spr_kris_plat_slash_airland/frame_000.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_airland/frame_001.png"
+      ],
+      "ticks": 2,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        6.5,
+        29
+      ]
+    },
+    "kris_slash1": {
+      "frames": [
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_000.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_001.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_002.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_003.png"
+      ],
+      "ticks": 2,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        6.5,
+        29
+      ]
+    },
+    "kris_slash1_foreground": {
+      "frames": [
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_000.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_001.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_002.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_003.png"
+      ],
+      "ticks": 2,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        6.5,
+        29
+      ]
+    },
+    "kris_slash2": {
+      "frames": [
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_004.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_005.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_006.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_007.png"
+      ],
+      "ticks": 2,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        6.5,
+        29
+      ]
+    },
+    "kris_slash2_foreground": {
+      "frames": [
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_004.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_005.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_006.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_007.png"
+      ],
+      "ticks": 2,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        6.5,
+        29
+      ]
+    },
+    "kris_slash3": {
+      "frames": [
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_008.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_009.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_010.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_011.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground/frame_012.png"
+      ],
+      "ticks": 2,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        6.5,
+        29
+      ]
+    },
+    "kris_slash3_foreground": {
+      "frames": [
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_008.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_009.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_010.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_011.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_ground_foreground/frame_012.png"
+      ],
+      "ticks": 2,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        6.5,
+        29
+      ]
+    },
+    "kris_air": {
+      "frames": [
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_000.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_001.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_002.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_003.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_004.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_005.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_006.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_007.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_008.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_009.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_010.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_011.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_012.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_013.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_014.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_015.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air/frame_016.png"
+      ],
+      "ticks": 2,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        -2.5,
+        31
+      ]
+    },
+    "kris_air_foreground": {
+      "frames": [
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_000.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_001.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_002.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_003.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_004.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_005.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_006.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_007.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_008.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_009.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_010.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_011.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_012.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_013.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_014.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_015.png",
+        "/official/animations/Kris/attack/spr_kris_plat_slash_air_foreground/frame_016.png"
+      ],
+      "ticks": 2,
+      "loop": false,
+      "scale": 2,
+      "anchor": "feet",
+      "offset": [
+        -2.5,
+        31
+      ]
+    },
+    "sun_shot": {
+      "frames": [
+        "/official/sprites/ch5/all_sprites/spr_plat_bullet_yellow.png"
+      ],
+      "scale": 2,
+      "anchor": "center"
+    },
+    "spr_forange_largeglove": {
+      "frames": [
+        "/studio/art/dungeon-ch5/spr_forange_largeglove_000.png",
+        "/studio/art/dungeon-ch5/spr_forange_largeglove_001.png",
+        "/studio/art/dungeon-ch5/spr_forange_largeglove_002.png",
+        "/studio/art/dungeon-ch5/spr_forange_largeglove_003.png",
+        "/studio/art/dungeon-ch5/spr_forange_largeglove_004.png",
+        "/studio/art/dungeon-ch5/spr_forange_largeglove_005.png"
+      ],
+      "ticks": 4,
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "spr_forange_largeglove_angry": {
+      "frames": [
+        "/official/sprites/ch5/all_sprites/spr_forange_largeglove_angry.png"
+      ],
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "spr_forange_glove": {
+      "frames": [
+        "/studio/art/dungeon-ch5/spr_forange_glove_000.png",
+        "/studio/art/dungeon-ch5/spr_forange_glove_001.png",
+        "/studio/art/dungeon-ch5/spr_forange_glove_002.png"
+      ],
+      "ticks": 2,
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "spr_shinobeetle": {
+      "frames": [
+        "/official/sprites/ch5/all_sprites/spr_shinobeetle.png"
+      ],
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "spr_shinobeetle_pose": {
+      "frames": [
+        "/official/sprites/ch5/all_sprites/spr_shinobeetle_pose.png"
+      ],
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "spr_shinobeetle_hurt": {
+      "frames": [
+        "/studio/art/dungeon-ch5/spr_shinobeetle_hurt_000.png",
+        "/studio/art/dungeon-ch5/spr_shinobeetle_hurt_001.png"
+      ],
+      "ticks": 2,
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "spr_fyellow_gun": {
+      "frames": [
+        "/studio/art/dungeon-ch5/spr_fyellow_gun_001.png",
+        "/studio/art/dungeon-ch5/spr_fyellow_gun_002.png",
+        "/studio/art/dungeon-ch5/spr_fyellow_gun_000.png"
+      ],
+      "ticks": 4,
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "spr_faqua_small": {
+      "frames": [
+        "/studio/art/dungeon-ch5/spr_faqua_small_000.png",
+        "/studio/art/dungeon-ch5/spr_faqua_small_001.png",
+        "/studio/art/dungeon-ch5/spr_faqua_small_002.png",
+        "/studio/art/dungeon-ch5/spr_faqua_small_003.png",
+        "/studio/art/dungeon-ch5/spr_faqua_small_004.png"
+      ],
+      "ticks": 4,
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "spr_faqua_spin": {
+      "frames": [
+        "/studio/art/dungeon-ch5/spr_faqua_spin_000.png",
+        "/studio/art/dungeon-ch5/spr_faqua_spin_001.png",
+        "/studio/art/dungeon-ch5/spr_faqua_spin_002.png",
+        "/studio/art/dungeon-ch5/spr_faqua_spin_003.png",
+        "/studio/art/dungeon-ch5/spr_faqua_spin_004.png"
+      ],
+      "ticks": 4,
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "spr_faqua_blur": {
+      "frames": [
+        "/studio/art/dungeon-ch5/spr_faqua_blur_000.png",
+        "/studio/art/dungeon-ch5/spr_faqua_blur_001.png",
+        "/studio/art/dungeon-ch5/spr_faqua_blur_002.png"
+      ],
+      "ticks": 4,
+      "scale": 2,
+      "anchor": "feet"
+    },
+    "spr_jigsawry_idle": {
+      "frames": [
+        "/official/enemy-animations/enemies/spr_jigsawry_idle/frame_000.png",
+        "/official/enemy-animations/enemies/spr_jigsawry_idle/frame_001.png",
+        "/official/enemy-animations/enemies/spr_jigsawry_idle/frame_002.png",
+        "/official/enemy-animations/enemies/spr_jigsawry_idle/frame_003.png",
+        "/official/enemy-animations/enemies/spr_jigsawry_idle/frame_004.png",
+        "/official/enemy-animations/enemies/spr_jigsawry_idle/frame_005.png"
+      ],
+      "ticks": 4,
+      "loop": true,
+      "anchor": "feet",
+      "scale": 2
+    },
+    "spr_jigsawry_wounded": {
+      "frames": [
+        "/official/enemy-animations/enemies/spr_jigsawry_wounded/frame_000.png",
+        "/official/enemy-animations/enemies/spr_jigsawry_wounded/frame_001.png",
+        "/official/enemy-animations/enemies/spr_jigsawry_wounded/frame_002.png",
+        "/official/enemy-animations/enemies/spr_jigsawry_wounded/frame_003.png",
+        "/official/enemy-animations/enemies/spr_jigsawry_wounded/frame_004.png",
+        "/official/enemy-animations/enemies/spr_jigsawry_wounded/frame_005.png"
+      ],
+      "ticks": 4,
+      "loop": false,
+      "anchor": "feet",
+      "scale": 2
+    },
+    "spr_jigsawry_clobbered": {
+      "frames": [
+        "/official/enemy-animations/enemies/spr_jigsawry_clobbered/frame_000.png"
+      ],
+      "ticks": 4,
+      "loop": false,
+      "anchor": "feet",
+      "scale": 2
+    },
+    "spr_ponman_idle": {
+      "frames": [
+        "/official/enemy-animations/enemies/spr_ponman_idle/frame_000.png",
+        "/official/enemy-animations/enemies/spr_ponman_idle/frame_001.png",
+        "/official/enemy-animations/enemies/spr_ponman_idle/frame_002.png",
+        "/official/enemy-animations/enemies/spr_ponman_idle/frame_003.png"
+      ],
+      "ticks": 4,
+      "loop": true,
+      "anchor": "feet",
+      "scale": 2
+    },
+    "spr_ponman_appear": {
+      "frames": [
+        "/official/enemy-animations/enemies/spr_ponman_appear/frame_000.png",
+        "/official/enemy-animations/enemies/spr_ponman_appear/frame_001.png",
+        "/official/enemy-animations/enemies/spr_ponman_appear/frame_002.png",
+        "/official/enemy-animations/enemies/spr_ponman_appear/frame_003.png",
+        "/official/enemy-animations/enemies/spr_ponman_appear/frame_004.png",
+        "/official/enemy-animations/enemies/spr_ponman_appear/frame_005.png"
+      ],
+      "ticks": 4,
+      "loop": false,
+      "anchor": "feet",
+      "scale": 2
+    },
+    "spr_ponman_touched": {
+      "frames": [
+        "/official/enemy-animations/enemies/spr_ponman_touched/frame_000.png"
+      ],
+      "ticks": 4,
+      "loop": false,
+      "anchor": "feet",
+      "scale": 2
+    },
+    "spr_ponman_dark": {
+      "frames": [
+        "/official/enemy-animations/enemies/spr_ponman_dark/frame_000.png"
+      ],
+      "ticks": 4,
+      "loop": false,
+      "anchor": "feet",
+      "scale": 2
+    },
+    "ch5_brick": "/a-files/exports/derived/tiles/ch5/bg_dw_castletop_tileset_new/tile_0006.png",
+    "ch5_floor": "/a-files/exports/derived/tiles/ch5/bg_dw_castletop_tileset_new/tile_0046.png",
+    "ch5_ledge": "/a-files/exports/derived/tiles/ch5/bg_dw_castletop_tileset_new/tile_0123.png",
+    "ch5_column": "/a-files/exports/derived/tiles/ch5/bg_dw_castletop_tileset_new/tile_0023.png",
+    "ch5_capital": "/a-files/exports/derived/tiles/ch5/bg_dw_castletop_tileset_new/tile_0003.png",
+    "ch5_base": "/a-files/exports/derived/tiles/ch5/bg_dw_castletop_tileset_new/tile_0012.png",
+    "ch5_rock": "/a-files/exports/derived/tiles/ch5/tiles_cliff_dark_new/tile_0136.png",
+    "ch5_soil": "/a-files/exports/derived/tiles/ch5/tiles_cliff_dark_new/tile_0077.png",
+    "ch5_shelf": "/a-files/exports/derived/tiles/ch5/tiles_cliff_dark_new/tile_0126.png",
+    "ch5_root": "/a-files/exports/derived/tiles/ch5/tiles_cliff_dark_new/tile_0156.png",
+    "ch5_spur": "/a-files/exports/derived/tiles/ch5/tiles_cliff_dark_new/tile_0031.png",
+    "gate": "/official/sprites/ch5/all_sprites/spr_fcastle_pinkdoor.png",
+    "star": "/official/sprites/ch5/all_sprites/spr_savepoint.png",
+    "gun_rest": {
+      "frames": [
+        "/studio/art/dungeon-ch5/spr_fyellow_gun_000.png"
+      ],
+      "ticks": 4,
+      "scale": 2,
+      "anchor": "feet"
+    }
+  },
+  "fighters": {
+    "kris": {
+      "name": "Kris",
+      "hp": 120,
+      "box": {
+        "w": 36,
+        "h": 68
+      },
+      "walkSpeed": 6,
+      "runSpeed": 9,
+      "jump": 20,
+      "anims": {
+        "idle": "kris_idle",
+        "walk": "kris_walk",
+        "run": "kris_run",
+        "turn": "kris_turn",
+        "jump": "kris_jump",
+        "fall": "kris_fall",
+        "land": "kris_land",
+        "hurt": "kris_hurt",
+        "down": "kris_down",
+        "hurtAir": "kris_hurt_air",
+        "climb": "kris_climb",
+        "clash": "kris_clash",
+        "pose": "kris_pose",
+        "airLand": "kris_air_land",
+        "dodge": "kris_run"
+      },
+      "attacks": [
+        {
+          "anim": "kris_slash1",
+          "effect": "kris_slash1_foreground",
+          "windup": 2,
+          "active": 3,
+          "recovery": 3,
+          "hitbox": {
+            "x": -36,
+            "y": -98,
+            "w": 116,
+            "h": 110
+          },
+          "damage": 2,
+          "lunge": 1,
+          "hitstop": 3,
+          "knockback": 2
+        },
+        {
+          "anim": "kris_slash2",
+          "effect": "kris_slash2_foreground",
+          "windup": 2,
+          "active": 3,
+          "recovery": 3,
+          "hitbox": {
+            "x": 14,
+            "y": -110,
+            "w": 66,
+            "h": 142
+          },
+          "damage": 3,
+          "lunge": 1,
+          "hitstop": 7,
+          "knockback": 3
+        },
+        {
+          "anim": "kris_slash3",
+          "effect": "kris_slash3_foreground",
+          "windup": 2,
+          "active": 3,
+          "recovery": 5,
+          "hitbox": {
+            "x": -48,
+            "y": -122,
+            "w": 148,
+            "h": 146
+          },
+          "damage": 4,
+          "lunge": 1,
+          "hitstop": 8,
+          "knockback": 4
+        }
+      ],
+      "airAttack": {
+        "anim": "kris_air",
+        "effect": "kris_air_foreground",
+        "windup": 2,
+        "active": 6,
+        "recovery": 26,
+        "hitbox": {
+          "x": -56,
+          "y": -110,
+          "w": 144,
+          "h": 144
+        },
+        "damage": 3,
+        "lunge": 1,
+        "hitstop": 4,
+        "knockback": 3
+      },
+      "comboWindow": 15,
+      "dodge": {
+        "anim": "kris_run",
+        "ticks": 9,
+        "speed": 11,
+        "invulnerable": 8,
+        "cooldown": 0.4,
+        "afterimages": true
+      },
+      "skills": [
+        {
+          "id": "spark",
+          "name": "金星",
+          "input": "skill1",
+          "type": "projectile",
+          "anim": "kris_turn",
+          "sprite": "sun_shot",
+          "cooldown": 0.8,
+          "cast": 2,
+          "projectile": {
+            "speed": 8,
+            "life": 45,
+            "w": 24,
+            "h": 24,
+            "damage": 3,
+            "count": 1
+          }
+        },
+        {
+          "id": "guard",
+          "name": "架剑",
+          "input": "skill2",
+          "type": "parry",
+          "anim": "kris_turn",
+          "cooldown": 1,
+          "cast": 0,
+          "parry": {
+            "radius": 48,
+            "window": 8,
+            "reflect": true,
+            "stun": 15
+          }
+        },
+        {
+          "id": "rush",
+          "name": "破阵",
+          "input": "skill3",
+          "type": "dash",
+          "anim": "kris_run",
+          "cooldown": 1.5,
+          "cast": 2,
+          "dash": {
+            "speed": 9,
+            "ticks": 8,
+            "damage": 4,
+            "invulnerable": 6
+          }
+        },
+        {
+          "id": "recover",
+          "name": "振作",
+          "input": "skill4",
+          "type": "heal",
+          "anim": "kris_idle",
+          "cooldown": 3,
+          "cast": 8,
+          "heal": {
+            "amount": 16
+          }
+        }
+      ]
+    }
+  },
+  "tileParts": {
+    "brick": {
+      "sym": "b",
+      "label": "砖壁",
+      "sprite": "ch5_brick",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "back",
+      "solid": "none"
+    },
+    "floor": {
+      "sym": "s",
+      "label": "城墙",
+      "sprite": "ch5_floor",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "actor",
+      "solid": "solid"
+    },
+    "ledge": {
+      "sym": "l",
+      "label": "窄台",
+      "sprite": "ch5_ledge",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "actor",
+      "solid": "oneway"
+    },
+    "column": {
+      "sym": "p",
+      "label": "前景柱身",
+      "sprite": "ch5_column",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "front",
+      "solid": "none"
+    },
+    "capital": {
+      "sym": "c",
+      "label": "柱头",
+      "sprite": "ch5_capital",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "front",
+      "solid": "none"
+    },
+    "base": {
+      "sym": "v",
+      "label": "近处浮雕",
+      "sprite": "ch5_base",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "actor",
+      "solid": "none",
+      "depth": 6
+    },
+    "rock": {
+      "sym": "r",
+      "label": "远岩",
+      "sprite": "ch5_rock",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "back",
+      "solid": "none"
+    },
+    "soil": {
+      "sym": "g",
+      "label": "崖顶",
+      "sprite": "ch5_soil",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "actor",
+      "solid": "solid"
+    },
+    "shelf": {
+      "sym": "t",
+      "label": "浮岩",
+      "sprite": "ch5_shelf",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "actor",
+      "solid": "oneway"
+    },
+    "root": {
+      "sym": "f",
+      "label": "前景岩缘",
+      "sprite": "ch5_root",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "front",
+      "solid": "none"
+    },
+    "spur": {
+      "sym": "a",
+      "label": "岩角",
+      "sprite": "ch5_spur",
+      "cells": [
+        1,
+        1
+      ],
+      "layer": "actor",
+      "solid": "none",
+      "depth": 6
+    }
+  },
+  "enemyTypes": {
+    "glove": {
+      "sym": "G",
+      "label": "拳套",
+      "cells": [
+        1,
+        2
+      ],
+      "hp": 8,
+      "damage": 5,
+      "contact": true,
+      "box": {
+        "w": 48,
+        "h": 60
+      },
+      "ai": "patrol",
+      "speed": 1,
+      "aggroRange": 220,
+      "gravity": true,
+      "anims": {
+        "idle": "spr_forange_largeglove",
+        "move": "spr_forange_largeglove",
+        "attack": "spr_forange_largeglove_angry",
+        "hurt": "spr_forange_glove",
+        "die": "spr_forange_glove"
+      }
+    },
+    "beetle": {
+      "sym": "J",
+      "label": "忍甲虫",
+      "cells": [
+        1,
+        2
+      ],
+      "hp": 8,
+      "damage": 5,
+      "contact": true,
+      "box": {
+        "w": 48,
+        "h": 60
+      },
+      "ai": "chase",
+      "speed": 1,
+      "aggroRange": 220,
+      "gravity": true,
+      "anims": {
+        "idle": "spr_shinobeetle",
+        "move": "spr_shinobeetle",
+        "attack": "spr_shinobeetle_pose",
+        "hurt": "spr_shinobeetle_hurt",
+        "die": "spr_shinobeetle_hurt"
+      },
+      "melee": {
+        "range": 60,
+        "windup": 8,
+        "active": 3,
+        "recovery": 12,
+        "hitbox": {
+          "x": 0,
+          "y": -64,
+          "w": 64,
+          "h": 64
+        },
+        "damage": 7
+      }
+    },
+    "gun": {
+      "sym": "T",
+      "label": "金枪",
+      "cells": [
+        1,
+        2
+      ],
+      "hp": 8,
+      "damage": 5,
+      "contact": true,
+      "box": {
+        "w": 48,
+        "h": 60
+      },
+      "ai": "turret",
+      "speed": 0,
+      "aggroRange": 220,
+      "gravity": true,
+      "anims": {
+        "idle": "gun_rest",
+        "move": "gun_rest",
+        "attack": "spr_fyellow_gun",
+        "hurt": "gun_rest",
+        "die": "gun_rest"
+      },
+      "shoot": {
+        "interval": 1.6,
+        "delay": 0.6,
+        "speed": 4,
+        "count": 1,
+        "spread": 0,
+        "range": 240,
+        "sprite": "sun_shot"
+      }
+    },
+    "aqua": {
+      "sym": "A",
+      "label": "水刃",
+      "cells": [
+        1,
+        2
+      ],
+      "hp": 8,
+      "damage": 5,
+      "contact": true,
+      "box": {
+        "w": 48,
+        "h": 60
+      },
+      "ai": "flyer",
+      "speed": 1,
+      "aggroRange": 220,
+      "gravity": false,
+      "anims": {
+        "idle": "spr_faqua_small",
+        "move": "spr_faqua_small",
+        "attack": "spr_faqua_spin",
+        "hurt": "spr_faqua_blur",
+        "die": "spr_faqua_blur"
+      }
+    },
+    "jigsawry": {
+      "sym": "I",
+      "label": "拼图兵",
+      "cells": [
+        1,
+        2
+      ],
+      "ai": "patrol",
+      "hp": 7,
+      "damage": 4,
+      "contact": true,
+      "gravity": true,
+      "speed": 0.8,
+      "aggroRange": 160,
+      "box": {
+        "w": 48,
+        "h": 64
+      },
+      "anims": {
+        "idle": "spr_jigsawry_idle",
+        "hurt": "spr_jigsawry_wounded",
+        "die": "spr_jigsawry_clobbered",
+        "move": "spr_jigsawry_idle"
+      }
+    },
+    "ponman": {
+      "sym": "M",
+      "label": "棋兵",
+      "cells": [
+        1,
+        2
+      ],
+      "ai": "chase",
+      "hp": 7,
+      "damage": 4,
+      "contact": true,
+      "gravity": true,
+      "speed": 0.8,
+      "aggroRange": 160,
+      "box": {
+        "w": 48,
+        "h": 64
+      },
+      "anims": {
+        "idle": "spr_ponman_idle",
+        "attack": "spr_ponman_appear",
+        "hurt": "spr_ponman_touched",
+        "die": "spr_ponman_dark",
+        "move": "spr_ponman_idle"
+      }
+    }
+  },
+  "rooms": {
+    "cliff": {
+      "title": "暮色断崖",
+      "mode": "dungeon",
+      "w": 1120,
+      "h": 480,
+      "grid": {
+        "size": 40
+      },
+      "style": "flat",
+      "color": "#3c3651",
+      "parallax": [
+        {
+          "src": "/official/sprites/ch5/all_sprites/spr_newsunset_bg.png",
+          "height": 480,
+          "speedX": 0.18,
+          "repeatX": true
+        }
+      ],
+      "entries": {
+        "start": {
+          "x": 60,
+          "y": 380,
+          "face": "right"
+        }
+      },
+      "platform": {
+        "retryEntry": "start",
+        "gravity": 1.25,
+        "fallSpeed": 20,
+        "acceleration": 2
+      },
+      "tiles": [
+        {
+          "part": "soil",
+          "x": 0,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 0,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 0,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 0,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 40,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 40,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 40,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 40,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 80,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 80,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 80,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 80,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 120,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 120,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 120,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 120,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 160,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 160,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 160,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 160,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 200,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 200,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 200,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 200,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 240,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 240,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 280,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 280,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 320,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 320,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 360,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 360,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 360,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 360,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 400,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 400,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 400,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 400,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 440,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 440,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 440,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 440,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 480,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 480,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 480,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 480,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 520,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 520,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 520,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 520,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 560,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 560,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 560,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 560,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 600,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 600,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 640,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 640,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 680,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 680,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 720,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 720,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 720,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 720,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 760,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 760,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 760,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 760,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 800,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 800,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 800,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 800,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 840,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 840,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 840,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 840,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 880,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 880,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 880,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 880,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 920,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 920,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 920,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 920,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 960,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 960,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 1000,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 1000,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 1040,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 1040,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "soil",
+          "x": 1080,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 1080,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 1080,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "rock",
+          "x": 1080,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "shelf",
+          "x": 240,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "shelf",
+          "x": 280,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "shelf",
+          "x": 480,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "shelf",
+          "x": 520,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "shelf",
+          "x": 560,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "shelf",
+          "x": 800,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "shelf",
+          "x": 840,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "spur",
+          "x": 360,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "root",
+          "x": 680,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        }
+      ],
+      "entities": [
+        {
+          "id": "jigsawry_guard",
+          "kind": "actionEnemy",
+          "enemyType": "jigsawry",
+          "x": 560,
+          "y": 320,
+          "w": 40,
+          "h": 80
+        },
+        {
+          "id": "glove_guard",
+          "kind": "actionEnemy",
+          "enemyType": "glove",
+          "x": 360,
+          "y": 320,
+          "w": 40,
+          "h": 80
+        },
+        {
+          "id": "beetle_guard",
+          "kind": "actionEnemy",
+          "enemyType": "beetle",
+          "x": 720,
+          "y": 320,
+          "w": 40,
+          "h": 80
+        },
+        {
+          "kind": "checkpoint",
+          "id": "trail_star",
+          "sprite": "star",
+          "name": "断崖检查点",
+          "x": 440,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "kind": "door",
+          "id": "gate",
+          "sprite": "gate",
+          "name": "登上城顶",
+          "room": "roof",
+          "entry": "start",
+          "x": 1040,
+          "y": 320,
+          "w": 40,
+          "h": 80
+        }
+      ]
+    },
+    "roof": {
+      "title": "城顶回廊",
+      "mode": "dungeon",
+      "w": 960,
+      "h": 480,
+      "grid": {
+        "size": 40
+      },
+      "style": "flat",
+      "color": "#332038",
+      "parallax": [
+        {
+          "src": "/official/sprites/ch5/all_sprites/spr_newsunset_bg.png",
+          "height": 480,
+          "speedX": 0.12,
+          "repeatX": true
+        },
+        {
+          "src": "/official/sprites/ch5/all_sprites/spr_dw_parallaxpillar_1.png",
+          "height": 360,
+          "y": 0,
+          "speedX": 0.4,
+          "repeatX": true
+        }
+      ],
+      "entries": {
+        "start": {
+          "x": 60,
+          "y": 380,
+          "face": "right"
+        }
+      },
+      "platform": {
+        "retryEntry": "start",
+        "gravity": 1.25,
+        "fallSpeed": 20,
+        "acceleration": 2
+      },
+      "dungeonConfig": {
+        "fighter": "kris"
+      },
+      "tiles": [
+        {
+          "part": "floor",
+          "x": 0,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 0,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 0,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 0,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 40,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 40,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 40,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 40,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 80,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 80,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 80,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 80,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 120,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 120,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 120,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 120,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 160,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 160,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 160,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 160,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 200,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 200,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 200,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 200,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 240,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 240,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 240,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 240,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 280,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 280,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 280,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 280,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 320,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 320,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 320,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 320,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 360,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 360,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 360,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 360,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 400,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 400,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 400,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 400,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 440,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 440,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 440,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 440,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 480,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 480,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 480,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 480,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 520,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 520,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 520,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 520,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 560,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 560,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 560,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 560,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 600,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 600,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 600,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 600,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 640,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 640,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 640,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 640,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 680,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 680,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 680,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 680,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 720,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 720,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 720,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 720,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 760,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 760,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 760,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 760,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 800,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 800,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 800,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 800,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 840,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 840,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 840,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 840,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 880,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 880,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 880,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 880,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "floor",
+          "x": 920,
+          "y": 400,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 920,
+          "y": 440,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 920,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "brick",
+          "x": 920,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "ledge",
+          "x": 240,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "ledge",
+          "x": 280,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "ledge",
+          "x": 480,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "ledge",
+          "x": 520,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "ledge",
+          "x": 560,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "ledge",
+          "x": 800,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "ledge",
+          "x": 840,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "capital",
+          "x": 160,
+          "y": 240,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "column",
+          "x": 160,
+          "y": 280,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "column",
+          "x": 160,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "column",
+          "x": 160,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "base",
+          "x": 200,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "capital",
+          "x": 440,
+          "y": 240,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "column",
+          "x": 440,
+          "y": 280,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "column",
+          "x": 440,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "column",
+          "x": 440,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "base",
+          "x": 480,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "capital",
+          "x": 760,
+          "y": 240,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "column",
+          "x": 760,
+          "y": 280,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "column",
+          "x": 760,
+          "y": 320,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "column",
+          "x": 760,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "part": "base",
+          "x": 720,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        }
+      ],
+      "entities": [
+        {
+          "id": "ponman_guard",
+          "kind": "actionEnemy",
+          "enemyType": "ponman",
+          "x": 200,
+          "y": 320,
+          "w": 40,
+          "h": 80
+        },
+        {
+          "id": "gun_guard",
+          "kind": "actionEnemy",
+          "enemyType": "gun",
+          "x": 640,
+          "y": 320,
+          "w": 40,
+          "h": 80
+        },
+        {
+          "id": "aqua_guard",
+          "kind": "actionEnemy",
+          "enemyType": "aqua",
+          "x": 360,
+          "y": 200,
+          "w": 40,
+          "h": 80
+        },
+        {
+          "kind": "checkpoint",
+          "id": "summit",
+          "sprite": "star",
+          "name": "城顶星光",
+          "event": "arrived",
+          "x": 880,
+          "y": 360,
+          "w": 40,
+          "h": 40
+        }
+      ]
+    }
+  },
+  "events": {
+    "arrived": [
+      {
+        "op": "flag",
+        "id": "finished",
+        "value": true
+      },
+      {
+        "op": "say",
+        "pages": [
+          "星光照亮了来路。你已抵达城顶。"
+        ]
+      }
+    ]
+  }
+}

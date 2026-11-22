@@ -1,0 +1,491 @@
+{
+  "format": "dr-battle-encounter/1",
+  "meta": { "name": "演出指令展示", "author": "DR Battle Editor" },
+  "settings": {
+    "seed": 3,
+    "bgm": "battle",
+    "background": "spr_battlebg_0",
+    "introText": { "zh": "* 两个影子挡住了去路！", "en": "* Two shadows block the way!" },
+    "canFlee": false
+  },
+  "actors": {
+    "kris": {
+      "kind": "party",
+      "x": 96,
+      "y": 140,
+      "anims": {
+        "idle": { "sprite": "spr_krisb_idle", "fps": 5, "loop": true },
+        "attack": { "sprite": "spr_krisb_attack", "fps": 15, "loop": false, "then": "idle" },
+        "act": { "sprite": "spr_krisb_act", "fps": 10, "loop": false, "then": "idle" },
+        "item": { "sprite": "spr_krisb_item", "fps": 10, "loop": false, "then": "idle" },
+        "spare": { "sprite": "spr_krisb_idle", "fps": 5, "loop": false },
+        "defend": { "sprite": "spr_krisb_defend", "fps": 8, "loop": false },
+        "hurt": { "sprite": "spr_krisb_hurt", "fps": 12, "loop": false, "then": "idle" },
+        "down": { "sprite": "spr_krisb_defeat", "fps": 1, "loop": false },
+        "victory": { "sprite": "spr_krisb_victory", "fps": 8, "loop": false }
+      }
+    },
+    "susie": {
+      "kind": "party",
+      "x": 104,
+      "y": 230,
+      "anims": {
+        "idle": { "sprite": "spr_susieb_idle", "fps": 4, "loop": true },
+        "attack": { "sprite": "spr_susieb_attack", "fps": 15, "loop": false, "then": "idle" },
+        "act": { "sprite": "spr_susieb_act", "fps": 10, "loop": false, "then": "idle" },
+        "magic": { "sprite": "spr_susieb_spell", "fps": 12, "loop": false, "then": "idle" },
+        "item": { "sprite": "spr_susieb_item", "fps": 10, "loop": false, "then": "idle" },
+        "spare": { "sprite": "spr_susieb_idle", "fps": 4, "loop": false },
+        "defend": { "sprite": "spr_susieb_defend", "fps": 8, "loop": false },
+        "hurt": { "sprite": "spr_susieb_hurt", "fps": 12, "loop": false, "then": "idle" },
+        "down": { "sprite": "spr_susieb_defeat", "fps": 1, "loop": false },
+        "victory": { "sprite": "spr_susieb_victory", "fps": 10, "loop": false }
+      }
+    },
+    "ralsei": {
+      "kind": "party",
+      "x": 100,
+      "y": 322,
+      "anims": {
+        "idle": { "sprite": "spr_ralseib_idle", "fps": 4, "loop": true },
+        "attack": { "sprite": "spr_ralseib_attack", "fps": 15, "loop": false, "then": "idle" },
+        "act": { "sprite": "spr_ralseib_act", "fps": 10, "loop": false, "then": "idle" },
+        "magic": { "sprite": "spr_ralseib_spell", "fps": 12, "loop": false, "then": "idle" },
+        "item": { "sprite": "spr_ralseib_item", "fps": 10, "loop": false, "then": "idle" },
+        "spare": { "sprite": "spr_ralseib_idle", "fps": 4, "loop": false },
+        "defend": { "sprite": "spr_ralseib_defend", "fps": 8, "loop": false },
+        "hurt": { "sprite": "spr_ralseib_shock_enemy", "fps": 6, "loop": false, "then": "idle" },
+        "down": { "sprite": "spr_ralseib_defeat", "fps": 1, "loop": false },
+        "victory": { "sprite": "spr_ralseib_victory", "fps": 8, "loop": false }
+      }
+    },
+    "jigsaw": {
+      "kind": "enemy",
+      "x": 480,
+      "y": 200,
+      "anims": {
+        "idle": { "sprite": "spr_jigsawry_idle", "fps": 6, "loop": true },
+        "hurt": { "sprite": "spr_jigsawry_hurt", "fps": 1, "loop": false, "then": "idle" },
+        "wounded": { "sprite": "spr_jigsawry_wounded", "fps": 6, "loop": true },
+        "spared": { "sprite": "spr_jigsawry_spared", "fps": 6, "loop": false },
+        "defeat": { "sprite": "spr_jigsawry_clobbered", "fps": 1, "loop": false }
+      }
+    },
+    "hathy": {
+      "kind": "enemy",
+      "x": 530,
+      "y": 290,
+      "anims": {
+        "idle": { "sprite": "spr_hathyx_idle", "fps": 5, "loop": true },
+        "hurt": { "sprite": "spr_hathyx_hurt", "fps": 1, "loop": false, "then": "idle" },
+        "spared": { "sprite": "spr_hathyx_spared", "fps": 5, "loop": false },
+        "defeat": { "sprite": "spr_hathyx_hurt", "fps": 1, "loop": false }
+      }
+    }
+  },
+  "party": [
+    {
+      "id": "kris",
+      "actor": "kris",
+      "name": "Kris",
+      "hp": 90,
+      "maxHp": 90,
+      "atk": 10,
+      "def": 2,
+      "magic": 0,
+      "color": "#00ffff",
+      "commands": ["fight", "act", "item", "spare", "defend"]
+    },
+    {
+      "id": "susie",
+      "actor": "susie",
+      "name": "Susie",
+      "hp": 110,
+      "maxHp": 110,
+      "atk": 14,
+      "def": 2,
+      "magic": 0,
+      "color": "#ff00ff",
+      "commands": ["fight", "act", "item", "spare", "defend"]
+    },
+    {
+      "id": "ralsei",
+      "actor": "ralsei",
+      "name": "Ralsei",
+      "hp": 70,
+      "maxHp": 70,
+      "atk": 8,
+      "def": 4,
+      "magic": 12,
+      "color": "#00ff00",
+      "commands": ["fight", "magic", "item", "spare", "defend"],
+      "spells": [
+        {
+          "id": "pacify",
+          "name": { "zh": "安抚", "en": "Pacify" },
+          "tp": 32,
+          "target": "enemy",
+          "cues": [
+            { "cmd": "anim", "actor": "ralsei", "anim": "magic" },
+            {
+              "cmd": "say",
+              "speaker": "Ralsei",
+              "portrait": "spr_face_r_nohat",
+              "text": { "zh": "* Ralsei唱起了安抚的歌。", "en": "* Ralsei sings a soothing song." }
+            },
+            { "cmd": "mercy", "enemy": "jigsaw", "amount": 25 },
+            { "cmd": "mercy", "enemy": "hathy", "amount": 25 }
+          ]
+        }
+      ]
+    }
+  ],
+  "enemies": [
+    {
+      "id": "jigsaw",
+      "actor": "jigsaw",
+      "name": "Jigsawry",
+      "hp": 90,
+      "maxHp": 90,
+      "atk": 4,
+      "def": 0,
+      "mercy": 0,
+      "spareAt": 100,
+      "tired": false,
+      "acts": [
+        {
+          "id": "check",
+          "name": { "zh": "查看", "en": "Check" },
+          "text": "* JIGSAWRY——攻击 4 防御 0\n* 拼图的碎块，边缘有点紧。",
+          "cues": []
+        },
+        {
+          "id": "comfort",
+          "name": { "zh": "安慰", "en": "Comfort" },
+          "party": ["susie"],
+          "mercy": 45,
+          "cues": [
+            { "cmd": "anim", "actor": "susie", "anim": "act" },
+            {
+              "cmd": "say",
+              "speaker": "Susie",
+              "portrait": "spr_face_s0",
+              "text": { "zh": "* 喂，别紧张。\n* 拼不进去也没关系。", "en": "* Hey, easy.\n* It's fine if you don't fit." }
+            },
+            { "cmd": "anim", "actor": "jigsaw", "anim": "wounded" },
+            { "cmd": "bubble", "actor": "jigsaw", "text": { "zh": "真的吗……\n那我不撑了。", "en": "Really...?\nThen I'll relax." }, "wait": 1.6 },
+            { "cmd": "set", "var": "comforted", "value": 1, "op": "add" }
+          ]
+        }
+      ],
+      "onHurt": [
+        { "cmd": "shake", "amount": 3, "duration": 0.25 },
+        { "cmd": "sfx", "sound": "snd_hit" }
+      ],
+      "onSpare": [
+        { "cmd": "anim", "actor": "jigsaw", "anim": "spared" },
+        { "cmd": "flash", "color": "#ffffff", "duration": 0.25 }
+      ],
+      "onDefeat": [
+        { "cmd": "anim", "actor": "jigsaw", "anim": "defeat" },
+        { "cmd": "sfx", "sound": "snd_enemy_defeat" }
+      ]
+    },
+    {
+      "id": "hathy",
+      "actor": "hathy",
+      "name": "Hathy",
+      "hp": 80,
+      "maxHp": 80,
+      "atk": 3,
+      "def": 1,
+      "mercy": 0,
+      "spareAt": 100,
+      "tired": false,
+      "acts": [
+        {
+          "id": "check",
+          "name": { "zh": "查看", "en": "Check" },
+          "text": "* HATHY——攻击 3 防御 1\n* 一颗会飘的爱心。",
+          "cues": []
+        },
+        {
+          "id": "flatter",
+          "name": { "zh": "奉承", "en": "Flatter" },
+          "party": ["kris"],
+          "mercy": 50,
+          "cues": [
+            { "cmd": "anim", "actor": "kris", "anim": "act" },
+            {
+              "cmd": "say",
+              "speaker": "Kris",
+              "portrait": "spr_headkris",
+              "text": { "zh": "* 你的形状……挺好看的。", "en": "* Your shape... looks nice." }
+            },
+            { "cmd": "bubble", "actor": "hathy", "text": { "zh": "哎呀，\n嘴真甜。", "en": "Oh my,\nsuch a charmer." }, "wait": 1.5 },
+            { "cmd": "mercy", "enemy": "hathy", "amount": 10 }
+          ]
+        }
+      ],
+      "onHurt": [
+        { "cmd": "shake", "amount": 3, "duration": 0.25 },
+        { "cmd": "sfx", "sound": "snd_hit" }
+      ],
+      "onSpare": [
+        { "cmd": "anim", "actor": "hathy", "anim": "spared" },
+        { "cmd": "flash", "color": "#ffffff", "duration": 0.25 }
+      ],
+      "onDefeat": [
+        { "cmd": "anim", "actor": "hathy", "anim": "defeat" },
+        { "cmd": "sfx", "sound": "snd_enemy_defeat" }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "darkburger",
+      "name": "Dark Burger",
+      "count": 3,
+      "heal": 70,
+      "target": "party",
+      "text": "* 吃下了一个黑暗汉堡。"
+    }
+  ],
+  "turns": [
+    {
+      "id": "t1",
+      "flavor": { "zh": "* 影子们在低声商量。", "en": "* The shadows whisper among themselves." },
+      "talk": [
+        { "actor": "jigsaw", "text": { "zh": "我们……\n不想打。", "en": "We...\ndon't want to fight." } },
+        { "actor": "hathy", "text": { "zh": "但规矩\n就是规矩。", "en": "But rules\nare rules." } }
+      ],
+      "attack": "sine-wave",
+      "start": [],
+      "end": [
+        { "cmd": "shake", "amount": 2, "duration": 0.2 },
+        { "cmd": "damage", "target": "party", "amount": 3 },
+        { "cmd": "heal", "target": "ralsei", "amount": 0 }
+      ]
+    },
+    {
+      "id": "t2",
+      "flavor": "* 战斗框亮了一下。",
+      "talk": [
+        { "actor": "hathy", "text": { "zh": "再撑一会儿！", "en": "Hold on a bit longer!" } }
+      ],
+      "attack": null,
+      "start": [
+        { "cmd": "sfx", "sound": "snd_spawn_attack" },
+        {
+          "cmd": "attack",
+          "attack": {
+            "format": "dr-battle-attack/1",
+            "meta": { "name": "内嵌小弹幕", "author": "DR Battle Editor" },
+            "settings": {
+              "duration": 2.5,
+              "seed": 11,
+              "damage": 6,
+              "invincibleFrames": 30,
+              "grazeTP": 1,
+              "background": null,
+              "bgm": null
+            },
+            "box": { "x": 320, "y": 190, "w": 180, "h": 120, "rotation": 0, "border": 3, "color": "#00c000" },
+            "soul": { "x": null, "y": null, "speed": 4, "slowSpeed": 2, "mode": "red", "color": "#ff0000" },
+            "party": [],
+            "enemies": [],
+            "bulletTypes": {
+              "seed": {
+                "sprite": "spr_heartbullet",
+                "frameRate": 0,
+                "scale": 0.6,
+                "color": null,
+                "hitbox": { "shape": "circle", "r": 5 },
+                "damage": null,
+                "grazeable": true,
+                "destroyOnHit": true,
+                "faceVelocity": false,
+                "offscreen": "destroy",
+                "maskToBox": false
+              }
+            },
+            "timeline": [
+              {
+                "id": "ev_inline_a",
+                "at": 0.2,
+                "type": "spawn",
+                "label": "內嵌彈幕",
+                "bullet": "seed",
+                "count": 6,
+                "x": "(box.left + box.right) / 2",
+                "y": "box.top + 20",
+                "speed": 2.6,
+                "angle": "90 + (i - (n - 1) / 2) * 18",
+                "life": 3
+              },
+              { "id": "ev_inline_end", "at": 2.4, "type": "end", "label": "結束" }
+            ]
+          }
+        }
+      ],
+      "end": []
+    },
+    {
+      "id": "t3",
+      "flavor": "* 影子们开始摇晃。",
+      "talk": [
+        { "actor": "jigsaw", "text": { "zh": "够了……\n真的够了。", "en": "Enough...\nreally, enough." } }
+      ],
+      "attack": "ring-burst",
+      "start": [],
+      "end": []
+    }
+  ],
+  "turnOrder": "loop-last",
+  "hooks": {
+    "intro": [
+      { "cmd": "bgm", "track": "battle", "fade": 0.4 },
+      { "cmd": "sfx", "sound": "snd_enemy_appear" },
+      { "cmd": "fade", "actor": "kris", "alpha": 0, "duration": 0 },
+      { "cmd": "fade", "actor": "susie", "alpha": 0, "duration": 0 },
+      { "cmd": "fade", "actor": "ralsei", "alpha": 0, "duration": 0 },
+      { "cmd": "fade", "actor": "jigsaw", "alpha": 0, "duration": 0 },
+      { "cmd": "fade", "actor": "hathy", "alpha": 0, "duration": 0 },
+      {
+        "cmd": "parallel",
+        "cues": [
+          { "cmd": "move", "actor": "kris", "x": 96, "y": 140, "duration": 0.5, "ease": "backOut" },
+          { "cmd": "move", "actor": "susie", "x": 104, "y": 230, "duration": 0.6, "ease": "backOut" },
+          { "cmd": "move", "actor": "ralsei", "x": 100, "y": 322, "duration": 0.7, "ease": "backOut" },
+          { "cmd": "move", "actor": "jigsaw", "x": 480, "y": 200, "duration": 0.8, "ease": "quadOut" },
+          { "cmd": "move", "actor": "hathy", "x": 530, "y": 290, "duration": 0.9, "ease": "quadOut" },
+          { "cmd": "flip", "actor": "jigsaw", "value": true },
+          { "cmd": "flip", "actor": "hathy", "value": true },
+          { "cmd": "fade", "actor": "kris", "alpha": 1, "duration": 0.3 },
+          { "cmd": "fade", "actor": "susie", "alpha": 1, "duration": 0.3 },
+          { "cmd": "fade", "actor": "ralsei", "alpha": 1, "duration": 0.3 },
+          { "cmd": "fade", "actor": "jigsaw", "alpha": 1, "duration": 0.3 },
+          { "cmd": "fade", "actor": "hathy", "alpha": 1, "duration": 0.3 },
+          { "cmd": "shake", "amount": 3, "duration": 0.4 },
+          { "cmd": "flash", "color": "#ffffff", "duration": 0.2 }
+        ]
+      },
+      {
+        "cmd": "say",
+        "speaker": "Susie",
+        "portrait": "spr_face_s0",
+        "speed": 2,
+        "text": { "zh": "* 又是你们两个？\n* 这次别挡路。", "en": "* You two again?\n* Don't get in the way." }
+      },
+      {
+        "cmd": "parallel",
+        "cues": [
+          { "cmd": "bubble", "actor": "jigsaw", "text": { "zh": "我们只是\n在值班……", "en": "We're just\non shift..." }, "wait": 1.6 },
+          { "cmd": "anim", "actor": "hathy", "anim": "idle" }
+        ]
+      },
+      {
+        "cmd": "if",
+        "cond": "mercy.jigsaw >= 50",
+        "then": [
+          { "cmd": "say", "text": "* Jigsawry看起来松弛了一点。", "async": true },
+          { "cmd": "anim", "actor": "jigsaw", "anim": "wounded" }
+        ],
+        "else": [
+          { "cmd": "say", "text": "* Jigsawry绷得紧紧的。" }
+        ]
+      },
+      { "cmd": "wait", "seconds": 0.2 }
+    ],
+    "victory": [
+      { "cmd": "bgm", "track": "fanfare", "fade": 0.3 },
+      { "cmd": "sfx", "sound": "snd_won" },
+      {
+        "cmd": "parallel",
+        "cues": [
+          { "cmd": "anim", "actor": "kris", "anim": "victory" },
+          { "cmd": "anim", "actor": "susie", "anim": "victory" },
+          { "cmd": "anim", "actor": "ralsei", "anim": "victory" },
+          { "cmd": "anim", "actor": "jigsaw", "anim": "defeat" },
+          { "cmd": "anim", "actor": "hathy", "anim": "defeat" }
+        ]
+      },
+      { "cmd": "flash", "color": "#ffff88", "duration": 0.4 },
+      {
+        "cmd": "say",
+        "speaker": "Ralsei",
+        "portrait": "spr_face_r_nohat",
+        "text": { "zh": "* 我们赢了！\n* ……虽然有点对不起他们。", "en": "* We won!\n* ...though I feel a bit bad for them." }
+      }
+    ],
+    "spared": [
+      { "cmd": "bgm", "track": null },
+      { "cmd": "sfx", "sound": "snd_spare" },
+      {
+        "cmd": "parallel",
+        "cues": [
+          { "cmd": "anim", "actor": "jigsaw", "anim": "spared" },
+          { "cmd": "anim", "actor": "hathy", "anim": "spared" }
+        ]
+      },
+      {
+        "cmd": "if",
+        "cond": "var.comforted >= 1",
+        "then": [
+          { "cmd": "say", "text": "* Jigsawry向你鞠了一躬。" },
+          { "cmd": "bubble", "actor": "jigsaw", "text": { "zh": "谢谢你\n听我们说。", "en": "Thanks for\nlistening." }, "wait": 2.0 }
+        ],
+        "else": [
+          { "cmd": "say", "text": "* 影子们安静地散开了。" }
+        ]
+      }
+    ],
+    "defeat": [
+      { "cmd": "bgm", "track": "gameover_short" },
+      { "cmd": "shake", "amount": 5, "duration": 0.6 },
+      { "cmd": "say", "text": "* 队伍倒下了……" }
+    ],
+    "flee": [
+      { "cmd": "say", "text": "* 你逃跑了。" },
+      { "cmd": "bgm", "track": null, "fade": 0.3 },
+      { "cmd": "end", "result": "flee" }
+    ]
+  },
+  "demo": {
+    "text": { "auto": true, "delay": 0.5 },
+    "menuDelay": 6,
+    "turns": [
+      {
+        "turn": 1,
+        "choices": [
+          { "member": "kris", "command": "act", "target": "hathy", "option": "flatter" },
+          { "member": "susie", "command": "fight", "target": "jigsaw" },
+          { "member": "ralsei", "command": "defend" }
+        ],
+        "fight": "perfect",
+        "dodge": "path"
+      },
+      {
+        "turn": 2,
+        "choices": [
+          { "member": "kris", "command": "fight", "target": "jigsaw" },
+          { "member": "susie", "command": "fight", "target": "jigsaw" },
+          { "member": "ralsei", "command": "item", "option": "darkburger", "target": "kris" }
+        ],
+        "fight": "perfect"
+      },
+      {
+        "turn": 3,
+        "choices": [
+          { "member": "kris", "command": "fight", "target": "hathy" },
+          { "member": "susie", "command": "fight", "target": "hathy" },
+          { "member": "ralsei", "command": "magic", "target": "hathy", "option": "Pacify" }
+        ],
+        "fight": "perfect",
+        "dodge": "path"
+      }
+    ],
+    "default": { "choices": "fight", "fight": "good", "dodge": "bot" }
+  },
+  "vars": { "comforted": 0 }
+}

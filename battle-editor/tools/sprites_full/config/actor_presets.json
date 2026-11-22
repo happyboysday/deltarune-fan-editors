@@ -1,0 +1,282 @@
+{
+ "_comment": "A3 sprite-full 的演員預設來源。extract.py 讀 party/enemies 兩區，把 anims 轉成 assets/actor-presets.json（SPEC-P2 §1 actors.<id>.anims 格式）。fps/loop/then 是『建議值』：sprite 的 GMS2 播放速度多為預設 30fps 無語意，實際演出速度依原作手感估；loop/then 為流程提示。x/y 為 640x480 畫布上的建議初始位置。",
+ "_spriteNames": "所有 sprite 名對應 assets/sprites-full.index.json（UTMT 全幀匯出）。同名 sprite 若有多章，index 的 chapter 是最新章（見 tools/sprites_full/README.md）。",
+ "party": {
+  "kris": {
+   "name": "Kris",
+   "x": 96,
+   "y": 140,
+   "anims": {
+    "idle": { "sprite": "spr_krisb_idle", "fps": 5, "loop": true },
+    "attack": { "sprite": "spr_krisb_attack", "fps": 15, "loop": false, "then": "idle" },
+    "act": { "sprite": "spr_krisb_act", "fps": 10, "loop": false, "then": "idle" },
+    "item": { "sprite": "spr_krisb_item", "fps": 10, "loop": false, "then": "idle" },
+    "spare": { "sprite": "spr_krisb_idle", "fps": 5, "loop": true },
+    "defend": { "sprite": "spr_krisb_defend", "fps": 8, "loop": true },
+    "hurt": { "sprite": "spr_krisb_hurt", "fps": 12, "loop": false, "then": "idle" },
+    "down": { "sprite": "spr_krisb_defeat", "fps": 1, "loop": true },
+    "victory": { "sprite": "spr_krisb_victory", "fps": 8, "loop": true }
+   }
+  },
+  "susie": {
+   "name": "Susie",
+   "x": 104,
+   "y": 230,
+   "anims": {
+    "idle": { "sprite": "spr_susieb_idle", "fps": 4, "loop": true },
+    "attack": { "sprite": "spr_susieb_attack", "fps": 15, "loop": false, "then": "idle" },
+    "act": { "sprite": "spr_susieb_act", "fps": 10, "loop": false, "then": "idle" },
+    "magic": { "sprite": "spr_susieb_spell", "fps": 12, "loop": false, "then": "idle" },
+    "item": { "sprite": "spr_susieb_item", "fps": 10, "loop": false, "then": "idle" },
+    "spare": { "sprite": "spr_susieb_idle", "fps": 4, "loop": true },
+    "defend": { "sprite": "spr_susieb_defend", "fps": 8, "loop": true },
+    "hurt": { "sprite": "spr_susieb_hurt", "fps": 12, "loop": false, "then": "idle" },
+    "down": { "sprite": "spr_susieb_defeat", "fps": 1, "loop": true },
+    "victory": { "sprite": "spr_susieb_victory", "fps": 10, "loop": true }
+   }
+  },
+  "ralsei": {
+   "name": "Ralsei",
+   "x": 100,
+   "y": 322,
+   "anims": {
+    "idle": { "sprite": "spr_ralseib_idle", "fps": 4, "loop": true },
+    "attack": { "sprite": "spr_ralseib_attack", "fps": 15, "loop": false, "then": "idle" },
+    "act": { "sprite": "spr_ralseib_act", "fps": 10, "loop": false, "then": "idle" },
+    "magic": { "sprite": "spr_ralseib_spell", "fps": 12, "loop": false, "then": "idle" },
+    "item": { "sprite": "spr_ralseib_item", "fps": 10, "loop": false, "then": "idle" },
+    "spare": { "sprite": "spr_ralseib_idle", "fps": 4, "loop": true },
+    "defend": { "sprite": "spr_ralseib_defend", "fps": 8, "loop": true },
+    "hurt": { "sprite": "spr_ralseib_shock_enemy", "fps": 6, "loop": false, "then": "idle" },
+    "down": { "sprite": "spr_ralseib_defeat", "fps": 1, "loop": true },
+    "victory": { "sprite": "spr_ralseib_victory", "fps": 8, "loop": true }
+   }
+  },
+  "noelle": {
+   "name": "Noelle",
+   "x": 108,
+   "y": 330,
+   "anims": {
+    "idle": { "sprite": "spr_noelleb_idle", "fps": 5, "loop": true },
+    "attack": { "sprite": "spr_noelleb_attack", "fps": 15, "loop": false, "then": "idle" },
+    "act": { "sprite": "spr_noelleb_act", "fps": 10, "loop": false, "then": "idle" },
+    "magic": { "sprite": "spr_noelleb_spell", "fps": 12, "loop": false, "then": "idle" },
+    "item": { "sprite": "spr_noelleb_item", "fps": 10, "loop": false, "then": "idle" },
+    "spare": { "sprite": "spr_noelleb_idle", "fps": 5, "loop": true },
+    "defend": { "sprite": "spr_noelleb_defend", "fps": 8, "loop": true },
+    "hurt": { "sprite": "spr_noelleb_hurt", "fps": 12, "loop": false, "then": "idle" },
+    "down": { "sprite": "spr_noelleb_defeat", "fps": 1, "loop": true },
+    "victory": { "sprite": "spr_noelleb_victory", "fps": 8, "loop": true }
+   }
+  }
+ },
+ "enemies": {
+  "rudinn": {
+   "name": "Rudinn",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_diamondm_idle", "fps": 5, "loop": true },
+    "hurt": { "sprite": "spr_diamondm_hurt", "fps": 1, "loop": false, "then": "idle" },
+    "spared": { "sprite": "spr_diamondm_spared", "fps": 6, "loop": true }
+   }
+  },
+  "rudinn_ranger": {
+   "name": "Rudinn Ranger",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_daimond_knight_idle", "fps": 5, "loop": true },
+    "attack": { "sprite": "spr_diamond_knight_slash", "fps": 15, "loop": false, "then": "idle" },
+    "hurt": { "sprite": "spr_diamond_knight_hurt", "fps": 1, "loop": false, "then": "idle" },
+    "spared": { "sprite": "spr_diamond_knight_spared", "fps": 6, "loop": true }
+   }
+  },
+  "hathy": {
+   "name": "Hathy",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_hathyx_idle", "fps": 5, "loop": true },
+    "hurt": { "sprite": "spr_hathyx_hurt", "fps": 1, "loop": false, "then": "idle" },
+    "spared": { "sprite": "spr_hathyx_spared", "fps": 5, "loop": true }
+   }
+  },
+  "ponman": {
+   "name": "Ponman",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_ponman_idle", "fps": 5, "loop": true },
+    "hurt": { "sprite": "spr_ponman_touched", "fps": 1, "loop": false, "then": "idle" },
+    "spared": { "sprite": "spr_ponman_touched", "fps": 5, "loop": true }
+   }
+  },
+  "k_round": {
+   "name": "K.Round",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_checkers_idle", "fps": 8, "loop": true },
+    "attack": { "sprite": "spr_checkers_leap", "fps": 12, "loop": false, "then": "idle" },
+    "hurt": { "sprite": "spr_checkers_crouch", "fps": 1, "loop": false, "then": "idle" },
+    "spared": { "sprite": "spr_checkers_bow", "fps": 8, "loop": false, "then": "idle" }
+   }
+  },
+  "bloxer": {
+   "name": "Bloxer",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_blockguy_idleFriendly", "fps": 8, "loop": true },
+    "attack": { "sprite": "spr_blockguy_part", "fps": 10, "loop": false, "then": "idle" },
+    "hurt": { "sprite": "spr_blockguy_part_hurt", "fps": 10, "loop": false, "then": "idle" },
+    "spared": { "sprite": "spr_blockguy_spared", "fps": 5, "loop": true }
+   }
+  },
+  "jigsawry": {
+   "name": "Jigsawry",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_jigsawry_idle", "fps": 6, "loop": true },
+    "hurt": { "sprite": "spr_jigsawry_hurt", "fps": 1, "loop": false, "then": "idle" },
+    "spared": { "sprite": "spr_jigsawry_spared", "fps": 6, "loop": true }
+   }
+  },
+  "clubs": {
+   "name": "Clubs",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_clubs_idle", "fps": 7, "loop": true },
+    "hurt": { "sprite": "spr_clubs_hurt", "fps": 1, "loop": false, "then": "idle" },
+    "spared": { "sprite": "spr_clubs_spared", "fps": 5, "loop": true }
+   }
+  },
+  "rabbick": {
+   "name": "Rabbick",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_rabbick_enemy", "fps": 3, "loop": true },
+    "hurt": { "sprite": "spr_rabbick_enemy_hurt", "fps": 5, "loop": false, "then": "idle" },
+    "spared": { "sprite": "spr_rabbick_enemy_spared", "fps": 5, "loop": true }
+   }
+  },
+  "smallchecker": {
+   "name": "Small Checker",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_smallchecker_idle", "fps": 8, "loop": true },
+    "hurt": { "sprite": "spr_smallchecker_hurt", "fps": 1, "loop": false, "then": "idle" }
+   }
+  },
+  "heartenemy": {
+   "name": "Heart Enemy",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_heartenemy_idle", "fps": 5, "loop": true },
+    "hurt": { "sprite": "spr_heartenemy_hurt", "fps": 5, "loop": false, "then": "idle" },
+    "spared": { "sprite": "spr_heartenemy_spared", "fps": 5, "loop": true }
+   }
+  },
+  "chain_king": {
+   "name": "Chain King",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_chainking_idle", "fps": 5, "loop": true },
+    "attack": { "sprite": "spr_chainking_toss", "fps": 10, "loop": false, "then": "idle" },
+    "hurt": { "sprite": "spr_chainking_hurt", "fps": 1, "loop": false, "then": "idle" }
+   }
+  },
+  "lancer": {
+   "name": "Lancer",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_lancer_battle", "fps": 3, "loop": true },
+    "hurt": { "sprite": "spr_lancer_battle_hurt", "fps": 1, "loop": false, "then": "idle" }
+   }
+  },
+  "lancer_bike": {
+   "name": "Lancer (bike)",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_lancerbike", "fps": 6, "loop": true },
+    "attack": { "sprite": "spr_lancerbike_l", "fps": 10, "loop": false, "then": "idle" },
+    "hurt": { "sprite": "spr_lancerbike_hurt", "fps": 6, "loop": false, "then": "idle" }
+   }
+  },
+  "king": {
+   "name": "King",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_king_battlepose", "fps": 3, "loop": true },
+    "attack": { "sprite": "spr_king_pullweapon", "fps": 10, "loop": false, "then": "idle" },
+    "laugh": { "sprite": "spr_king_laugh", "fps": 8, "loop": false, "then": "idle" },
+    "hurt": { "sprite": "spr_king_shock", "fps": 1, "loop": false, "then": "idle" }
+   }
+  },
+  "jevil": {
+   "name": "Jevil",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_joker_main", "fps": 3, "loop": true },
+    "attack": { "sprite": "spr_joker_dance", "fps": 10, "loop": true },
+    "tired": { "sprite": "spr_joker_tired", "fps": 2, "loop": true }
+   }
+  },
+  "susie_enemy": {
+   "name": "Susie (enemy)",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_susie_enemy", "fps": 5, "loop": true },
+    "attack": { "sprite": "spr_susie_enemy_attack", "fps": 10, "loop": false, "then": "idle" },
+    "hurt": { "sprite": "spr_susie_enemy_hurt", "fps": 1, "loop": false, "then": "idle" },
+    "defeat": { "sprite": "spr_susie_enemy_defeat", "fps": 1, "loop": true }
+   }
+  },
+  "dummy": {
+   "name": "Dummy",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_dummymonster", "fps": 2, "loop": true },
+    "hurt": { "sprite": "spr_dummymonster", "fps": 1, "loop": false, "then": "idle" }
+   }
+  },
+  "bqueen": {
+   "name": "Queen (battle)",
+   "x": 500, "y": 270,
+   "anims": {
+    "idle": { "sprite": "spr_bqueen_idle", "fps": 3, "loop": true },
+    "hurt": { "sprite": "spr_bqueen_hurt", "fps": 15, "loop": false, "then": "idle" },
+    "dizzy": { "sprite": "spr_bqueen_dizzy", "fps": 5, "loop": true },
+    "defeat": { "sprite": "spr_bqueen_defeated", "fps": 1, "loop": true }
+   }
+  }
+ },
+ "layouts": {
+  "_comment": "團隊站位建議，依 docs/SPEC-LAYOUT.md §3/§4 實機量測（640x480 邏輯座標、x/y 為腳底，renderer 依 scale 放大 2 倍）。隊伍在畫面左側 x≈100（各人 ±8 前後錯開）、由上而下；partyN 依隊伍人數套用（id→位置）；enemy1/2/3 為右側 1~3 隻敵人站位（中心 x 約 470~540、腳底 y 約 240~300，多隻上下錯開），依 enemies 陣列順序取用。",
+  "party1": [
+   { "id": "kris", "x": 96, "y": 240 }
+  ],
+  "party2": [
+   { "id": "kris", "x": 96, "y": 190 },
+   { "id": "susie", "x": 104, "y": 298 }
+  ],
+  "party3": [
+   { "id": "kris", "x": 96, "y": 140 },
+   { "id": "susie", "x": 104, "y": 230 },
+   { "id": "ralsei", "x": 100, "y": 322 }
+  ],
+  "party4": [
+   { "id": "kris", "x": 96, "y": 120 },
+   { "id": "susie", "x": 104, "y": 190 },
+   { "id": "ralsei", "x": 100, "y": 260 },
+   { "id": "noelle", "x": 108, "y": 330 }
+  ],
+  "enemy1": [
+   { "x": 500, "y": 270 }
+  ],
+  "enemy2": [
+   { "x": 480, "y": 200 },
+   { "x": 530, "y": 290 }
+  ],
+  "enemy3": [
+   { "x": 470, "y": 170 },
+   { "x": 520, "y": 240 },
+   { "x": 500, "y": 310 }
+  ]
+ }
+}

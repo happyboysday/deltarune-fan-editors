@@ -1,0 +1,861 @@
+{
+  "format": "deltarune-scene/1",
+  "id": "echo-workshop",
+  "title": "回声工坊",
+  "viewport": {
+    "w": 480,
+    "h": 300
+  },
+  "start": {
+    "room": "hub",
+    "entry": "arrival"
+  },
+  "player": {
+    "sprite": "walker",
+    "speed": 2.65,
+    "radius": 6,
+    "reach": 19
+  },
+  "assets": {
+    "walker": {
+      "ticks": 5,
+      "anchor": "feet",
+      "idle_down": "/studio/art/walker-down-0.png",
+      "walk_down": [
+        "/studio/art/walker-down-0.png",
+        "/studio/art/walker-down-1.png",
+        "/studio/art/walker-down-0.png",
+        "/studio/art/walker-down-2.png"
+      ],
+      "idle_left": "/studio/art/walker-left-0.png",
+      "walk_left": [
+        "/studio/art/walker-left-0.png",
+        "/studio/art/walker-left-1.png",
+        "/studio/art/walker-left-0.png",
+        "/studio/art/walker-left-2.png"
+      ],
+      "idle_right": "/studio/art/walker-right-0.png",
+      "walk_right": [
+        "/studio/art/walker-right-0.png",
+        "/studio/art/walker-right-1.png",
+        "/studio/art/walker-right-0.png",
+        "/studio/art/walker-right-2.png"
+      ],
+      "idle_up": "/studio/art/walker-up-0.png",
+      "walk_up": [
+        "/studio/art/walker-up-0.png",
+        "/studio/art/walker-up-1.png",
+        "/studio/art/walker-up-0.png",
+        "/studio/art/walker-up-2.png"
+      ]
+    },
+    "foreman": "/studio/art/foreman.png",
+    "foremanFace": "/studio/art/foreman-face.png",
+    "stagehand": "/studio/art/stagehand.png",
+    "sprout": "/studio/art/sprout.png",
+    "lantern": {
+      "frames": [
+        "/studio/art/lantern-0.png",
+        "/studio/art/lantern-1.png"
+      ],
+      "ticks": 12
+    }
+  },
+  "rooms": {
+    "hub": {
+      "w": 620,
+      "h": 336,
+      "title": "01 · 回声工坊",
+      "style": "workshop",
+      "entries": {
+        "arrival": {
+          "x": 222,
+          "y": 200,
+          "face": "up"
+        },
+        "returned": {
+          "x": 326,
+          "y": 174,
+          "face": "left"
+        },
+        "finished": {
+          "x": 425,
+          "y": 180,
+          "face": "left"
+        }
+      },
+      "entities": [
+        {
+          "kind": "wall",
+          "id": "hub_back",
+          "x": 42,
+          "y": 58,
+          "w": 536,
+          "h": 14
+        },
+        {
+          "kind": "wall",
+          "id": "hub_bench",
+          "x": 62,
+          "y": 113,
+          "w": 95,
+          "h": 36
+        },
+        {
+          "kind": "wall",
+          "id": "hub_rack",
+          "x": 491,
+          "y": 208,
+          "w": 70,
+          "h": 27
+        },
+        {
+          "kind": "prop",
+          "id": "title_panel",
+          "x": 154,
+          "y": 79,
+          "w": 152,
+          "h": 26,
+          "name": "回声工坊 / 维修中"
+        },
+        {
+          "kind": "prop",
+          "id": "hub_notes",
+          "x": 472,
+          "y": 112,
+          "w": 88,
+          "h": 22,
+          "name": "储物柜 →"
+        },
+        {
+          "kind": "npc",
+          "id": "foreman",
+          "x": 207,
+          "y": 132,
+          "w": 30,
+          "h": 28,
+          "name": "值班员",
+          "event": "foreman_chat",
+          "solid": true,
+          "sprite": "foreman"
+        },
+        {
+          "kind": "door",
+          "id": "canal_gate",
+          "x": 363,
+          "y": 130,
+          "w": 28,
+          "h": 42,
+          "name": "冷却水道",
+          "room": "canal",
+          "entry": "start",
+          "when": {
+            "item": "铜钥匙"
+          },
+          "otherwise": "locked"
+        },
+        {
+          "kind": "prop",
+          "id": "exit_cabinet",
+          "x": 496,
+          "y": 142,
+          "w": 41,
+          "h": 31,
+          "name": "储物柜",
+          "event": "finish",
+          "otherwise": "unfinished",
+          "when": {
+            "all": [
+              {
+                "flag": "valve"
+              },
+              {
+                "flag": "badge"
+              },
+              {
+                "flag": "bloom"
+              }
+            ]
+          },
+          "solid": true
+        },
+        {
+          "kind": "prop",
+          "id": "hub_lamp",
+          "x": 530,
+          "y": 103,
+          "w": 14,
+          "h": 16,
+          "sprite": "lantern"
+        }
+      ]
+    },
+    "canal": {
+      "w": 544,
+      "h": 288,
+      "title": "02 · 冷却水道",
+      "style": "canal",
+      "mode": "slide",
+      "entries": {
+        "start": {
+          "x": 80,
+          "y": 147,
+          "face": "right"
+        }
+      },
+      "entities": [
+        {
+          "kind": "wall",
+          "id": "canal_north",
+          "x": 22,
+          "y": 78,
+          "w": 492,
+          "h": 18
+        },
+        {
+          "kind": "wall",
+          "id": "canal_south",
+          "x": 22,
+          "y": 193,
+          "w": 492,
+          "h": 18
+        },
+        {
+          "kind": "prop",
+          "id": "canal_hint",
+          "x": 119,
+          "y": 105,
+          "w": 181,
+          "h": 17,
+          "name": "把铜箱推上亮色踏板 →"
+        },
+        {
+          "kind": "block",
+          "id": "copper_box",
+          "x": 175,
+          "y": 137,
+          "w": 22,
+          "h": 22,
+          "name": "铜箱",
+          "color": "#cf9368"
+        },
+        {
+          "kind": "switch",
+          "id": "pressure",
+          "x": 251,
+          "y": 134,
+          "w": 26,
+          "h": 28,
+          "name": "踏板",
+          "flag": "valve",
+          "latch": true,
+          "once": true,
+          "event": "valve_event"
+        },
+        {
+          "kind": "door",
+          "id": "back_hub",
+          "x": 25,
+          "y": 121,
+          "w": 28,
+          "h": 42,
+          "name": "工坊",
+          "room": "hub",
+          "entry": "returned"
+        },
+        {
+          "kind": "door",
+          "id": "stage_gate",
+          "x": 468,
+          "y": 123,
+          "w": 28,
+          "h": 42,
+          "name": "回声剧场",
+          "room": "stage",
+          "entry": "start",
+          "when": {
+            "flag": "valve"
+          },
+          "otherwise": "pressure_hint"
+        }
+      ]
+    },
+    "stage": {
+      "w": 480,
+      "h": 288,
+      "title": "03 · 回声剧场",
+      "style": "theatre",
+      "entries": {
+        "start": {
+          "x": 78,
+          "y": 148,
+          "face": "right"
+        }
+      },
+      "entities": [
+        {
+          "kind": "wall",
+          "id": "stage_wall",
+          "x": 28,
+          "y": 65,
+          "w": 424,
+          "h": 14
+        },
+        {
+          "kind": "wall",
+          "id": "stage_foot",
+          "x": 28,
+          "y": 206,
+          "w": 424,
+          "h": 14
+        },
+        {
+          "kind": "prop",
+          "id": "stage_sign",
+          "x": 149,
+          "y": 92,
+          "w": 172,
+          "h": 23,
+          "name": "试音台 · 六拍亮相",
+          "color": "#ed8dbb"
+        },
+        {
+          "kind": "prop",
+          "id": "rhythm_console",
+          "x": 193,
+          "y": 126,
+          "w": 37,
+          "h": 29,
+          "name": "试音台",
+          "event": "rhythm_intro",
+          "solid": true,
+          "color": "#ff9dbf"
+        },
+        {
+          "kind": "npc",
+          "id": "stagehand",
+          "x": 273,
+          "y": 128,
+          "w": 23,
+          "h": 28,
+          "name": "提词员",
+          "sprite": "stagehand",
+          "event": "stagehand_line"
+        },
+        {
+          "kind": "prop",
+          "id": "stage_light",
+          "x": 273,
+          "y": 101,
+          "w": 18,
+          "h": 14,
+          "sprite": "lantern",
+          "hidden": true
+        },
+        {
+          "kind": "door",
+          "id": "garden_gate",
+          "x": 400,
+          "y": 123,
+          "w": 28,
+          "h": 42,
+          "name": "攀爬试验场",
+          "room": "garden",
+          "entry": "start",
+          "when": {
+            "flag": "badge"
+          },
+          "otherwise": "need_beat"
+        }
+      ]
+    },
+    "garden": {
+      "w": 520,
+      "h": 416,
+      "title": "04 · 屋顶苗圃",
+      "style": "garden",
+      "entries": {
+        "start": {
+          "x": 94,
+          "y": 324,
+          "face": "right"
+        }
+      },
+      "entities": [
+        {
+          "kind": "wall",
+          "id": "ledge_l",
+          "x": 0,
+          "y": 251,
+          "w": 183,
+          "h": 24
+        },
+        {
+          "kind": "wall",
+          "id": "ledge_r",
+          "x": 250,
+          "y": 251,
+          "w": 270,
+          "h": 24
+        },
+        {
+          "kind": "wall",
+          "id": "wall_l",
+          "x": 158,
+          "y": 123,
+          "w": 23,
+          "h": 128
+        },
+        {
+          "kind": "wall",
+          "id": "wall_r",
+          "x": 250,
+          "y": 133,
+          "w": 26,
+          "h": 118
+        },
+        {
+          "kind": "prop",
+          "id": "garden_sign",
+          "x": 60,
+          "y": 291,
+          "w": 161,
+          "h": 17,
+          "name": "踏进竖道后向上攀爬"
+        },
+        {
+          "kind": "checkpoint",
+          "id": "garden_save",
+          "x": 125,
+          "y": 312,
+          "w": 19,
+          "h": 25,
+          "name": "苗圃入口"
+        },
+        {
+          "kind": "mode",
+          "id": "climb_wall",
+          "x": 181,
+          "y": 124,
+          "w": 69,
+          "h": 216,
+          "name": "抓力试验",
+          "mode": "climb",
+          "grip": 86
+        },
+        {
+          "kind": "mode",
+          "id": "climb_rest",
+          "x": 188,
+          "y": 220,
+          "w": 55,
+          "h": 25,
+          "name": "休息台",
+          "mode": "climb",
+          "grip": 86,
+          "rest": true
+        },
+        {
+          "kind": "prop",
+          "id": "rest_sign",
+          "x": 101,
+          "y": 224,
+          "w": 51,
+          "h": 17,
+          "name": "休息台",
+          "color": "#78d49a"
+        },
+        {
+          "kind": "hold",
+          "id": "planter",
+          "x": 298,
+          "y": 106,
+          "w": 39,
+          "h": 36,
+          "name": "给苗圃浇水",
+          "when": {
+            "item": "水壶"
+          },
+          "otherwise": "no_water",
+          "ticks": 56,
+          "decay": 1.4,
+          "once": true,
+          "event": "water_begin",
+          "solid": true
+        },
+        {
+          "kind": "prop",
+          "id": "sprout",
+          "x": 308,
+          "y": 87,
+          "w": 18,
+          "h": 18,
+          "hidden": true,
+          "sprite": "sprout"
+        },
+        {
+          "kind": "door",
+          "id": "garden_exit",
+          "x": 431,
+          "y": 102,
+          "w": 28,
+          "h": 42,
+          "name": "回工坊",
+          "room": "hub",
+          "entry": "finished",
+          "when": {
+            "flag": "bloom"
+          },
+          "otherwise": "need_bloom"
+        }
+      ]
+    }
+  },
+  "events": {
+    "foreman_chat": [
+      {
+        "op": "branch",
+        "if": {
+          "flag": "met"
+        },
+        "then": [
+          {
+            "op": "say",
+            "pages": [
+              {
+                "speaker": "值班员",
+                "text": "水道那扇门已经给你开好了。看见坏掉的东西，不要问。它们都在排练。"
+              }
+            ]
+          }
+        ],
+        "else": [
+          {
+            "op": "say",
+            "pages": [
+              {
+                "speaker": "值班员",
+                "text": "工坊收到三份故障报告。巧了，三份都是我写的。",
+                "portrait": "foremanFace"
+              },
+              {
+                "speaker": "值班员",
+                "text": "冷却水道有踏板，剧场有拍子，苗圃有一株拒绝长大的植物。带上钥匙和水壶。",
+                "portrait": "foremanFace"
+              }
+            ]
+          },
+          {
+            "op": "choose",
+            "question": "工坊需要一位临时修理工。",
+            "options": [
+              {
+                "text": "接下委托",
+                "actions": [
+                  {
+                    "op": "flag",
+                    "id": "commission",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "text": "先问加班费",
+                "actions": [
+                  {
+                    "op": "say",
+                    "pages": [
+                      {
+                        "speaker": "值班员",
+                        "text": "当然有。两次赞美，记得找我报销。",
+                        "portrait": "foremanFace"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "op": "item",
+            "id": "铜钥匙",
+            "delta": 1
+          },
+          {
+            "op": "item",
+            "id": "水壶",
+            "delta": 1
+          },
+          {
+            "op": "flag",
+            "id": "met",
+            "value": true
+          },
+          {
+            "op": "checkpoint"
+          }
+        ]
+      }
+    ],
+    "locked": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 门旁贴着一张便笺：钥匙在值班员手里。"
+        ]
+      }
+    ],
+    "valve_event": [
+      {
+        "op": "timer",
+        "ticks": 12,
+        "event": "valve_confirm"
+      }
+    ],
+    "valve_confirm": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 铜箱压住踏板。水道闸门卡了一下，然后决定配合。"
+        ]
+      }
+    ],
+    "pressure_hint": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 门的指示灯没亮。把铜箱往右推上踏板。"
+        ]
+      }
+    ],
+    "rhythm_intro": [
+      {
+        "op": "branch",
+        "if": {
+          "flag": "badge"
+        },
+        "then": [
+          {
+            "op": "say",
+            "pages": [
+              "＊ 试音已通过。下次请把剧场搬得离水道远一点。"
+            ]
+          }
+        ],
+        "else": [
+          {
+            "op": "call",
+            "event": "six_beats"
+          }
+        ]
+      }
+    ],
+    "six_beats": {
+      "type": "rhythm",
+      "title": "回声试音 · 六拍",
+      "lead": 30,
+      "window": 4,
+      "minHits": 5,
+      "resultTicks": 28,
+      "beats": [
+        {
+          "at": 0,
+          "key": "left"
+        },
+        {
+          "at": 24,
+          "key": "up"
+        },
+        {
+          "at": 48,
+          "key": "act"
+        },
+        {
+          "at": 72,
+          "key": "right"
+        },
+        {
+          "at": 96,
+          "key": "down"
+        },
+        {
+          "at": 120,
+          "key": "act"
+        }
+      ],
+      "onWin": "rhythm_pass",
+      "onLose": "rhythm_retry"
+    },
+    "rhythm_pass": [
+      {
+        "op": "flag",
+        "id": "badge",
+        "value": true
+      },
+      {
+        "op": "item",
+        "id": "试音章",
+        "delta": 1
+      },
+      {
+        "op": "show",
+        "actor": "stage_light",
+        "value": true
+      },
+      {
+        "op": "move",
+        "actor": "stagehand",
+        "x": 303,
+        "y": 128,
+        "ticks": 15
+      },
+      {
+        "op": "wait",
+        "ticks": 7
+      },
+      {
+        "op": "say",
+        "pages": [
+          {
+            "speaker": "提词员",
+            "text": "合格。其实有一拍是我打喷嚏，但我们都当作没发生。"
+          }
+        ]
+      }
+    ],
+    "rhythm_retry": [
+      {
+        "op": "say",
+        "pages": [
+          {
+            "speaker": "提词员",
+            "text": "没关系。亮线经过记号时再按键。再来一次，我把喷嚏忍住。"
+          }
+        ]
+      }
+    ],
+    "stagehand_line": [
+      {
+        "op": "say",
+        "pages": [
+          {
+            "speaker": "提词员",
+            "text": "台上负责打拍子。台下负责假装拍子很准。"
+          }
+        ]
+      }
+    ],
+    "need_beat": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 剧场出口需要一枚试音章。"
+        ]
+      }
+    ],
+    "no_water": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 种子很渴。你身上没有水壶。"
+        ]
+      }
+    ],
+    "water_begin": [
+      {
+        "op": "timer",
+        "ticks": 22,
+        "event": "water_finish",
+        "global": true
+      },
+      {
+        "op": "wait",
+        "ticks": 9
+      }
+    ],
+    "water_finish": [
+      {
+        "op": "flag",
+        "id": "bloom",
+        "value": true
+      },
+      {
+        "op": "show",
+        "actor": "sprout",
+        "value": true
+      },
+      {
+        "op": "item",
+        "id": "苗圃签",
+        "delta": 1
+      },
+      {
+        "op": "say",
+        "pages": [
+          "＊ 芽破土了。它第一个学会的动作，是朝门口点头。"
+        ]
+      }
+    ],
+    "need_bloom": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 苗圃的值班牌还没挂上。对着花槽长按 Z。"
+        ]
+      }
+    ],
+    "unfinished": [
+      {
+        "op": "say",
+        "pages": [
+          "＊ 储物柜要求三张检查表。你还没有修完整座工坊。"
+        ]
+      }
+    ],
+    "finish": [
+      {
+        "op": "branch",
+        "if": {
+          "flag": "done"
+        },
+        "then": [
+          {
+            "op": "say",
+            "pages": [
+              "＊ 储物柜里只剩下安静。它终于学会了。"
+            ]
+          }
+        ],
+        "else": [
+          {
+            "op": "camera",
+            "x": 520,
+            "y": 155,
+            "ticks": 18
+          },
+          {
+            "op": "say",
+            "pages": [
+              "＊ 钥匙、试音章、苗圃签都对得上。",
+              "＊ 值班灯熄灭了。下班。"
+            ]
+          },
+          {
+            "op": "show",
+            "actor": "hub_lamp",
+            "value": false
+          },
+          {
+            "op": "flag",
+            "id": "done",
+            "value": true
+          },
+          {
+            "op": "camera",
+            "follow": true
+          }
+        ]
+      }
+    ]
+  }
+}

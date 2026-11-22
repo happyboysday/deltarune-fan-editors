@@ -1,0 +1,115 @@
+{
+  "format": "dr-battle-encounter/1",
+  "meta": {
+    "name": "灵魂驾驶舱",
+    "author": "DR Battle Editor"
+  },
+  "actors": {
+    "kris": {
+      "kind": "party",
+      "anims": {
+        "idle": {
+          "sprite": "spr_krisb_idle",
+          "fps": 5
+        },
+        "defend": {
+          "sprite": "spr_krisb_defend",
+          "fps": 8
+        }
+      }
+    },
+    "engineer": {
+      "kind": "enemy",
+      "x": 568,
+      "y": 250,
+      "anims": {
+        "idle": {
+          "sprite": "spr_diamondm_idle",
+          "fps": 5
+        }
+      }
+    }
+  },
+  "party": [
+    {
+      "id": "kris",
+      "actor": "kris",
+      "name": "Kris",
+      "hp": 90,
+      "maxHp": 90,
+      "color": "#00ffff",
+      "commands": [
+        "defend"
+      ]
+    }
+  ],
+  "enemies": [
+    {
+      "id": "engineer",
+      "actor": "engineer",
+      "name": "实习技师",
+      "hp": 60,
+      "maxHp": 60
+    }
+  ],
+  "hooks": {
+    "intro": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 黄心测试：方向键移动。\n* V 冲刺，B 打碎金色弹。",
+          "en": "* Yellow soul test: arrows to move.\n* V dashes, B breaks gold bullets."
+        }
+      }
+    ]
+  },
+  "turns": [
+    {
+      "id": "pulse",
+      "attack": "soul-pulse",
+      "end": [
+        {
+          "cmd": "say",
+          "text": {
+            "zh": "* 方向盘已经装在灵魂上了。\n* ↑ 油门，↓ 刹车，← → 转向。",
+            "en": "* Your SOUL now has a steering wheel.\n* Up: gas. Down: brake. Left/right: steer."
+          }
+        }
+      ]
+    },
+    {
+      "id": "racer",
+      "attack": "soul-racer",
+      "end": [
+        {
+          "cmd": "end",
+          "result": "victory"
+        }
+      ]
+    }
+  ],
+  "demo": {
+    "turns": [
+      {
+        "turn": 1,
+        "choices": [
+          {
+            "member": "kris",
+            "command": "defend"
+          }
+        ],
+        "dodge": "inputs"
+      },
+      {
+        "turn": 2,
+        "choices": [
+          {
+            "member": "kris",
+            "command": "defend"
+          }
+        ],
+        "dodge": "inputs"
+      }
+    ]
+  }
+}

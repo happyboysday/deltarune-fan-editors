@@ -1,0 +1,14 @@
+# Runtime data written next to the editors
+/scene-studio-data/
+scene-editor/.codex-tmp/
+scene-editor/tools/test-env.local.json
+battle-editor/attacks/*.json
+battle-editor/encounters/*.json
+battle-editor/history/
+battle-editor/trash/
+battle-editor/generated/record/
+battle-editor/tools/agent/.tmp/
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store

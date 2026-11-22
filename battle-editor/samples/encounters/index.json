@@ -1,0 +1,38 @@
+{
+  "format": "dr-battle-encounters/1",
+  "encounters": [
+    {
+      "file": "rudinn.json",
+      "name": "Rudinn遭遇",
+      "description": "单敌人标准遭遇：ACT（Check / Compliment / 需 Susie 的 X-Action）、效果对话、三回合各自引用不同攻击样本、敌人泡泡台词、可饶恕的完整路线。",
+      "turns": 3,
+      "enemies": 1,
+      "difficulty": "easy"
+    },
+    {
+      "file": "showcase.json",
+      "name": "演出指令展示",
+      "description": "演示 §3 全部常用指令：intro 走位进场、say 带头像、bubble、anim、parallel 同时演出、if 依 mercy/变量分支、set/var、shake/flash、bgm 切换、回合内以 attack 指令插入内嵌弹幕、victory/spared/defeat hooks。",
+      "turns": 3,
+      "enemies": 2,
+      "difficulty": "normal"
+    },
+    {
+      "file": "forms-demo.json",
+      "name": "形态示范：烘焙师 Rudinn",
+      "description": "V2-07 actor.forms 示范：第二回合用 form 指令切换形态（整组动画 + 显示偏移），第三回合用 if 依变量切回；形态内没定义的动画沿用基础 anims。",
+      "turns": 3,
+      "enemies": 1,
+      "difficulty": "easy"
+    },
+    {
+      "file": "arena-tour.json",
+      "name": "战斗区域试验场",
+      "description": "两回合试玩：无框舞台、L 形墙壁及独立弹幕裁剪。",
+      "turns": 2,
+      "enemies": 1,
+      "difficulty": "easy"
+    },
+    { "file": "soul-cockpit.json", "name": "灵魂驾驶舱", "description": "两回合试玩：冲刺拆弹与惯性驾驶。", "turns": 2, "enemies": 1, "difficulty": "easy" }
+  ]
+}

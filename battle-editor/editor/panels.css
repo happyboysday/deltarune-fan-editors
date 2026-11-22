@@ -1,0 +1,1127 @@
+/* editor/panels.css  (ED3)
+ *
+ * 擁有者：ED3 —— 屬性檢查器 / 素材瀏覽器 / 子彈類型面板。
+ * 只使用 .pan- 前綴的 class，避免與 ED1（全域版面、styles.css）與 ED2（時間軸 timeline.css）衝突。
+ * 顏色沿用 DELTARUNE 風：黑底、暗紫面板、綠色戰鬥框、等寬像素字。
+ */
+
+/* ======================= 共用 ======================= */
+
+.pan-inspector,
+.pan-assets,
+.pan-bt {
+  --pan-bg: #0a0a10;
+  --pan-bg2: #12121c;
+  --pan-bg3: #171724;
+  --pan-line: #2a2a3e;
+  --pan-line2: #3a3a55;
+  --pan-fg: #d8d8e8;
+  --pan-fg-dim: #8a8a9e;
+  --pan-accent: #00c000;
+  --pan-accent2: #6f7dff;
+  --pan-danger: #ff4d5e;
+  --pan-warn: #ffcc44;
+  --pan-mono: "Courier New", "Consolas", ui-monospace, monospace;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  height: 100%;
+  background: var(--pan-bg);
+  color: var(--pan-fg);
+  font-family: var(--pan-mono);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.pan-inspector *,
+.pan-assets *,
+.pan-bt * {
+  box-sizing: border-box;
+}
+
+/* 檢查器內容可垂直捲動 */
+.pan-inspector {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pan-line2) var(--pan-bg);
+}
+
+.pan-inspector::-webkit-scrollbar,
+.pan-assets-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.pan-inspector::-webkit-scrollbar-thumb,
+.pan-assets-scroll::-webkit-scrollbar-thumb {
+  background: var(--pan-line2);
+  border-radius: 5px;
+}
+.pan-inspector::-webkit-scrollbar-track,
+.pan-assets-scroll::-webkit-scrollbar-track {
+  background: var(--pan-bg);
+}
+
+/* 面板標題 */
+.pan-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, #1b1b2b, #12121c);
+  border-bottom: 1px solid var(--pan-line);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  flex: 0 0 auto;
+}
+
+.pan-title {
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-size: 13px;
+  color: #e8e8ff;
+  text-shadow: 0 0 8px rgba(111, 125, 255, 0.4);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.pan-subtitle {
+  color: var(--pan-fg-dim);
+  font-size: 11px;
+  margin-left: auto;
+  min-width: 0;
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pan-header-tools {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.pan-badge {
+  background: var(--pan-line);
+  border-radius: 8px;
+  padding: 1px 7px;
+  font-size: 11px;
+  color: var(--pan-fg-dim);
+  margin-left: auto;
+}
+
+/* ======================= 按鈕 / 輸入 ======================= */
+
+.pan-btn {
+  background: #1e1e2e;
+  color: var(--pan-fg);
+  border: 1px solid var(--pan-line2);
+  border-radius: 2px;
+  padding: 3px 9px;
+  font-family: var(--pan-mono);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.1s, border-color 0.1s;
+  user-select: none;
+}
+.pan-btn:hover { background: #2a2a40; border-color: #505070; }
+.pan-btn:active { background: #34345a; }
+.pan-btn:disabled { opacity: 0.4; cursor: default; }
+.pan-btn-small { padding: 1px 6px; font-size: 11px; }
+.pan-btn-danger { border-color: #6a2a30; color: #ff97a0; }
+.pan-btn-danger:hover { background: #3a1a20; border-color: var(--pan-danger); }
+.pan-btn.active,
+.pan-btn.pan-btn-small.active {
+  background: #263a6a;
+  border-color: var(--pan-accent2);
+  color: #cdd4ff;
+}
+
+.pan-input,
+.pan-select {
+  background: #07070c;
+  color: var(--pan-fg);
+  border: 1px solid var(--pan-line2);
+  border-radius: 2px;
+  padding: 3px 6px;
+  font-family: var(--pan-mono);
+  font-size: 12px;
+  width: 100%;
+  min-width: 0;
+  outline: none;
+}
+.pan-input:focus,
+.pan-select:focus {
+  border-color: var(--pan-accent2);
+  box-shadow: 0 0 0 1px rgba(111, 125, 255, 0.35);
+}
+.pan-input-small { font-size: 11px; padding: 2px 4px; }
+.pan-input-mono { font-family: var(--pan-mono); }
+.pan-input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.pan-input[type="number"]::-webkit-outer-spin-button,
+.pan-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.pan-input-search { flex: 0 1 170px; }
+
+.pan-select {
+  cursor: pointer;
+  padding-right: 4px;
+}
+.pan-select option { background: #12121c; color: var(--pan-fg); }
+
+.pan-input.has-error,
+.pan-select.has-error,
+.pan-numfield.has-error,
+.pan-field.has-error .pan-input,
+.pan-spritefield.has-error {
+  border-color: var(--pan-danger) !important;
+  box-shadow: 0 0 0 1px rgba(255, 77, 94, 0.4) !important;
+}
+
+.hidden { display: none !important; }
+
+.pan-readonly {
+  color: var(--pan-fg-dim);
+  padding: 2px 0;
+  word-break: break-all;
+  font-size: 11px;
+}
+
+.pan-mono { font-family: var(--pan-mono); }
+
+.pan-kicker {
+  color: var(--pan-fg-dim);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  /* 語言切換後長度不同：不壓縮、不折行，否則「型別」會被切成兩行 */
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.pan-kicker-name {
+  font-size: 13px;
+  color: #9ff0c0;
+  padding: 6px 10px 0;
+  word-break: break-all;
+}
+
+.pan-code {
+  font-family: var(--pan-mono);
+  background: #07070c;
+  border: 1px solid var(--pan-line);
+  border-radius: 2px;
+  padding: 0 4px;
+  color: #a8c8ff;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ======================= 區塊 / 列 ======================= */
+
+.pan-section {
+  border-bottom: 1px solid #1a1a28;
+  flex: 0 0 auto;
+}
+
+.pan-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: #0e0e18;
+  border-top: 1px solid #1c1c2c;
+  cursor: pointer;
+  user-select: none;
+  color: #b8b8d8;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+.pan-section-title:hover { background: #14141f; }
+.pan-section-arrow { color: var(--pan-fg-dim); font-size: 10px; width: 10px; }
+
+.pan-section-body {
+  padding: 8px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pan-section-body.collapsed { display: none; }
+
+.pan-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.pan-grid-tight { gap: 3px; }
+
+.pan-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.pan-row-label {
+  flex: 0 0 auto;
+  min-width: 76px;
+  max-width: 140px;
+  color: var(--pan-fg-dim);
+  font-size: 11px;
+  text-align: right;
+  /* 多語系下標籤長度差很多（繁中／簡中／英文），折行顯示比截斷好讀 */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+.pan-row-control {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pan-hint {
+  color: var(--pan-fg-dim);
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 2px 0;
+}
+.pan-hint-bad { color: #ffb0b8; font-size: 11px; }
+.pan-hint-ok { color: #7fe0a8; font-size: 11px; }
+
+.pan-empty {
+  padding: 18px 14px;
+  text-align: center;
+  color: var(--pan-fg-dim);
+}
+.pan-empty-main { font-size: 13px; color: #a8a8c0; margin-bottom: 6px; }
+.pan-empty-sub { font-size: 11px; color: #6f6f88; line-height: 1.6; }
+
+.pan-json {
+  background: #06060a;
+  border: 1px solid var(--pan-line);
+  border-radius: 2px;
+  padding: 6px 8px;
+  font-family: var(--pan-mono);
+  font-size: 11px;
+  color: #9fb0d0;
+  overflow: auto;
+  max-height: 260px;
+  white-space: pre;
+  margin: 0;
+}
+
+/* ======================= 數字欄位（Blender 式拖曳） ======================= */
+
+.pan-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.pan-field-num { min-width: 0; }
+
+.pan-numfield {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+
+.pan-numlabel {
+  flex: 0 1 auto;
+  min-width: 56px;
+  max-width: 132px;
+  text-align: left;
+  background: #151524;
+  border: 1px solid var(--pan-line);
+  border-radius: 2px;
+  color: #a8b0d0;
+  font-family: var(--pan-mono);
+  font-size: 11px;
+  padding: 3px 5px;
+  cursor: ew-resize;
+  user-select: none;
+  /* 標籤要能被拖曳調值，所以不能整段隱藏；窄面板時折行顯示完整名稱 */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+  touch-action: none;
+}
+.pan-numlabel:hover { background: #20203a; border-color: var(--pan-line2); color: #d0d8f8; }
+.pan-numfield.dragging .pan-numlabel {
+  background: #2a3a6a;
+  border-color: var(--pan-accent2);
+  color: #fff;
+}
+
+.pan-nummode { display: flex; flex: 0 0 auto; }
+.pan-modebtn {
+  background: #10101a;
+  border: 1px solid var(--pan-line);
+  color: #77778e;
+  font-family: var(--pan-mono);
+  font-size: 9px;
+  line-height: 1;
+  padding: 3px 3px;
+  cursor: pointer;
+  min-width: 18px;
+}
+.pan-modebtn:first-child { border-radius: 2px 0 0 2px; }
+.pan-modebtn:last-child { border-radius: 0 2px 2px 0; border-left: none; }
+.pan-modebtn.active { background: #263a6a; color: #cdd6ff; border-color: var(--pan-accent2); }
+
+.pan-numinput { flex: 1 1 auto; min-width: 40px; display: flex; }
+.pan-input-num { text-align: right; font-variant-numeric: tabular-nums; }
+.pan-input-expr {
+  font-family: var(--pan-mono);
+  color: #ffe08a;
+  background: #0b0b12;
+}
+
+.pan-unit {
+  flex: 0 0 auto;
+  color: #5f5f78;
+  font-size: 10px;
+  min-width: 12px;
+}
+
+.pan-field-error {
+  display: none;
+  color: #ff9aa2;
+  font-size: 10px;
+  padding-left: 2px;
+  word-break: break-word;
+}
+.pan-field-error.show { display: block; }
+
+.pan-expr-hint {
+  font-size: 10px;
+  padding-left: 2px;
+}
+.pan-expr-hint.hidden { display: none; }
+
+body.pan-value-dragging { cursor: ew-resize !important; user-select: none; }
+body.pan-value-dragging * { cursor: ew-resize !important; }
+
+/* ======================= 顏色 / sprite 欄位 ======================= */
+
+.pan-colorfield {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.pan-color {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--pan-line2);
+  background: #07070c;
+  cursor: pointer;
+}
+.pan-color-hex {
+  flex: 1 1 auto;
+  min-width: 60px;
+  font-size: 11px;
+  text-align: center;
+  text-transform: lowercase;
+}
+
+.pan-spritefield {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  position: relative;
+  padding: 1px;
+  border: 1px dashed transparent;
+  border-radius: 2px;
+}
+.pan-spritefield.drop-target {
+  border-color: var(--pan-accent);
+  background: rgba(0, 192, 0, 0.08);
+}
+
+.pan-sprite-picker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: #10101a;
+  border: 1px solid var(--pan-line2);
+  border-radius: 2px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+  max-height: 260px;
+  overflow: auto;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.pan-sprite-list { display: flex; flex-direction: column; max-height: 180px; overflow: auto; }
+.pan-sprite-item {
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--pan-fg);
+  font-family: var(--pan-mono);
+  font-size: 11px;
+  padding: 2px 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pan-sprite-item:hover { background: #26304f; color: #fff; }
+.pan-sprite-picker-hint { color: var(--pan-fg-dim); font-size: 10px; padding: 2px 4px; border-top: 1px solid var(--pan-line); }
+
+/* ======================= 事件型別列 ======================= */
+
+.pan-event-type {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  background: #0d0d16;
+  border-bottom: 1px solid var(--pan-line);
+}
+.pan-event-type .pan-select { flex: 1 1 auto; }
+
+.pan-error-banner {
+  margin: 6px 10px;
+  border: 1px solid #5a2a32;
+  background: rgba(255, 77, 94, 0.08);
+  border-radius: 2px;
+  padding: 5px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pan-error-list { display: flex; flex-direction: column; gap: 3px; }
+.pan-error-row {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 11px;
+  word-break: break-word;
+}
+.pan-error-msg { color: #ffb0b8; }
+
+/* ======================= 表達式說明 ======================= */
+
+.pan-expr-help { display: flex; flex-direction: column; gap: 6px; }
+.pan-expr-cols { display: flex; gap: 12px; flex-wrap: wrap; }
+.pan-expr-col { flex: 1 1 130px; min-width: 0; }
+.pan-expr-h {
+  color: #8fa8e0;
+  font-size: 11px;
+  border-bottom: 1px solid var(--pan-line);
+  margin-bottom: 3px;
+  padding-bottom: 2px;
+}
+.pan-expr-row { display: flex; gap: 5px; align-items: baseline; font-size: 11px; padding: 1px 0; }
+.pan-expr-desc { color: #7f7f98; font-size: 10px; }
+
+/* ======================= 陣列編輯器（party / enemies） ======================= */
+
+.pan-list { display: flex; flex-direction: column; gap: 5px; }
+.pan-list-item {
+  border: 1px solid var(--pan-line);
+  background: #0d0d16;
+  border-radius: 2px;
+  padding: 4px 6px 6px;
+}
+.pan-list-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.pan-list-title {
+  flex: 1 1 auto;
+  color: #b0c0e8;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ======================= 素材瀏覽器 ======================= */
+
+.pan-assets-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--pan-line);
+  background: #0b0b13;
+  flex: 0 0 auto;
+}
+
+.pan-tagbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.pan-tag {
+  background: #14141f;
+  border: 1px solid var(--pan-line);
+  border-radius: 9px;
+  color: #9090a8;
+  font-family: var(--pan-mono);
+  font-size: 10px;
+  padding: 1px 7px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pan-tag:hover { background: #1e1e30; color: #c8c8e0; }
+.pan-tag.active {
+  background: #263a6a;
+  border-color: var(--pan-accent2);
+  color: #d0d8ff;
+}
+
+.pan-assets-main {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pan-assets-scroll {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  outline: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pan-line2) var(--pan-bg);
+}
+
+.pan-assets-spacer { position: relative; width: 100%; }
+
+.pan-assets-grid {
+  position: absolute;
+  top: 0;
+  display: grid;
+  will-change: transform;
+}
+
+.pan-asset-tile {
+  width: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  padding: 2px;
+  background: #0e0e18;
+  user-select: none;
+  overflow: hidden;
+}
+.pan-asset-tile:hover { background: #1a1a2a; border-color: var(--pan-line2); }
+.pan-asset-tile.selected {
+  border-color: var(--pan-accent2);
+  background: #1c2450;
+  box-shadow: 0 0 0 1px rgba(111, 125, 255, 0.5);
+}
+.pan-asset-tile.dragging { opacity: 0.5; }
+.pan-asset-tile:focus-visible { outline: 1px solid var(--pan-accent2); }
+
+.pan-asset-thumb {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    repeating-conic-gradient(#15151f 0% 25%, #101018 0% 50%) 50% / 8px 8px;
+  border-radius: 1px;
+  overflow: hidden;
+}
+.pan-asset-img { image-rendering: pixelated; -ms-interpolation-mode: nearest-neighbor; display: block; }
+.pan-asset-ph {
+  color: #44445a;
+  font-size: 9px;
+  text-align: center;
+  padding: 0 2px;
+  word-break: break-all;
+}
+.pan-asset-name {
+  width: 100%;
+  font-size: 9px;
+  color: #9a9ab0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pan-assets-empty { padding: 20px; text-align: center; }
+
+.pan-assets-detail {
+  flex: 0 0 190px;
+  min-width: 0;
+  border-left: 1px solid var(--pan-line);
+  background: #0b0b13;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pan-line2) var(--pan-bg);
+}
+
+.pan-detail-title {
+  color: #9ff0c0;
+  font-size: 12px;
+  word-break: break-all;
+  border-bottom: 1px solid var(--pan-line);
+  padding-bottom: 4px;
+}
+
+.pan-detail-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  background:
+    repeating-conic-gradient(#15151f 0% 25%, #101018 0% 50%) 50% / 10px 10px;
+  border: 1px solid var(--pan-line);
+  border-radius: 2px;
+  overflow: hidden;
+  padding: 4px;
+}
+.pan-detail-preview img { image-rendering: pixelated; }
+
+.pan-detail-info { display: flex; flex-direction: column; gap: 2px; }
+.pan-detail-row { display: flex; gap: 6px; font-size: 11px; align-items: baseline; }
+.pan-detail-label { flex: 0 0 44px; color: var(--pan-fg-dim); text-align: right; }
+.pan-detail-value { flex: 1 1 auto; color: #c0c8e0; word-break: break-all; }
+
+.pan-detail-frames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.pan-frame-thumb {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  background: #0a0a12;
+  border: 1px solid var(--pan-line);
+  border-radius: 1px;
+}
+
+.pan-detail-actions { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.pan-toast {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translate(-50%, 8px);
+  background: rgba(20, 30, 55, 0.95);
+  border: 1px solid var(--pan-line2);
+  color: #d0d8ff;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-size: 11px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 60;
+  max-width: 90%;
+  text-align: center;
+}
+.pan-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ======================= 子彈類型面板 ======================= */
+
+.pan-bt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 7px;
+  flex: 0 0 auto;
+  max-height: 42%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pan-line2) var(--pan-bg);
+}
+
+.pan-bt-item {
+  border: 1px solid var(--pan-line);
+  border-radius: 2px;
+  background: #0d0d16;
+  padding: 3px 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.pan-bt-item:hover { border-color: var(--pan-line2); background: #12121d; }
+.pan-bt-item.selected {
+  border-color: var(--pan-accent2);
+  background: #171d33;
+  box-shadow: inset 2px 0 0 var(--pan-accent2);
+}
+
+.pan-bt-namerow { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.pan-bt-name {
+  flex: 1 1 auto;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #c8d0f0;
+  font-family: var(--pan-mono);
+  font-size: 12px;
+  padding: 1px 2px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pan-bt-name:hover { color: #fff; text-decoration: underline; }
+.pan-bt-item.selected .pan-bt-name { color: #dfe6ff; }
+.pan-bt-refs {
+  flex: 0 0 auto;
+  font-size: 9px;
+  color: #7f8fc0;
+  background: #1a2238;
+  border-radius: 7px;
+  padding: 0 5px;
+  white-space: nowrap;
+}
+.pan-bt-rename {
+  flex: 1 1 auto;
+  font-size: 12px;
+}
+
+.pan-bt-sub {
+  font-size: 10px;
+  color: #6f7f9f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 2px;
+}
+
+.pan-bt-preview-host {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  border-top: 1px solid var(--pan-line);
+  scrollbar-width: thin;
+  scrollbar-color: var(--pan-line2) var(--pan-bg);
+}
+
+.pan-bt-previewbar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.pan-bt-frameinfo { margin-left: auto; color: #7f8fa8; font-size: 10px; }
+
+.pan-bt-canvas {
+  display: block;
+  margin: 0 auto;
+  background: #101018;
+  border: 1px solid var(--pan-line2);
+  border-radius: 2px;
+  image-rendering: pixelated;
+  cursor: crosshair;
+  touch-action: none;
+  max-width: 100%;
+}
+.pan-bt-canvas.dragging { cursor: none; }
+
+.pan-bt-hbinfo {
+  font-size: 11px;
+  color: #7fe0b0;
+  text-align: center;
+}
+
+.pan-bt-previewopts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.pan-check-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  color: #b0b8d0;
+  font-size: 11px;
+  user-select: none;
+}
+.pan-check { accent-color: var(--pan-accent2); cursor: pointer; margin: 0; }
+.pan-check-label { white-space: nowrap; }
+.pan-check-wrap.has-error { outline: 1px solid var(--pan-danger); }
+
+/* ======================= 演示 demo：路徑點數值表格（§4-7） ======================= */
+
+.pan-demo { display: flex; flex-direction: column; gap: 6px; }
+
+.pan-demo-tablehint {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--pan-fg-dim);
+  font-size: 10px;
+  line-height: 1.45;
+}
+.pan-demo-tablewarn { color: #e0b060; }
+
+.pan-demo-tablewrap {
+  overflow-x: auto;
+  border: 1px solid var(--pan-line);
+  border-radius: 2px;
+  background: #0b0b13;
+}
+
+.pan-demo-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--pan-mono);
+  font-size: 11px;
+}
+
+.pan-demo-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #14141f;
+  color: #9090a8;
+  font-weight: normal;
+  font-size: 10px;
+  text-align: left;
+  padding: 3px 3px;
+  border-bottom: 1px solid var(--pan-line);
+  white-space: nowrap;
+}
+.pan-demo-th-index { width: 20px; text-align: right !important; }
+.pan-demo-th-actions { width: 62px; }
+
+.pan-demo-tr { border-bottom: 1px solid #171725; }
+.pan-demo-tr:last-child { border-bottom: none; }
+.pan-demo-tr:hover { background: #12121e; }
+/* 目前時間游標落在這一段 → 高亮，讓「表格 ↔ 預覽」對得起來 */
+.pan-demo-tr.is-active {
+  background: #17202f;
+  box-shadow: inset 2px 0 0 var(--pan-accent2);
+}
+
+.pan-demo-td {
+  padding: 2px 2px;
+  vertical-align: middle;
+  min-width: 0;
+}
+.pan-demo-td-index {
+  color: #6f7f9f;
+  font-size: 10px;
+  text-align: right;
+  padding-right: 4px;
+}
+.pan-demo-td-center { text-align: center; }
+.pan-demo-td-tools { padding-left: 2px; }
+
+.pan-demo-cell {
+  padding: 1px 3px;
+  font-size: 11px;
+  height: 20px;
+  min-width: 44px;
+}
+
+.pan-demo-slow { display: flex; justify-content: center; }
+
+.pan-demo-rowtools {
+  display: flex;
+  gap: 2px;
+  justify-content: flex-end;
+}
+.pan-demo-rowtools .pan-btn {
+  padding: 0 4px;
+  font-size: 10px;
+  line-height: 16px;
+  min-width: 18px;
+}
+
+/* ============ V2-06：自動產生路徑 / 實際軌跡疊圖 / BGM 可搜尋下拉 ============ */
+
+.pan-demogen,
+.pan-demotrace {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px 6px 7px;
+  border: 1px solid var(--pan-line);
+  border-radius: 3px;
+  background: #0d0d16;
+}
+
+.pan-demogen-status {
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--pan-fg-dim);
+  min-height: 14px;
+}
+.pan-demogen-status.is-error { color: #ff8a8a; }
+.pan-demogen-status.is-ok { color: #7fe0b0; }
+
+.pan-demogen-bar {
+  height: 5px;
+  border-radius: 3px;
+  background: #1b1b28;
+  overflow: hidden;
+}
+.pan-demogen-bar[hidden] { display: none; }
+.pan-demogen-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #4aa8ff, #7fe0b0);
+  transition: width 0.18s ease-out;
+}
+
+/* 自動駕駛未就緒（describe().ready === false）的提示 */
+.pan-demogen-warn {
+  font-size: 10px;
+  line-height: 1.45;
+  color: #e0b060;
+  border-left: 2px solid #e0b060;
+  padding-left: 5px;
+}
+
+.pan-demotrace-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--pan-mono);
+  font-size: 10px;
+  color: var(--pan-fg-dim);
+}
+.pan-demotrace-hit { color: #ff8ac4; }
+
+/* 實際軌跡圖例（檢查器與預覽用同一組顏色） */
+.pan-demotrace-legend {
+  display: flex;
+  gap: 10px;
+  font-size: 10px;
+  color: var(--pan-fg-dim);
+  flex-wrap: wrap;
+}
+.pan-demotrace-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.pan-demotrace-legend i { width: 14px; height: 0; border-top-width: 2px; border-top-style: solid; display: inline-block; }
+.pan-demotrace-legend i.is-target { border-top-color: rgba(120, 220, 255, 0.85); border-top-style: dashed; }
+.pan-demotrace-legend i.is-actual { border-top-color: rgba(255, 138, 196, 0.92); }
+.pan-demotrace-legend i.is-hit { border-top: none; width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 75, 75, 0.9); }
+
+/* 時間欄位（接受 "2b" 這種拍點字串） */
+.pan-field-time .pan-input-time {
+  font-family: var(--pan-mono);
+  min-width: 62px;
+}
+.pan-time-hint {
+  font-size: 9.5px;
+  color: #6f7f9f;
+  white-space: nowrap;
+}
+
+/* BGM 可搜尋下拉 */
+.pan-music-picker { max-height: 280px; overflow-y: auto; }
+/* 清單是 flex column，項目必須 flex:0 0 auto 否則 60 個項目會被壓成 3px 高、文字疊在一起 */
+.pan-music-picker .pan-sprite-list { max-height: 220px; }
+.pan-music-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-height: 18px;
+  line-height: 16px;
+  padding: 2px 5px;
+}
+.pan-music-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pan-music-tags {
+  flex: 0 0 auto;
+  font-size: 9px;
+  color: #6f7f9f;
+  max-width: 46%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pan-music-badge {
+  flex: 0 0 auto;
+  font-size: 9px;
+  color: #0b0b13;
+  background: #7fe0b0;
+  border-radius: 2px;
+  padding: 0 3px;
+}
+.pan-music-meta { font-size: 10px; color: #6f7f9f; }
+
+/* ======================= 窄面板自適應 ======================= */
+
+@media (max-width: 1100px) {
+  .pan-row-label { min-width: 56px; max-width: 108px; }
+  .pan-assets-detail { flex-basis: 150px; }
+  .pan-numlabel { min-width: 44px; max-width: 104px; }
+}
+
+@media (max-width: 900px) {
+  .pan-assets-main { flex-direction: column; }
+  .pan-assets-detail {
+    flex: 0 0 auto;
+    max-height: 34%;
+    border-left: none;
+    border-top: 1px solid var(--pan-line);
+  }
+}
+
+/* B5：雙擊時間軸事件條後，把檢查器捲回頂端並短暫高亮，讓使用者一眼看到「聚焦到哪裡」 */
+.pan-inspector.is-flash {
+  animation: pan-flash 0.9s ease-out;
+}
+
+@keyframes pan-flash {
+  0% {
+    box-shadow: inset 0 0 0 2px rgba(255, 217, 61, 0.85);
+  }
+  100% {
+    box-shadow: inset 0 0 0 2px rgba(255, 217, 61, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pan-inspector.is-flash {
+    animation: none;
+    box-shadow: inset 0 0 0 2px rgba(255, 217, 61, 0.7);
+  }
+}

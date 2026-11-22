@@ -1,0 +1,190 @@
+{
+  "format": "dr-battle-encounter/1",
+  "meta": {
+    "name": "折纸哨兵 · 值班测试",
+    "author": "Scene Studio"
+  },
+  "settings": {
+    "seed": 13,
+    "canFlee": true,
+    "hudLayout": "classic",
+    "soulFlight": "classic",
+    "bgm": "battle",
+    "introText": {
+      "zh": "* 折纸哨兵把值班单翻到了背面。",
+      "en": "* PAPER GUARD turns over the duty sheet."
+    },
+    "bossHud": {
+      "widgets": {
+        "duty": {
+          "type": "text",
+          "show": "always",
+          "anchor": "actor",
+          "actor": "guard",
+          "x": 0,
+          "y": -52,
+          "align": "center",
+          "text": {
+            "zh": "巡逻中",
+            "en": "ON DUTY"
+          },
+          "scale": 0.65,
+          "color": "#ffe1a6"
+        }
+      }
+    }
+  },
+  "actors": {
+    "kris": {
+      "kind": "party",
+      "x": 120,
+      "y": 219,
+      "anims": {
+        "idle": {
+          "sprite": "spr_krisb_idle",
+          "fps": 5
+        },
+        "attack": {
+          "sprite": "spr_krisb_attack",
+          "fps": 15,
+          "loop": false,
+          "then": "idle"
+        },
+        "defend": {
+          "sprite": "spr_krisb_defend",
+          "fps": 8
+        },
+        "down": {
+          "sprite": "spr_krisb_defeat",
+          "fps": 1
+        },
+        "victory": {
+          "sprite": "spr_krisb_victory",
+          "fps": 8
+        }
+      }
+    },
+    "guard": {
+      "kind": "enemy",
+      "x": 502,
+      "y": 247,
+      "anims": {
+        "idle": {
+          "sprite": "spr_diamondm_idle",
+          "fps": 5
+        },
+        "hurt": {
+          "sprite": "spr_diamondm_hurt",
+          "fps": 6,
+          "loop": false,
+          "then": "idle"
+        },
+        "spared": {
+          "sprite": "spr_diamondm_spared",
+          "fps": 6,
+          "loop": false
+        },
+        "defeat": {
+          "sprite": "spr_diamondm_hurt",
+          "fps": 1
+        }
+      }
+    }
+  },
+  "party": [
+    {
+      "id": "kris",
+      "actor": "kris",
+      "name": "Kris",
+      "hp": 40,
+      "maxHp": 40,
+      "atk": 22,
+      "def": 0,
+      "color": "#00ffff",
+      "commands": [
+        "fight",
+        "act",
+        "spare",
+        "defend"
+      ]
+    }
+  ],
+  "enemies": [
+    {
+      "id": "guard",
+      "actor": "guard",
+      "name": {
+        "zh": "折纸哨兵",
+        "en": "PAPER GUARD"
+      },
+      "hp": 18,
+      "maxHp": 18,
+      "atk": 8,
+      "def": 0,
+      "mercy": 0,
+      "spareAt": 100,
+      "acts": [
+        {
+          "id": "stamp",
+          "name": {
+            "zh": "盖章",
+            "en": "STAMP"
+          },
+          "mercy": 100,
+          "text": {
+            "zh": "* 你给值班单盖了章。它立刻写上了下班时间。",
+            "en": "* You stamp the duty sheet. The guard writes down its clock-out time."
+          }
+        }
+      ]
+    }
+  ],
+  "turns": [
+    {
+      "id": "paper_rain",
+      "flavor": {
+        "zh": "* 纸张摩擦的声音越来越大。",
+        "en": "* The papers are getting restless."
+      },
+      "attack": "paper-guard-rain"
+    }
+  ],
+  "hooks": {
+    "victory": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 哨兵折成一叠通行纸。",
+          "en": "* The guard folds into a stack of passes."
+        }
+      }
+    ],
+    "spared": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 它收好值班单，腾出半步。",
+          "en": "* It files the sheet and steps aside."
+        }
+      }
+    ],
+    "defeat": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 你被纸片盖住了。哨兵替你扫出一条路。",
+          "en": "* You're buried in paper. The guard sweeps you a way out."
+        }
+      }
+    ],
+    "flee": [
+      {
+        "cmd": "say",
+        "text": {
+          "zh": "* 你后退了一步。哨兵也后退了一步。",
+          "en": "* You take a step back. The guard takes one too."
+        }
+      }
+    ]
+  }
+}

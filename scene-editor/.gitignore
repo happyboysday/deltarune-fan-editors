@@ -1,0 +1,18 @@
+# Large generated map data, recordings and local work output stay out of version control
+/chapters/
+/chapter5/
+/examples/*.mp4
+/examples/*.html
+/projects/
+/legacy-*/
+/battle-workspace/
+/.relocated/
+__pycache__/
+*.pyc
+/.v04-cache/
+/.research/
+/.ui-cache/
+
+# Codex scratch output
+/.codex-tmp/
+/tools/test-env.local.json

@@ -1,0 +1,1826 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DR Battle — 試玩（play.html）</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<style>
+  :root {
+    --ink: #d8d2ff;
+    --dim: #7f79a6;
+    --line: #2a2240;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #05030a;
+    color: var(--ink);
+    font-family: "Courier New", "Consolas", monospace;
+    overflow: hidden;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  #stage {
+    position: relative;
+    line-height: 0;
+    border: 2px solid var(--line);
+    box-shadow: 0 0 0 1px #000, 0 12px 48px rgba(96, 48, 168, 0.28);
+    background: #000;
+  }
+  #game {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: #000;
+  }
+  #hud {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #9af7c0;
+    text-shadow: 0 1px 0 #000, 0 0 6px rgba(0, 0, 0, 0.9);
+    text-align: right;
+    pointer-events: none;
+    white-space: pre;
+    opacity: 0.92;
+  }
+  #banner {
+    position: absolute;
+    /* 讓開左側 TP 條（x≈14..28）與右上角 HUD，僅覆蓋中間偏左區域 */
+    left: 40px;
+    top: 8px;
+    max-width: 46%;
+    padding: 6px 9px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #ffd9a0;
+    background: rgba(28, 10, 4, 0.86);
+    border: 1px solid #a4631e;
+    border-radius: 3px;
+    white-space: pre-wrap;
+    pointer-events: none;
+  }
+  #banner[hidden] { display: none; }
+  #help {
+    font-size: 12px;
+    color: var(--dim);
+    letter-spacing: 0.3px;
+    text-align: center;
+    line-height: 1.7;
+    user-select: none;
+  }
+  #help b { color: var(--ink); font-weight: bold; }
+  #help .sep { color: #3a3258; padding: 0 6px; }
+  #paused {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.62);
+    text-shadow: 0 0 18px rgba(150, 96, 226, 0.8);
+    pointer-events: none;
+  }
+  #paused[hidden] { display: none; }
+
+  /* SPEC-AUTOPLAY §4：畫布外的自動演示工具列（狀態只在頁面上，不畫進遊戲畫面） */
+  #toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 96vw;
+    font-size: 12px;
+    color: var(--ink);
+    user-select: none;
+  }
+  #toolbar button,
+  #toolbar select {
+    font: inherit;
+    font-size: 12px;
+    color: var(--ink);
+    background: #171129;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 2px 8px;
+    cursor: pointer;
+  }
+  #toolbar button:hover:not(:disabled),
+  #toolbar select:hover { border-color: #5b4b8a; }
+  #toolbar button:disabled { opacity: 0.45; cursor: default; }
+  #auto-status {
+    color: #9af7c0;
+    min-width: 12ch;
+    text-shadow: 0 1px 0 #000;
+  }
+  #auto-warn { color: #ffd9a0; }
+  #auto-warn[hidden] { display: none; }
+
+  /* 錄製結果面板（同樣在畫布外） */
+  #rec-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: min(760px, 94vw);
+    padding: 8px 10px;
+    background: #0d0918;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  #rec-panel[hidden] { display: none; }
+  #rec-panel textarea {
+    width: 100%;
+    resize: vertical;
+    font: inherit;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: #05030a;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 5px 7px;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  #rec-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  #rec-actions button {
+    font: inherit;
+    font-size: 12px;
+    color: var(--ink);
+    background: #171129;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 3px 9px;
+    cursor: pointer;
+  }
+  #rec-actions button:disabled { opacity: 0.45; cursor: default; }
+  #rec-note { color: var(--dim); white-space: pre-wrap; }
+
+  /* ?chrome=0：錄影用，只留畫布；右上角保留極小 AUTO 狀態字（SPEC-AUTOPLAY §4-11） */
+  body.chrome-hidden { gap: 0; }
+  body.chrome-hidden #help,
+  body.chrome-hidden #hud,
+  body.chrome-hidden #banner,
+  body.chrome-hidden #paused,
+  body.chrome-hidden #rec-panel { display: none !important; }
+  body.chrome-hidden #toolbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 50;
+    display: block;
+    width: auto;
+    padding: 4px 6px;
+    background: transparent;
+    border: 0;
+    pointer-events: none;
+  }
+  body.chrome-hidden #toolbar > *:not(#auto-status) { display: none !important; }
+  body.chrome-hidden #auto-status {
+    min-width: 0;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    opacity: 0.9;
+    text-shadow: 0 1px 0 #000, 0 0 3px #000;
+  }
+  body.chrome-hidden #stage { border: 0; box-shadow: none; }
+  /* ?chrome=0 時錄影 UI 全部隱藏（功能照常；節流提示也藏起來以免入鏡） */
+  body.chrome-hidden #vidrec-group,
+  body.chrome-hidden #vidrec-throttle { display: none !important; }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="game" width="640" height="480"></canvas>
+    <div id="hud">…</div>
+    <div id="banner" hidden></div>
+    <div id="paused" hidden>暫停</div>
+  </div>
+  <div id="toolbar">
+    <button id="auto-toggle" type="button" title="快捷鍵 P">自動：關</button>
+    <select id="auto-mode" title="自動演示模式">
+      <option value="demo">腳本</option>
+      <option value="bot">AI</option>
+      <option value="off">關</option>
+    </select>
+    <span id="auto-status"></span>
+    <button id="rec-toggle" type="button" title="從第 0 幀開始錄製人類輸入">錄製</button>
+    <button id="rec-restart" type="button" title="腳本模式重新對齊時間軸">從頭重播</button>
+  </div>
+  <div id="auto-warn" hidden></div>
+  <div id="rec-panel" hidden>
+    <div id="rec-note"></div>
+    <textarea id="rec-text" readonly rows="4" spellcheck="false"></textarea>
+    <div id="rec-actions">
+      <button id="rec-apply" type="button">存進作品（PATCH /demo/inputs）</button>
+      <button id="rec-download" type="button">下載 JSON</button>
+      <button id="rec-copy" type="button">複製字串</button>
+      <button id="rec-close" type="button">關閉</button>
+    </div>
+  </div>
+  <div id="help">
+    <b>方向鍵 / WASD</b> 移動<span class="sep">・</span>
+    <b>X / Shift</b> 低速<span class="sep">・</span>
+    <b>Esc</b> 暫停<span class="sep">・</span>
+    <b>R</b> 重來<span class="sep">・</span>
+    <b>P</b> 自動<span class="sep">・</span>
+    <b>H</b> hitbox<span class="sep">・</span>
+    <b>G</b> 格線<span class="sep">・</span>
+    <b>M</b> 靜音<span class="sep">・</span>
+    <b>V</b> 錄影<span class="sep">・</span>
+    <b>L</b> 語言 <span id="lang-label">zh</span>
+  </div>
+  <script type="module">
+    /* =========================================================================
+     * play.html — 引擎試玩頁（E2 擁有）
+     *
+     * 正式路徑：import { createBattle, loadAssets } from './engine/index.js'
+     *   - 但 engine/index.js 由 E1 平行開發中，若尚未存在，模組載入會整體失敗，
+     *     連 ?mock=1 的渲染自測都會一起掛掉。因此改用動態 import + 例外處理：
+     *     引擎可用 → 走正式 createBattle；引擎缺失 → 顯示提示並自動切到假資料。
+     *
+     * ?mock=1          使用 play.html 內建的假 state 產生器（不需 E1 的 sim）
+     * ?attack=<url>    載入攻擊 JSON（相對 play.html）
+     * ?scale=<n>       固定整數縮放（1..6）；預設依視窗自動取最大整數倍
+     * ?bg=sprite       假資料改用 settings.background sprite 平鋪（測素材背景）
+     * ?autoplay=demo|bot  開頁即啟動自動演示（SPEC-AUTOPLAY §4）
+     * &chrome=0        隱藏頁面 UI（工具列/說明/HUD/提示），只留畫布，方便錄影
+     * &record=1        開頁即錄影（WebM，含遊戲音訊）；戰鬥結束後再錄 1 秒自動停止並下載
+     * &recscale=1|2|3  錄影輸出倍率（最近鄰放大；V2-10）
+     * ========================================================================= */
+
+    import { createRenderer, LOGICAL_WIDTH, LOGICAL_HEIGHT, computeFitScale } from './engine/render.js';
+    import { createInput, normalizeFrameInput } from './engine/input.js';
+    import { createAudio } from './engine/audio.js';
+    import { loadAssets } from './engine/assets.js';
+    import { createAutopilot, createRecorder } from './engine/autoplay/index.js';
+    import { mountRecorderUi } from './tools/web/recorder-ui.js';
+
+    const SIM_FPS = 30;
+    const STEP_MS = 1000 / SIM_FPS;
+    const params = new URLSearchParams(location.search);
+    const mockParam = params.get('mock') === '1' || params.get('mock') === 'true';
+    const spriteBg = params.get('bg') === 'sprite';
+    const scaleParam = Number(params.get('scale'));
+    const attackParam = params.get('attack');
+    // Phase 2：BGM。優先 ?bgm= 覆寫，其次攻擊檔的 settings.bgm
+    const bgmParam = params.get('bgm');
+    const bgmOff = bgmParam === 'off' || bgmParam === '0' || params.get('mutebgm') === '1';
+    // SPEC-AUTOPLAY §4：?autoplay=demo|bot 開頁即啟動；&chrome=0 只留畫布
+    const autoplayParam = params.get('autoplay');
+    const autoStartMode = autoplayParam === 'bot' ? 'bot' : autoplayParam === 'demo' ? 'demo' : null;
+    const chromeHidden = params.get('chrome') === '0';
+    // V2-10 頁內錄影：?record=1 開頁即錄、?recscale=1|2|3 倍率
+    const autoVideoRecord = params.get('record') === '1' || params.get('record') === 'true';
+    const videoScaleParam = Math.max(1, Math.min(3, Math.floor(Number(params.get('recscale')) || 1)));
+
+    const canvas = document.getElementById('game');
+    const stageEl = document.getElementById('stage');
+    const hudEl = document.getElementById('hud');
+    const bannerEl = document.getElementById('banner');
+    const pausedEl = document.getElementById('paused');
+    const langLabelEl = document.getElementById('lang-label');
+    const toolbarEl = document.getElementById('toolbar');
+    const autoToggleEl = document.getElementById('auto-toggle');
+    const autoModeEl = document.getElementById('auto-mode');
+    const autoStatusEl = document.getElementById('auto-status');
+    const autoWarnEl = document.getElementById('auto-warn');
+    const recToggleEl = document.getElementById('rec-toggle');
+    const recRestartEl = document.getElementById('rec-restart');
+    const recPanelEl = document.getElementById('rec-panel');
+    const recNoteEl = document.getElementById('rec-note');
+    const recTextEl = document.getElementById('rec-text');
+    const recApplyEl = document.getElementById('rec-apply');
+    const recDownloadEl = document.getElementById('rec-download');
+    const recCopyEl = document.getElementById('rec-copy');
+    const recCloseEl = document.getElementById('rec-close');
+    if (chromeHidden) document.body.classList.add('chrome-hidden');
+
+    /* 全域錯誤可視化：讓 E1/編輯器整合時一眼看到哪個模組爆了 */
+    const runtimeErrors = [];
+    window.addEventListener('error', (event) => {
+      const msg = event && event.message ? event.message : '未知錯誤';
+      runtimeErrors.push(msg);
+      if (runtimeErrors.length <= 3) setBanner('執行期錯誤：' + msg);
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+      const reason = event && event.reason;
+      const msg = reason && reason.message ? reason.message : String(reason);
+      runtimeErrors.push(msg);
+      if (runtimeErrors.length <= 3) setBanner('未處理的 Promise 錯誤：' + msg);
+    });
+
+    let renderer = null;
+    let assets = null;
+    let audio = null;
+    let engine = null;          // E1 引擎模組（若可用）
+    let battle = null;          // E1 battle 實例
+    let useMock = mockParam;    // 目前是否使用假資料
+    let mock = null;            // 假 state 產生器
+    let mockInput = null;       // 假資料模式的鍵盤輸入
+    let paused = false;
+    let showHitboxes = params.get('hit') === '1';
+    let showGrid = true;
+    let muted = false;
+    // SPEC §7 語言：遊戲畫面 zh/en，預設 zh；?lang=en 或 localStorage 可覆寫
+    let lang = params.get('lang') === 'en' ? 'en' : params.get('lang') === 'zh' ? 'zh' : 'zh';
+    try {
+      const savedLang = localStorage.getItem('dr-lang');
+      if (!params.get('lang') && (savedLang === 'zh' || savedLang === 'en')) lang = savedLang;
+    } catch (_err) {
+      /* 無 localStorage：維持預設 */
+    }
+    let rafId = 0;
+    let lastTime = 0;
+    let acc = 0;
+    let destroyed = false;
+    let ended = false;
+    let fps = 0;
+    let fpsFrames = 0;
+    let fpsClock = 0;
+    let currentScale = 1;
+    // ?owner=page：強制由 play.html 驅動 step/draw（引擎預設自己持有 rAF 迴圈）
+    const forcePageLoop = params.get('owner') === 'page';
+
+    /* ------------------------------------------------------------------ 提示 */
+
+    function setBanner(text) {
+      if (!text) {
+        bannerEl.hidden = true;
+        bannerEl.textContent = '';
+        return;
+      }
+      bannerEl.hidden = false;
+      bannerEl.textContent = text;
+    }
+
+    /** 遊戲畫面用語（簡體 zh / en）；開發提示一律繁體中文（編輯器/除錯用） */
+    const UI_TEXT = {
+      zh: {
+        ended: '战斗结束。按 R 重新开始。',
+        pause: '暂停',
+        langName: 'zh',
+      },
+      en: {
+        ended: 'BATTLE OVER. Press R to restart.',
+        pause: 'PAUSE',
+        langName: 'en',
+      },
+    };
+
+    function ui(key) {
+      const table = UI_TEXT[lang === 'en' ? 'en' : 'zh'];
+      return Object.prototype.hasOwnProperty.call(table, key) ? table[key] : key;
+    }
+
+    function endedBannerText() {
+      return ui('ended');
+    }
+
+    /* -------------------------------------------------------- 內建示範攻擊 */
+
+    // 給 E1 整合測試用：符合 SPEC §3/§4/§5 的最小攻擊檔
+    const DEMO_ATTACK = {
+      format: 'dr-battle-attack/1',
+      meta: { name: '示範：黑桃雨', author: 'E2' },
+      settings: {
+        duration: 12,
+        seed: 7,
+        damage: 10,
+        invincibleFrames: 30,
+        grazeTP: 1.0,
+        background: null,
+        bgm: null,
+      },
+      box: { x: 320, y: 171, w: 150, h: 150, rotation: 0, border: 5, color: '#00c000' },
+      soul: { x: null, y: null, speed: 4, slowSpeed: 2, mode: 'red', color: '#ff0000' },
+      party: [
+        { name: 'Kris', hp: 90, maxHp: 90, color: '#00ffff', icon: null },
+        { name: 'Susie', hp: 110, maxHp: 110, color: '#ff00ff', icon: null },
+        { name: 'Ralsei', hp: 70, maxHp: 70, color: '#00ff00', icon: null },
+      ],
+      enemies: [
+        { sprite: 'spr_jigsawry_idle', x: 520, y: 200, scale: 2, frameRate: 6 },
+        { sprite: 'spr_ponman_idle', x: 148, y: 208, scale: 2, frameRate: 4 },
+      ],
+      bulletTypes: {
+        spade: {
+          sprite: 'spr_spadebullet',
+          frameRate: 0,
+          scale: 1,
+          color: null,
+          hitbox: { shape: 'circle', r: 6 },
+          damage: null,
+          grazeable: true,
+          destroyOnHit: true,
+          faceVelocity: true,
+          offscreen: 'destroy',
+          maskToBox: false,
+        },
+        ring: {
+          sprite: 'spr_spadebullet',
+          frameRate: 0,
+          scale: 0.5,
+          color: null,
+          hitbox: { shape: 'circle', r: 5 },
+          damage: null,
+          grazeable: true,
+          destroyOnHit: true,
+          faceVelocity: true,
+          offscreen: 'destroy',
+          maskToBox: true,
+        },
+      },
+      timeline: [
+        // life 有值才會回收：emitter 每 frame 都在生成，無限 life + offscreen keep 會爆量
+        { id: 'ev1', at: 0.0, type: 'emitter', label: '外圈黑桃', duration: 10, interval: 0.3, count: 8, spawn: { bullet: 'ring', speed: 1.6, angle: 'i * 45 + k * 12', life: 6 } },
+        { id: 'ev2', at: 0.5, type: 'emitter', label: '瞄準黑桃', duration: 9, interval: 0.7, count: 1, spawn: { bullet: 'spade', x: 'box.x + rand(-70, 70)', y: 'box.y - 96', speed: 2.2, angle: 'aim(x, y)', life: 8 } },
+        { id: 'ev3', at: 2.0, type: 'box', duration: 6, ease: 'sineInOut', to: { w: 170, h: 170, rotation: 6 } },
+        { id: 'ev4', at: 8.5, type: 'box', duration: 1.2, ease: 'quadInOut', to: { w: 150, h: 150, rotation: 0 } },
+        { id: 'ev5', at: 0.2, type: 'shake', duration: 0.4, amount: 2 },
+      ],
+    };
+
+    /* ============================================================ 假 state */
+
+    /**
+     * 假 state 產生器：只產生 getState() 形狀的物件（SPEC §9），
+     * 用來在 E1 的 sim 尚未完成前驗證渲染器全部視覺分支：
+     * 背景格線 / sprite 背景、敵人浮動、戰鬥框旋轉、子彈裁切、
+     * 染色、動畫幀、缺圖佔位、靈魂閃爍與擦彈光暈、
+     * 隊伍面板、TP 條、hitbox 除錯層、hurtFlash/grazeFlash、shake。
+     */
+    function createMockBattle(input) {
+      const FPS = SIM_FPS;
+      const party = [
+        { name: 'Kris', hp: 90, maxHp: 90, color: '#00ffff' },
+        { name: 'Susie', hp: 110, maxHp: 110, color: '#ff00ff' },
+        { name: 'Ralsei', hp: 70, maxHp: 70, color: '#00ff00' },
+      ];
+      const enemiesBase = [
+        { sprite: 'spr_jigsawry_idle', x: 520, y: 200, scale: 2, frames: 6, rate: 6 },
+        { sprite: 'spr_ponman_idle', x: 148, y: 208, scale: 2, frames: 4, rate: 4 },
+      ];
+      const attack = {
+        format: 'dr-battle-attack/1',
+        meta: { name: '假資料自測', author: 'E2' },
+        settings: {
+          duration: 999,
+          seed: 1,
+          damage: 10,
+          invincibleFrames: 30,
+          grazeTP: 1,
+          background: spriteBg ? 'spr_battlebg_0' : null,
+          bgm: null,
+        },
+        box: { x: 320, y: 171, w: 150, h: 150, rotation: 0, border: 5, color: '#00c000' },
+        soul: { x: null, y: null, speed: 4, slowSpeed: 2, mode: 'red', color: '#ff0000' },
+        party,
+        enemies: [],
+        bulletTypes: {},
+        timeline: [],
+      };
+
+      let frame = 0;
+      let time = 0;
+      let tp = 34;
+      let soulX = 320;
+      let soulY = 171;
+      let invFrames = 0;
+      let grazing = false;
+      let hurtFlash = 0;
+      let grazeFlash = 0;
+      let shakeX = 0;
+      let shakeY = 0;
+      const bullets = [];
+      let nextId = 1;
+
+      function addBullet(o) {
+        bullets.push(Object.assign({
+          id: nextId++,
+          type: 'spade',
+          sprite: 'spr_spadebullet',
+          x: 320,
+          y: 171,
+          angle: 0,
+          speed: 1,
+          rotation: 0,
+          angularVel: 0,
+          scale: 1,
+          alpha: 1,
+          color: null,
+          maskToBox: false,
+          hitbox: { shape: 'circle', r: 5 },
+          age: 0,
+          life: null,
+          frame: 0,
+        }, o));
+      }
+
+      const aimAt = (x, y) => (Math.atan2(soulY - y, soulX - x) * 180) / Math.PI;
+
+      function tick() {
+        frame += 1;
+        time = frame / FPS;
+
+        // --- 輸入 → 靈魂
+        const ins = input.read();
+        const speed = ins.slow ? 2 : 4;
+        soulX += ins.dx * speed;
+        soulY += ins.dy * speed;
+        const half = 75 - 8;
+        soulX = Math.max(320 - half, Math.min(320 + half, soulX));
+        soulY = Math.max(171 - half, Math.min(171 + half, soulY));
+
+        // --- 生成（模擬 emitter / spawn 事件）
+        if (frame % 12 === 0) {
+          // 每 12 幀一圈 8 發，環繞模式；maskToBox=true 測裁切
+          const k = frame / 12;
+          for (let i = 0; i < 8; i += 1) {
+            const ang = i * 45 + k * 13;
+            addBullet({
+              type: 'ring',
+              x: 320,
+              y: 171,
+              angle: ang,
+              speed: 1.5,
+              rotation: ang,
+              scale: 0.85,
+              maskToBox: true,
+              hitbox: { shape: 'circle', r: 5 },
+            });
+          }
+        }
+        if (frame % 24 === 0) {
+          // 從上方瞄準靈魂
+          const sx = 320 + (Math.random() * 140 - 70);
+          addBullet({
+            type: 'spade',
+            x: sx,
+            y: 171 - 92,
+            angle: aimAt(sx, 171 - 92),
+            speed: 2.1,
+            rotation: 0,
+            maskToBox: false,
+            hitbox: { shape: 'circle', r: 6 },
+          });
+        }
+        if (frame % 90 === 0) {
+          // 染色 + 放大 + 矩形 hitbox + 多幀動畫（spr_soulshining 12 幀）
+          addBullet({
+            type: 'star',
+            sprite: 'spr_starbullet_test',
+            x: 320 + (Math.random() * 120 - 60),
+            y: 171 + (Math.random() * 120 - 60),
+            angle: 0,
+            speed: 0,
+            rotation: 0,
+            scale: 1.6,
+            color: '#ffcc00',
+            hitbox: { shape: 'rect', w: 14, h: 14 },
+            life: 3,
+          });
+          addBullet({
+            type: 'anim',
+            sprite: 'spr_soulshining',
+            x: 320 - 60,
+            y: 171 + 50,
+            angle: 0,
+            speed: 0.4,
+            rotation: 0,
+            scale: 0.9,
+            hitbox: { shape: 'circle', r: 8 },
+            life: 4,
+          });
+        }
+        if (frame === 40) {
+          // 缺圖 → 洋紅佔位方塊（驗證缺素材不崩潰）
+          addBullet({
+            type: 'missing',
+            sprite: 'spr_sprite_that_does_not_exist',
+            x: 320,
+            y: 240,
+            angle: 0,
+            speed: 0,
+            rotation: 0,
+            scale: 2,
+            life: 2.5,
+            hitbox: { shape: 'rect', w: 24, h: 24 },
+          });
+        }
+
+        // --- 子彈運動 + 碰撞
+        grazing = false;
+        let hitThisFrame = false;
+        for (let i = bullets.length - 1; i >= 0; i -= 1) {
+          const b = bullets[i];
+          b.age += 1 / FPS;
+          b.x += Math.cos((b.angle * Math.PI) / 180) * b.speed;
+          b.y += Math.sin((b.angle * Math.PI) / 180) * b.speed;
+          if (b.angularVel) b.rotation += b.angularVel;
+          if (b.sprite === 'spr_soulshining') b.frame = Math.floor(b.age * 8) % 12;
+          if (b.sprite === 'spr_spadebullet' && b.speed > 0) b.rotation = b.angle;
+
+          const dx = b.x - soulX;
+          const dy = b.y - soulY;
+          const dist = Math.hypot(dx, dy);
+          const r = b.hitbox.shape === 'circle' ? b.hitbox.r : Math.max(b.hitbox.w, b.hitbox.h) / 2;
+          if (dist < r + 4 && invFrames <= 0) {
+            hitThisFrame = true;
+            invFrames = 30;
+            party[0].hp = Math.max(0, party[0].hp - 10);
+            hurtFlash = 1;
+            shakeX = (Math.random() * 2 - 1) * 4;
+            shakeY = (Math.random() * 2 - 1) * 4;
+          } else if (dist < r + 20) {
+            grazing = true;
+          }
+
+          const expired = b.life !== null && b.age >= b.life;
+          const offscreen = b.x < -80 || b.x > 720 || b.y < -80 || b.y > 560;
+          if (expired || offscreen) bullets.splice(i, 1);
+        }
+
+        if (grazing) tp = Math.min(100, tp + 0.9);
+        if (hitThisFrame) tp = Math.max(0, tp - 3);
+        if (invFrames > 0) invFrames -= 1;
+        hurtFlash = Math.max(0, hurtFlash - 0.06);
+        grazeFlash = grazing ? Math.min(1, grazeFlash + 0.25) : Math.max(0, grazeFlash - 0.08);
+        shakeX *= 0.8;
+        shakeY *= 0.8;
+        if (Math.abs(shakeX) < 0.05) shakeX = 0;
+        if (Math.abs(shakeY) < 0.05) shakeY = 0;
+
+        if (party[0].hp <= 0) party[0].hp = 90; // 假資料不結束，循環自測
+      }
+
+      function getState() {
+        const boxRotation = Math.sin(time * 0.6) * 6;
+        const enemies = enemiesBase.map((e) => ({
+          sprite: e.sprite,
+          x: e.x,
+          y: e.y + Math.sin(time * 2 + e.x) * 3,
+          scale: e.scale,
+          frame: Math.floor(time * e.rate) % e.frames,
+        }));
+        return {
+          frame,
+          time,
+          running: true,
+          ended: false,
+          attack,
+          shake: { x: shakeX, y: shakeY },
+          box: { x: 320, y: 171, w: 150, h: 150, rotation: boxRotation, border: 5, color: '#00c000' },
+          soul: {
+            x: soulX,
+            y: soulY,
+            mode: 'red',
+            color: '#ff0000',
+            invFrames,
+            grazing,
+            visible: true,
+          },
+          bullets: bullets.map((b) => ({
+            id: b.id,
+            type: b.type,
+            sprite: b.sprite,
+            frame: b.frame,
+            x: b.x,
+            y: b.y,
+            rotation: b.rotation,
+            scale: b.scale,
+            alpha: b.alpha,
+            color: b.color,
+            maskToBox: b.maskToBox,
+            hitbox: b.hitbox,
+          })),
+          party: party.map((p) => ({ name: p.name, hp: p.hp, maxHp: p.maxHp, color: p.color })),
+          tp,
+          enemies,
+          sfxQueue: grazing && frame % 6 === 0 ? ['snd_graze'] : [],
+          grazeFlash,
+          hurtFlash,
+        };
+      }
+
+      return {
+        tick,
+        getState,
+        reset() {
+          frame = 0;
+          time = 0;
+          tp = 34;
+          soulX = 320;
+          soulY = 171;
+          invFrames = 0;
+          hurtFlash = 0;
+          grazeFlash = 0;
+          shakeX = 0;
+          shakeY = 0;
+          bullets.length = 0;
+          party[0].hp = 90;
+          party[1].hp = 110;
+          party[2].hp = 70;
+        },
+      };
+    }
+
+    /* ------------------------------------------------------------- 縮放 */
+
+    function applyScale() {
+      const scale = Number.isFinite(scaleParam) && scaleParam >= 1
+        ? Math.max(1, Math.min(6, Math.floor(scaleParam)))
+        : computeFitScale(window.innerWidth - 24, window.innerHeight - 86, 5);
+      currentScale = scale;
+      if (renderer) renderer.resize(scale);
+      canvas.style.width = LOGICAL_WIDTH * scale + 'px';
+      canvas.style.height = LOGICAL_HEIGHT * scale + 'px';
+      hudEl.style.fontSize = Math.max(10, 11) + 'px';
+    }
+
+    /* -------------------------------------------------------- 音效佇列 */
+
+    /**
+     * state.sfxQueue 依 SPEC §9 是「index.js 交給 audio.play 後清空」。
+     * 若 E1 尚未接上音效，佇列會殘留 → 這裡補播並清空，避免重複/累積。
+     */
+    function drainSfxQueue(state) {
+      if (!state || !Array.isArray(state.sfxQueue)) return;
+      const queue = state.sfxQueue;
+      if (!queue.length) return;
+      audio.playAll(queue);
+      queue.length = 0;
+    }
+
+    /* ------------------------------------------------------------ 主流程 */
+
+    /**
+     * 引擎模式：engine/index.js 自己持有 rAF 迴圈與 renderer（它會動態 import 本模組的
+     * render.js 並自行 draw / step）。此時 play.html 不得再 step 或 draw，否則速度加倍、
+     * 畫面重複繪製。play.html 只負責：HUD、快捷鍵 → battle API、素材/音效。
+     * ?owner=page 可強制由 play.html 驅動（除錯用）。
+     */
+    function engineOwnsLoopNow() {
+      return !useMock && !!battle && !forcePageLoop;
+    }
+
+    /** 自動演示 / 錄製時由 page 逐幀餵輸入（引擎 step() 吃不到外部輸入）。 */
+    function pageOwnsSteps() {
+      return !useMock && !!battle && (autoEnabled || autoRecording);
+    }
+
+    function showHud(state) {
+      const st = state || {};
+      const modeText = useMock ? '假資料' : battle ? '引擎' : '無引擎';
+      hudEl.textContent =
+        `FPS ${fps.toFixed(0)}  幀 ${Math.round(Number(st.frame) || 0)}  ${(Number(st.time) || 0).toFixed(2)}s\n` +
+        `${modeText}  Scale ×${currentScale}  Lang ${lang.toUpperCase()}  Hitbox ${
+          showHitboxes ? 'ON' : 'OFF'
+        }${paused ? '  暫停' : ''}`;
+    }
+
+    function readState() {
+      if (useMock && mock) return mock.getState();
+      if (battle && typeof battle.getState === 'function') {
+        try {
+          return battle.getState();
+        } catch (err) {
+          console.warn('[play] getState 失敗：', err);
+        }
+      }
+      return null;
+    }
+
+    function drawFrame() {
+      const state = readState();
+      drainSfxQueue(state);
+      if (!engineOwnsLoopNow()) {
+        if (renderer) renderer.draw(state, { showHitboxes, showGrid, scale: currentScale, lang });
+      }
+      showHud(state);
+      syncAutoplayUi();
+    }
+
+    /* ============================================ 自動演示（SPEC-AUTOPLAY §4） */
+
+    /**
+     * 自動演示的狀態機（攻擊試玩頁）：
+     *   - 工具列「自動」按鈕 / 模式選單（腳本、AI、關）＋快捷鍵 P。
+     *   - 開啟時人類方向鍵與 Z/X 一律忽略（P / R 重來 / Esc 暫停仍有效）。
+     *   - 腳本（path / inputs）與時間軸對齊 → 切換時自動從第 0 幀重來；
+     *     AI（bot）只 reset，從目前幀接手。
+     *   - 頁面接手步進：引擎 play 模式的 step() 只吃幀數、輸入來自 input.js，
+     *     所以自動演示 / 錄製時先 battle.pause()，再以 battle.engine.stepFrame()
+     *     逐幀餵入 pilot（或錄製時的人類）輸入；畫面仍由引擎的 rAF 迴圈繪製。
+     */
+    let auto = null;              // { mode: 'demo' | 'bot', pilot }
+    let autoEnabled = false;      // 自動演示中
+    let autoRecording = false;    // 錄製中（demo inputs 錄製；與「錄影」無關）
+    let recorder = null;          // createRecorder()（demo inputs 錄製）
+    // V2-10 頁內錄影（canvas → WebM）。名稱刻意與上面的「錄製」（demo inputs）分開。
+    let videoRec = null;          // mountRecorderUi()
+    let humanInput = null;        // 錄製用的人類鍵盤輸入（本頁自己的監聽）
+    let battleHits = 0;           // 引擎回報的累計受傷次數
+    let hitsAtAutoStart = 0;      // 自動演示開始時的累計值
+    let servedAttackName = null;  // ?attack=/api/attacks/<n>.json → 錄製可 PATCH 回伺服器
+    let recordingLabel = '';      // 錄製當下的作品名（面板顯示）
+    let autoMessage = '';         // 狀態列的附加訊息（提示 / 完成）
+    let autoLastState = null;     // 最近一次讀到的 state（狀態列用）
+    let lastUiSync = 0;
+
+    /** ?attack= 指向 /api/attacks/<name>.json 時記下作品名（錄製後可直接寫回）。 */
+    (function detectServedAttack() {
+      if (!attackParam) return;
+      const marker = '/api/attacks/';
+      const at = attackParam.indexOf(marker);
+      if (at < 0) return;
+      const rest = attackParam.slice(at + marker.length);
+      const cut = rest.search(/[?#]/);
+      const tail = cut >= 0 ? rest.slice(0, cut) : rest;
+      if (!tail.endsWith('.json')) return;
+      const name = tail.slice(0, -'.json'.length);
+      try {
+        servedAttackName = decodeURIComponent(name);
+      } catch (_err) {
+        servedAttackName = name;
+      }
+    })();
+
+    /** 目前作品（含 demo 欄位）；假資料模式回傳 mock 的假攻擊。 */
+    function currentAttackDoc() {
+      if (useMock) {
+        const state = readState();
+        return state && state.attack ? state.attack : null;
+      }
+      if (battle && typeof battle.getState === 'function') {
+        const state = readState();
+        if (state && state.attack) return state.attack;
+      }
+      return battle && battle.attack ? battle.attack : null;
+    }
+
+    function autoModeLabel() {
+      if (!autoEnabled || !auto) return '關';
+      return auto.mode === 'bot' ? 'AI' : '腳本';
+    }
+
+
+
+    /** 工具列 / 錄製按鈕 / 狀態列同步（節流 100ms；SPEC §4 只更新頁面 UI，不畫進遊戲）。 */
+    function syncAutoplayUi(force = false) {
+      const nowMs = Date.now();
+      if (!force && nowMs - lastUiSync < 100) return;
+      lastUiSync = nowMs;
+      if (autoToggleEl) autoToggleEl.textContent = `自動：${autoModeLabel()}`;
+      if (autoModeEl) {
+        // 沒有 demo 的作品不給選「腳本」，避免選了也只會退回 AI（B8）。
+        const demoOption = autoModeEl.querySelector('option[value="demo"]');
+        if (demoOption) demoOption.disabled = !attackHasDemo();
+        const want = autoEnabled ? auto.mode : 'off';
+        if (autoModeEl.value !== want) autoModeEl.value = want;
+      }
+      if (autoStatusEl) {
+        if (!autoEnabled) {
+          // chrome=0：工具列全隱藏，仍保留右上角極小狀態字（§4-11）。
+          autoStatusEl.textContent = autoRecording ? 'REC·錄製中' : chromeHidden ? 'AUTO·關' : '';
+        } else if (chromeHidden) {
+          autoStatusEl.textContent = `AUTO·${autoModeLabel()}${autoMessage ? '·' + autoMessage : ''}`;
+        } else {
+          const info = auto && auto.pilot && typeof auto.pilot.describe === 'function' ? auto.pilot.describe() : {};
+          const dodge = info.dodge ? ` · ${info.dodge}` : '';
+          const state = autoLastState;
+          const frame = state && Number.isFinite(Number(state.frame)) ? Number(state.frame) : 0;
+          const hits = Math.max(0, battleHits - hitsAtAutoStart);
+          const tail = autoMessage ? ` · ${autoMessage}` : '';
+          autoStatusEl.textContent = `AUTO · ${autoModeLabel()}${dodge} · 幀 ${frame} · 受傷 ${hits}${tail}`;
+        }
+      }
+      if (recToggleEl) recToggleEl.textContent = autoRecording ? '停止錄製' : '錄製';
+    }
+
+    function showAutoWarnings(warnings) {
+      if (!autoWarnEl) return;
+      const list = Array.isArray(warnings) ? warnings.filter((item) => typeof item === 'string' && item) : [];
+      if (list.length === 0) {
+        autoWarnEl.hidden = true;
+        autoWarnEl.textContent = '';
+        return;
+      }
+      autoWarnEl.hidden = false;
+      autoWarnEl.textContent = '自動演示提示：' + list.slice(0, 3).join('；');
+    }
+
+    /** 自動演示 / 錄製時由 page 步進 → 引擎必須停止自己的 step（仍可自己 draw）。 */
+    function syncEngineRunning() {
+      if (!battle || useMock) return;
+      try {
+        const pageOwnsSteps = autoEnabled || autoRecording || forcePageLoop;
+        const state = readState();
+        const simEnded = Boolean(state && state.ended);
+        if (pageOwnsSteps || paused || simEnded) {
+          if (typeof battle.pause === 'function') battle.pause();
+        } else if (typeof battle.play === 'function') {
+          battle.play();
+        }
+      } catch (err) {
+        console.warn('[play] 切換引擎步進失敗：', err);
+      }
+    }
+
+    /**
+     * 開關自動演示。
+     * @param {'demo'|'bot'|'off'} mode
+     * @param {{restart?:boolean}} [options] restart=true 強制從第 0 幀重來
+     */
+    function setAutoplay(mode, options = {}) {
+      const next = mode === 'bot' ? 'bot' : mode === 'demo' ? 'demo' : 'off';
+      if (useMock) {
+        autoEnabled = false;
+        auto = null;
+        setBanner('假資料模式（?mock=1）沒有真的攻擊檔，無法自動演示。');
+        syncAutoplayUi(true);
+        return 'off';
+      }
+      if (next === 'off') {
+        autoEnabled = false;
+        auto = null;
+        autoMessage = '';
+        showAutoWarnings([]);
+        if (autoRecording) stopRecording('自動演示已關閉');
+        setBanner(pendingBanner || '');
+        syncEngineRunning();
+        syncAutoplayUi(true);
+        return 'off';
+      }
+
+      const doc = currentAttackDoc();
+      // 錄製中切到自動演示：先停止錄製（面板留著結果），否則兩邊會同時餵輸入
+      if (autoRecording) stopRecording('切換自動演示');
+      const pilot = createAutopilot({ kind: 'attack', doc, mode: next });
+      auto = { mode: next, pilot };
+      autoEnabled = true;
+      autoMessage = '';
+      showAutoWarnings((pilot && pilot.warnings) || []);
+
+      const info = typeof pilot.describe === 'function' ? pilot.describe() : {};
+      // 腳本模式（path / inputs）依時間軸走 → 必須從第 0 幀對齊，否則 path 會整條錯位；
+      // AI 模式是反應式的 → 只 reset pilot，從目前幀直接接手（回合已結束時才自動重來）。
+      const timelineMode = next === 'demo' && (info.dodge === 'path' || info.dodge === 'inputs');
+      const atEnd = Boolean((readState() || {}).ended);
+      if (options.restart === true || timelineMode || atEnd) restart();
+      else pilot.reset();
+      hitsAtAutoStart = battleHits;
+
+      syncEngineRunning();
+      syncAutoplayUi(true);
+      setBanner(
+        next === 'bot'
+          ? '自動演示（AI）：人類方向鍵與 Z/X 已忽略；P 關閉、Esc 暫停。'
+          : `自動演示（腳本${info.dodge ? ' · ' + info.dodge : ''}）：人類方向鍵與 Z/X 已忽略；P 關閉、R 從頭重播。`,
+      );
+      return next;
+    }
+
+    /** 這份作品有沒有可播的 demo 腳本（沒有就跳過「腳本」模式，P 只在關↔AI 循環）。 */
+    function attackHasDemo() {
+      const doc = currentAttackDoc();
+      const demo = doc && doc.demo;
+      if (!demo || typeof demo !== 'object') return false;
+      if (demo.mode === 'path' || demo.mode === 'inputs') return true;
+      if (Array.isArray(demo.path) && demo.path.length > 0) return true;
+      return typeof demo.inputs === 'string' && demo.inputs.trim() !== '';
+    }
+
+    /**
+     * P 鍵 / 按鈕切換（B8）：關 → 腳本 → AI → 關；沒有 demo 的作品：關 → AI → 關。
+     * 不論從哪個模式開始都照這個順序走；切換後 syncAutoplayUi() 會同步 #auto-mode 下拉。
+     */
+    function toggleAutoplay() {
+      const hasDemo = attackHasDemo();
+      const cycle = hasDemo ? ['demo', 'bot', 'off'] : ['bot', 'off'];
+      const current = autoEnabled && auto ? auto.mode : 'off';
+      if (!hasDemo && current === 'demo') return setAutoplay('off');
+      const index = cycle.indexOf(current);
+      const next = cycle[(index + 1) % cycle.length];
+      return setAutoplay(next);
+    }
+
+    /* ---------------------------------------------------------- 錄製 */
+
+    function startRecording() {
+      if (useMock) {
+        setBanner('假資料模式（?mock=1）無法錄製：需要有真的攻擊檔。');
+        return false;
+      }
+      if (!battle) {
+        setBanner('引擎尚未就緒，無法錄製。');
+        return false;
+      }
+      if (autoEnabled) setAutoplay('off');
+      recorder = createRecorder();
+      autoRecording = true;
+      battleHits = 0;
+      hitsAtAutoStart = 0;
+      const doc = currentAttackDoc();
+      recordingLabel = servedAttackName || (doc && doc.meta && doc.meta.name) || '（未命名）';
+      if (recPanelEl) recPanelEl.hidden = true;
+      restart(); // 從第 0 幀重來
+      syncEngineRunning();
+      syncAutoplayUi(true);
+      setBanner('錄製中：從第 0 幀開始手動遊玩；回合結束或再按一次「停止錄製」即停止。');
+      return true;
+    }
+
+    /** 停止錄製並顯示結果（inputs 字串 + 三種出口）。 */
+    function stopRecording(reason = '') {
+      if (!autoRecording) return '';
+      autoRecording = false;
+      const text = recorder ? recorder.toString() : '';
+      const frames = recorder ? recorder.size : 0;
+      showRecordingResult(text, frames, reason);
+      syncEngineRunning();
+      syncAutoplayUi(true);
+      return text;
+    }
+
+    function toggleRecording() {
+      if (autoRecording) stopRecording('手動停止');
+      else startRecording();
+    }
+
+    function showRecordingResult(text, frames, reason) {
+      if (!recPanelEl) return;
+      recPanelEl.hidden = false;
+      const canPatch = Boolean(servedAttackName);
+      const head = `${reason ? reason + '；' : ''}已錄製 ${frames} 段（${text.length} 字元）· 作品：${recordingLabel}`;
+      const tail = canPatch
+        ? '「存進作品」會用 PATCH 寫入 /demo/inputs 並把 /demo/mode 設為 inputs。'
+        : '這個作品不是從 /api/attacks 開的 → 請用「下載 JSON」或「複製字串」。';
+      if (recNoteEl) recNoteEl.textContent = `${head}
+${tail}`;
+      if (recTextEl) recTextEl.value = text;
+      if (recApplyEl) recApplyEl.disabled = !canPatch;
+    }
+
+    /** (a) PATCH /demo/inputs（＋ /demo/mode = inputs）；只有 /api 來的作品才能用。 */
+    async function applyRecordingToServer() {
+      if (!servedAttackName) return false;
+      const inputs = recTextEl ? recTextEl.value : '';
+      if (!inputs) return false;
+      const url = `/api/attacks/${encodeURIComponent(servedAttackName)}.json`;
+      if (recNoteEl) recNoteEl.textContent = '寫入中…';
+      try {
+        const current = await fetch(url, { cache: 'no-cache', headers: { 'X-Client': 'human' } });
+        if (!current.ok) throw new Error('讀取作品失敗：HTTP ' + current.status);
+        const etag = current.headers.get('ETag') || '';
+        let doc = null;
+        try {
+          doc = await current.json();
+        } catch (_err) {
+          doc = null;
+        }
+        const hasDemo = Boolean(doc && doc.demo && typeof doc.demo === 'object');
+        const ops = hasDemo
+          ? [
+              { op: 'add', path: '/demo/inputs', value: inputs },
+              { op: 'add', path: '/demo/mode', value: 'inputs' },
+            ]
+          : [{ op: 'add', path: '/demo', value: { mode: 'inputs', inputs } }];
+        const response = await fetch(url, {
+          method: 'PATCH',
+          headers: Object.assign(
+            { 'Content-Type': 'application/json', 'X-Client': 'human' },
+            etag ? { 'If-Match': etag } : {},
+          ),
+          body: JSON.stringify(ops),
+        });
+        if (response.status === 409) throw new Error('作品已被其他人修改（409）→ 重新載入後再錄一次');
+        if (!response.ok) throw new Error('PATCH 失敗：HTTP ' + response.status);
+        const reloaded = await fetch(url, { cache: 'no-cache' });
+        if (reloaded.ok && battle) {
+          battle.load(await reloaded.json());
+          restart();
+          syncEngineRunning();
+        }
+        if (recNoteEl) recNoteEl.textContent = `已寫入 ${servedAttackName}.json 的 demo.inputs（mode = inputs）。`;
+        setBanner('');
+        return true;
+      } catch (err) {
+        if (recNoteEl) {
+          recNoteEl.textContent = `存進作品失敗：${(err && err.message) || err}
+（可改用「下載 JSON」或「複製字串」）`;
+        }
+        return false;
+      }
+    }
+
+    /** (b) 下載把錄製結果寫進 demo 後的 JSON。 */
+    function downloadRecording() {
+      const source = currentAttackDoc();
+      const doc = source ? JSON.parse(JSON.stringify(source)) : {};
+      if (!doc.demo || typeof doc.demo !== 'object' || Array.isArray(doc.demo)) doc.demo = {};
+      doc.demo.mode = 'inputs';
+      doc.demo.inputs = recTextEl ? recTextEl.value : '';
+      const name = String(recordingLabel || 'attack').replace(/[^A-Za-z0-9_-]+/g, '_').slice(0, 60) || 'attack';
+      const blob = new Blob([JSON.stringify(doc, null, 2) + String.fromCharCode(10)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${name}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    /** (c) 複製 inputs 字串到剪貼簿（失敗時退回 textarea 選取）。 */
+    async function copyRecording() {
+      const text = recTextEl ? recTextEl.value : '';
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          if (recNoteEl) recNoteEl.textContent = '已複製 inputs 字串到剪貼簿。';
+          return true;
+        }
+      } catch (_err) {
+        /* 退回 execCommand */
+      }
+      try {
+        recTextEl.removeAttribute('readonly');
+        recTextEl.select();
+        document.execCommand('copy');
+        recTextEl.setAttribute('readonly', 'readonly');
+        if (recNoteEl) recNoteEl.textContent = '已複製 inputs 字串。';
+        return true;
+      } catch (_err2) {
+        if (recNoteEl) recNoteEl.textContent = '無法自動複製，請手動選取上方文字。';
+        return false;
+      }
+    }
+
+    /**
+     * 頁面接手步進時的單幀推進：pilot（自動演示）或人類輸入（錄製）。
+     * @returns {boolean} 是否推進了
+     */
+    function stepPageOwned() {
+      if (useMock) {
+        if (mock) mock.tick();
+        return true;
+      }
+      if (!battle || !battle.engine) return false;
+      const sim = battle.engine;
+      const state = readState();
+      if (!state) return false;
+      autoLastState = state;
+      if (state.ended) return false;
+      const frame = Number(state.frame) || 0;
+
+      let engineInput = null;
+      if (autoEnabled && auto && auto.pilot) {
+        engineInput = auto.pilot.input(state, frame);
+      } else if (autoRecording && recorder) {
+        engineInput = humanInput.readFrame();
+        recorder.push(frame, { hold: engineInput.hold, press: engineInput.press });
+      } else {
+        return false;
+      }
+
+      const input = normalizeFrameInput(engineInput);
+      const sfx = typeof sim.drainSfx === 'function' ? sim.drainSfx() : [];
+      if (audio && sfx.length > 0) audio.playAll(sfx);
+      const moved = typeof sim.stepFrame === 'function' ? sim.stepFrame(input) !== false : false;
+      const after = readState();
+      autoLastState = after || state;
+      if (after && after.ended) {
+        ended = true;
+        if (autoRecording) stopRecording('回合結束');
+        if (autoEnabled) {
+          autoMessage = '完成';
+          syncAutoplayUi(true);
+        } else {
+          paused = true;
+          pausedEl.hidden = false;
+          setBanner(endedBannerText());
+        }
+      }
+      syncAutoplayUi();
+      return moved;
+    }
+
+    /**
+     * 逐幀推進。
+     *   - 自動演示 / 錄製：page 透過 pilot 或人類輸入餵 sim.stepFrame（引擎已 pause）。
+     *   - 其他情況：維持既有行為（?owner=page → battle.step；否則引擎自己步進）。
+     */
+    function advanceFrame() {
+      if (useMock) {
+        if (mock) mock.tick();
+        return true;
+      }
+      if (!battle) return false;
+      if (autoEnabled || autoRecording) return stepPageOwned();
+      tickSim();
+      return true;
+    }
+
+    /** 工具列事件綁定（按鈕 / 模式選單 / 錄製面板）。 */
+    function bindAutoplayControls() {
+      if (!humanInput) humanInput = createInput(window);
+      if (autoToggleEl) {
+        autoToggleEl.addEventListener('click', () => {
+          toggleAutoplay();
+          autoToggleEl.blur();
+        });
+      }
+      if (autoModeEl) {
+        autoModeEl.addEventListener('change', () => {
+          setAutoplay(autoModeEl.value);
+          autoModeEl.blur();
+        });
+      }
+      if (recToggleEl) {
+        recToggleEl.addEventListener('click', () => {
+          toggleRecording();
+          recToggleEl.blur();
+        });
+      }
+      if (recRestartEl) {
+        recRestartEl.addEventListener('click', () => {
+          restart();
+          if (autoEnabled && auto && auto.pilot) auto.pilot.reset();
+          syncAutoplayUi(true);
+          recRestartEl.blur();
+        });
+      }
+      if (recApplyEl) {
+        recApplyEl.addEventListener('click', () => {
+          applyRecordingToServer();
+        });
+      }
+      if (recDownloadEl) {
+        recDownloadEl.addEventListener('click', () => {
+          downloadRecording();
+        });
+      }
+      if (recCopyEl) {
+        recCopyEl.addEventListener('click', () => {
+          copyRecording();
+        });
+      }
+      if (recCloseEl) {
+        recCloseEl.addEventListener('click', () => {
+          if (recPanelEl) recPanelEl.hidden = true;
+        });
+      }
+    }
+
+    /* ================================================== 頁內錄影（V2-10） */
+
+    /**
+     * 把 canvas 錄成 WebM（含 engine/audio.js 的音訊）。
+     * 與上面的「錄製」（demo inputs 錄製、R 從頭重播）是兩件事：
+     *   - 錄製：記人類輸入 → demo.inputs JSON
+     *   - 錄影：畫面＋聲音 → .webm 檔
+     * 快捷鍵 V；?record=1 開頁自動錄，戰鬥結束後再 1 秒自動停止並下載。
+     */
+    function videoTitle() {
+      const doc = currentAttackDoc();
+      const meta = doc && doc.meta;
+      if (meta && typeof meta === 'object') return meta.name || meta.title || '';
+      return servedAttackName || '';
+    }
+
+    function mountVideoRecorder() {
+      if (videoRec || !canvas) return videoRec;
+      videoRec = mountRecorderUi({
+        canvas,
+        audio,
+        toolbar: toolbarEl,
+        getTitle: videoTitle,
+        getEnded: () => {
+          const state = readState();
+          return Boolean(ended || (state && state.ended));
+        },
+        autoRecord: autoVideoRecord,
+        autoStopDelayMs: 1000,
+        scale: videoScaleParam,
+        fps: SIM_FPS,
+        chromeHidden,
+        nowDate: () => new Date(),
+        onFinished: (result) => {
+          if (!result || !result.blob) {
+            setBanner('錄影失敗：瀏覽器沒有產生 WebM（可用 ?record=1 的 console 檢查）');
+            return;
+          }
+          setBanner(
+            `錄影完成：${result.filename}（${(result.bytes / 1024).toFixed(0)} KB）` +
+              (result.downloaded ? '，已開始下載。' : '，可按工具列「⬇ 再次下載」。'),
+          );
+        },
+      });
+      return videoRec;
+    }
+
+    /** 錄影狀態（給測試 / 除錯用；沒掛上時回 null）。 */
+    function videoSnapshot() {
+      if (!videoRec) return null;
+      const snap = videoRec.getSnapshot();
+      return Object.assign(snap, { filename: videoRec.getFilename(), audioWarning: videoRec.getAudioWarning() });
+    }
+
+    function tickSim() {
+      if (useMock && mock) {
+        mock.tick();
+        return;
+      }
+      if (!battle) return;
+      if (engineOwnsLoopNow()) return; // 引擎自己步進
+      if (typeof battle.step === 'function') {
+        try {
+          battle.step(1);
+        } catch (err) {
+          console.error('[play] step 失敗：', err);
+        }
+      }
+      const st = readState();
+      if (st && st.ended) {
+        ended = true;
+        paused = true;
+        setBanner(endedBannerText());
+      }
+    }
+
+    /** 暫停/繼續：引擎模式走 battle.play()/pause()，假資料模式只停 play.html 的迴圈 */
+    function setPaused(value) {
+      paused = value === true;
+      pausedEl.hidden = !paused;
+      // SPEC §7：遊戲畫面文字用簡體（zh）/ 英文（en）
+      pausedEl.textContent = ui('pause');
+      if (battle) {
+        try {
+          if (paused) {
+            if (typeof battle.pause === 'function') battle.pause();
+          } else if (typeof battle.play === 'function') {
+            // 自動演示 / 錄製時引擎必須保持 pause（page 逐幀餵輸入），不能把 rAF 步進打開
+            if (!autoEnabled && !autoRecording) battle.play();
+          }
+        } catch (err) {
+          console.warn('[play] 切換暫停失敗：', err);
+        }
+      }
+      acc = 0;
+    }
+
+    function loop(now) {
+      if (destroyed) return;
+      rafId = requestAnimationFrame(loop);
+      if (!lastTime) lastTime = now;
+      let dt = now - lastTime;
+      lastTime = now;
+      if (!(dt >= 0)) dt = 0;
+      if (dt > 250) dt = 250; // 切回分頁不追趕
+
+      fpsFrames += 1;
+      fpsClock += dt;
+      if (fpsClock >= 500) {
+        fps = (fpsFrames * 1000) / fpsClock;
+        fpsFrames = 0;
+        fpsClock = 0;
+      }
+
+      if (engineOwnsLoopNow()) {
+        // 引擎自己 step + draw；這裡只更新 HUD 與結束狀態。
+        // 自動演示 / 錄製時引擎已被 pause()，改由 page 逐幀用 sim.stepFrame 餵輸入。
+        if (!paused && pageOwnsSteps()) {
+          acc += dt;
+          let steps = 0;
+          while (acc >= STEP_MS && steps < 8) {
+            if (!advanceFrame()) break;
+            acc -= STEP_MS;
+            steps += 1;
+          }
+          if (steps >= 8) acc = 0;
+        } else {
+          acc = 0;
+        }
+        const state = readState();
+        drainSfxQueue(state);
+        showHud(state);
+        syncAutoplayUi();
+        if (state && state.ended && !paused && !autoEnabled && !autoRecording) {
+          ended = true;
+          setPaused(true);
+          setBanner(endedBannerText());
+        }
+        return;
+      }
+
+      if (!paused) {
+        acc += dt;
+        let steps = 0;
+        while (acc >= STEP_MS && steps < 8) {
+          if (!advanceFrame()) break;
+          acc -= STEP_MS;
+          steps += 1;
+        }
+        if (steps >= 8) acc = 0;
+      } else {
+        acc = 0;
+      }
+
+      drawFrame();
+    }
+
+    /* ------------------------------------------------------------ 鍵盤 */
+
+    function onKey(event) {
+      if (event.defaultPrevented) return;
+      const code = event.code || '';
+      const key = (event.key || '').toLowerCase();
+      if (code === 'Escape' || key === 'escape') {
+        setPaused(!paused);
+        event.preventDefault();
+        return;
+      }
+      // SPEC-AUTOPLAY §4：P 切換自動演示（關 → 腳本/AI、開 → 關）
+      if (key === 'p') {
+        toggleAutoplay();
+        event.preventDefault();
+        return;
+      }
+      if (key === 'r') {
+        restart();
+        event.preventDefault();
+        return;
+      }
+      if (key === 'h') {
+        showHitboxes = !showHitboxes;
+        applyOptionsToBattle();
+        event.preventDefault();
+        return;
+      }
+      if (key === 'g') {
+        showGrid = !showGrid;
+        applyOptionsToBattle();
+        event.preventDefault();
+        return;
+      }
+      if (key === 'm') {
+        muted = !muted;
+        if (audio) audio.setMuted(muted);
+        applyOptionsToBattle();
+        event.preventDefault();
+        return;
+      }
+      // SPEC §7：按 L 切換語言（zh ⇄ en）；遊戲畫面文字全部跟著切
+      if (key === 'l') {
+        lang = lang === 'zh' ? 'en' : 'zh';
+        try {
+          localStorage.setItem('dr-lang', lang);
+        } catch (_err) {
+          /* 無 localStorage 時僅本回合有效 */
+        }
+        applyOptionsToBattle();
+        syncLangUi();
+        showHud(readState());
+        event.preventDefault();
+        return;
+      }
+    }
+
+    /** 語言相關的 DOM 提示同步（角落語言標籤 + 暫停字樣） */
+    function syncLangUi() {
+      if (langLabelEl) langLabelEl.textContent = ui('langName');
+      if (!pausedEl.hidden) pausedEl.textContent = ui('pause');
+    }
+
+    /** 把選項同步給引擎（引擎模式渲染由 index.js 驅動，必須透過 setOptions） */
+    function applyOptionsToBattle() {
+      if (!battle || typeof battle.setOptions !== 'function') return;
+      try {
+        battle.setOptions({ showHitboxes, showGrid, muted, scale: currentScale, lang });
+      } catch (err) {
+        console.warn('[play] setOptions 失敗：', err);
+      }
+    }
+
+    function restart() {
+      setPaused(false);
+      ended = false;
+      acc = 0;
+      lastTime = 0;
+      if (useMock && mock) {
+        mock.reset();
+      } else if (battle) {
+        try {
+          if (typeof battle.reset === 'function') battle.reset();
+          // 自動演示 / 錄製：引擎保持 pause，由 page 逐幀餵輸入（見 syncEngineRunning）
+          if (typeof battle.play === 'function' && !autoEnabled && !autoRecording) battle.play();
+        } catch (err) {
+          console.warn('[play] 重來失敗：', err);
+        }
+      }
+      setBanner(useMock ? '' : pendingBanner);
+    }
+
+    /* --------------------------------------------------------- 啟動流程 */
+
+    let pendingBanner = '';
+    let bannerFromAssetError = '';
+
+    async function fetchAttack(url) {
+      const response = await fetch(url, { cache: 'no-cache' });
+      if (!response.ok) throw new Error('HTTP ' + response.status + '（' + url + '）');
+      return response.json();
+    }
+
+    /**
+     * Phase 2 任務 3：把攻擊檔的 settings.bgm 用 audio.playBgm() 播起來。
+     * 順序：?bgm=<名字> 覆寫 > attack.settings.bgm > 不播（null）。
+     * ?bgm=off / ?mutebgm=1 可完全關閉（自測截圖不想有聲音時）。
+     */
+    function playBattleBgm(attackData) {
+      if (!audio || typeof audio.playBgm !== 'function') return;
+      if (bgmOff) return;
+      let name = bgmParam || null;
+      if (!name) {
+        const settings = attackData && attackData.settings;
+        if (settings && typeof settings.bgm === 'string' && settings.bgm) name = settings.bgm;
+      }
+      if (!name) return;
+      try {
+        // 注意：playBgm 對「尚未解碼完」的音軌會先排隊並回 false（正常非同步流程），
+        // 所以這裡不把 false 當錯誤，也不印訊息（缺素材時 SPEC 要求靜默）。
+        audio.playBgm(name, { fade: 0.35 });
+      } catch (err) {
+        console.info('[play] BGM 播放失敗（靜默）：', err);
+      }
+    }
+
+    async function startMock(reason) {
+      useMock = true;
+      mockInput = createInput(window);
+      mock = createMockBattle(mockInput);
+      setBanner(
+        (reason ? reason + '\n' : '') +
+          '假資料模式（?mock=1）：不需要 E1 的 sim.js，用來驗證渲染、輸入、音效。',
+      );
+      // 假資料模式沒有攻擊檔，BGM 只能靠 ?bgm= 指定（用來驗證 playBgm 這條路）
+      if (bgmParam && !bgmOff) playBattleBgm(null);
+    }
+
+    async function startEngine() {
+      // 引擎模組（E1）
+      try {
+        engine = await import('./engine/index.js');
+      } catch (err) {
+        engine = null;
+        await startMock(
+          '引擎尚未就緒（engine/index.js 不存在或匯入失敗），已切換到假資料模式：\n' +
+            String((err && err.message) || err),
+        );
+        return;
+      }
+      if (!engine || typeof engine.createBattle !== 'function') {
+        engine = null;
+        await startMock('engine/index.js 沒有匯出 createBattle，已切換到假資料模式。');
+        return;
+      }
+
+      // 攻擊檔
+      let attack = DEMO_ATTACK;
+      if (attackParam) {
+        try {
+          attack = await fetchAttack(attackParam);
+        } catch (err) {
+          setBanner('攻擊檔載入失敗：' + ((err && err.message) || err) + '\n改用內建示範攻擊。');
+        }
+      } else {
+        pendingBanner = '未指定 ?attack=，使用 play.html 內建示範攻擊（E1 整合測試用）。';
+        setBanner(pendingBanner);
+      }
+
+      // battle
+      try {
+        battle = engine.createBattle({ canvas, assets, mode: 'play' });
+        battle.load(attack);
+        // SPEC §7：語言是檢視偏好 → 透過 setOptions 透傳（E1 的 index.js 已支援 lang）
+        if (typeof battle.setOptions === 'function') {
+          try {
+            battle.setOptions({ lang, showHitboxes, showGrid, muted, scale: currentScale });
+          } catch (optErr) {
+            console.warn('[play] setOptions 初始同步失敗：', optErr);
+          }
+        }
+        if (typeof battle.play === 'function') battle.play();
+        // Phase 2：用 audio.playBgm() 播攻擊檔的 settings.bgm（缺素材靜默）
+        playBattleBgm((battle && battle.attack) || attack);
+        if (typeof battle.on === 'function') {
+          battle.on('hit', () => {
+            battleHits += 1;
+          });
+          battle.on('end', () => {
+            // 自動演示 / 錄製時的收尾由 stepPageOwned 處理（不強制顯示「回合結束」）
+            if (autoEnabled || autoRecording) return;
+            ended = true;
+            paused = true;
+            pausedEl.hidden = true;
+            setBanner(endedBannerText());
+          });
+          battle.on('error', (err) => {
+            const msg = err && err.path ? err.path + '：' + (err.message || '') : String((err && err.message) || err);
+            console.warn('[play] 引擎 error 事件：', err);
+            setBanner('引擎錯誤：' + msg);
+          });
+        }
+      } catch (err) {
+        console.error('[play] 建立 battle 失敗：', err);
+        await startMock('建立 battle 失敗：' + String((err && err.message) || err) + '\n已切換到假資料模式。');
+      }
+    }
+
+    async function boot() {
+      applyScale();
+
+      // 1) 素材索引（兩種模式都需要：mock 模式用來驗證真圖與缺圖佔位）
+      try {
+        assets = await loadAssets('assets/index.json');
+      } catch (_err) {
+        assets = null;
+      }
+      if (assets && assets.error) {
+        bannerFromAssetError =
+          '素材索引載入失敗：' + assets.error.message + '\n（全部 sprite 以洋紅佔位方塊顯示）';
+      }
+
+      // 1.5) 字體（SPEC §7）：預載常用字型 + 中文 @zh 字庫 + DTM.otf 退回字
+      if (assets && typeof assets.preloadFonts === 'function') {
+        try {
+          await assets.preloadFonts(['fnt_main', 'fnt_mainbig', 'fnt_small', 'fnt_main@zh', 'fnt_mainbig@zh', 'DTM']);
+        } catch (_err) {
+          /* 字體失敗時 drawText 自動沿退回鏈降級 */
+        }
+      }
+
+      // 2) 音效（Web Audio 首次 play 才建立 context）
+      audio = createAudio(assets);
+      window.addEventListener('pointerdown', () => audio && audio.unlock(), { passive: true, once: true });
+      window.addEventListener('keydown', () => audio && audio.unlock(), { passive: true, once: true });
+      if (muted) audio.setMuted(true);
+
+      // 3) 渲染器（此時已有素材，之後不再重建）
+      renderer = createRenderer(canvas, assets);
+      applyScale();
+
+      window.addEventListener('resize', applyScale);
+      window.addEventListener('keydown', onKey);
+      syncLangUi();
+
+      // 4) 模式
+      if (mockParam) await startMock('');
+      else await startEngine();
+
+      // 5) 附帶提示
+      if (bannerFromAssetError) {
+        const existing = bannerEl.hidden ? '' : bannerEl.textContent + '\n';
+        setBanner(bannerFromAssetError + '\n' + existing);
+      }
+      if (mockInput) {
+        const existing = bannerEl.hidden ? '' : bannerEl.textContent + '\n';
+        setBanner(existing + '方向鍵/WASD 移動紅心，X 或 Shift 低速；H 切 hitbox、G 切格線。');
+      }
+
+      // 6) 自測用：?frames=N 先推進 N 幀再開始顯示（headless 截圖用，正常遊玩不需要）
+      const preFrames = Math.max(0, Math.min(6000, Math.floor(Number(params.get('frames')) || 0)));
+      for (let i = 0; i < preFrames; i += 1) tickSim();
+      if (preFrames > 0) drawFrame();
+
+      // 6.5) SPEC-AUTOPLAY §4：?autoplay=demo|bot 開頁即啟動
+      if (autoStartMode && !useMock) setAutoplay(autoStartMode);
+      else syncAutoplayUi(true);
+
+      // 7) 對外除錯把手（不影響遊戲；供自動化檢查）
+      window.__drPlay = {
+        tick: (n = 1) => {
+          for (let i = 0; i < n; i += 1) advanceFrame();
+          drawFrame();
+        },
+        draw: drawFrame,
+        getState: () => (useMock && mock ? mock.getState() : battle && battle.getState ? battle.getState() : null),
+        isMock: () => useMock,
+        scale: () => currentScale,
+        /** 除錯 / 自動化：引擎與 battle 實例（錄製→重播驗證用）。 */
+        battle: () => battle,
+        engine: () => (battle ? battle.engine : null),
+        /** 素材載入器（render.mjs 用 whenIdle() 等全部素材載完）。 */
+        assets: () => assets,
+        setHitboxes: (v) => {
+          showHitboxes = !!v;
+        },
+        // SPEC-AUTOPLAY §4：給自動化用的自動演示把手
+        autoplay: {
+          /** 設定模式：'demo' | 'bot' | 'off'（回傳實際套用的模式）。 */
+          set: (mode) => setAutoplay(mode),
+          /** 目前模式（'demo' | 'bot' | 'off'）。 */
+          get: () => (autoEnabled && auto ? auto.mode : 'off'),
+          /** pilot 的狀態摘要（SPEC §3 describe）。 */
+          describe: () => (auto && auto.pilot && typeof auto.pilot.describe === 'function' ? auto.pilot.describe() : null),
+          /** 錄製器：null = 沒在錄製。 */
+          get recorder() {
+            return autoRecording ? recorder : null;
+          },
+          /** 錄製中的 inputs 字串（沒錄製時回空字串）。 */
+          inputs: () => (recorder ? recorder.toString() : ''),
+          /** 開始 / 停止錄製；停止時回傳 inputs 字串。 */
+          record: (on) => {
+            if (on === false || (on === undefined && autoRecording)) return stopRecording('手動停止');
+            startRecording();
+            return '';
+          },
+          /** 目前狀態列文字（headless 驗證用）。 */
+          status: () => (autoStatusEl ? autoStatusEl.textContent : ''),
+          /** 工具列（給 UI 測試點按鈕用）。 */
+          toolbar: { toggle: () => toggleAutoplay(), mode: (next) => setAutoplay(next) },
+          warnings: () => (autoWarnEl && !autoWarnEl.hidden ? autoWarnEl.textContent : ''),
+        },
+        // Phase 2 自測用：讓 CDP 能查 BGM／音效狀態（讀不到就回 null）
+        audio: () => (audio ? { bgm: typeof audio.getBgm === 'function' ? audio.getBgm() : null, stats: typeof audio.stats === 'function' ? audio.stats() : null } : null),
+        // V2-10 頁內錄影：狀態 / 手動開關 / 節流偵測（CDP 驗證用）
+        video: {
+          /** {state, recording, elapsed, bytes, filename, scale, throttle, hasBlob}；沒掛 UI 時 null。 */
+          snapshot: () => videoSnapshot(),
+          /** 開始 / 停止錄影（停止回傳 Promise<{blob, filename, bytes, downloaded}>）。 */
+          record: (on) => {
+            if (!videoRec) return on === false ? null : false;
+            if (on === false || (on === undefined && videoRec.isRecording())) return videoRec.stop();
+            return videoRec.autoStart() || videoRec.start();
+          },
+          /** 目前錄影倍率。 */
+          scale: () => (videoRec ? videoRec.getScale() : 0),
+          /** 設定倍率（1|2|3）。 */
+          setScale: (value) => (videoRec ? videoRec.setScale(value) : 0),
+          /** 錄完的結果（測試用）。 */
+          results: () => (videoRec ? videoRec.getResults() : []),
+          /** 節流偵測狀態（DD12）。 */
+          throttle: () => (videoRec ? videoRec.throttle.state() : null),
+          /** 測試用：模擬頁面被節流 / 恢復。 */
+          simulateThrottle: (values) => (videoRec ? videoRec.throttle.simulate(values) : null),
+          /** 上一次錄影的 Blob（測試用；headless 取不到下載檔時的備援）。 */
+          blob: () => (videoRec ? videoRec.getBlob() : null),
+        },
+        playBgm: (name) => (audio && typeof audio.playBgm === 'function' ? audio.playBgm(name, { fade: 0.2 }) : false),
+        stopBgm: () => (audio && typeof audio.stopBgm === 'function' ? audio.stopBgm(0.2) : false),
+      };
+
+      bindAutoplayControls();
+      // 7.5) V2-10 頁內錄影 UI（?record=1 才自動開始錄；手動按 ⏺ 或 V 隨時可錄）
+      mountVideoRecorder();
+      if (autoVideoRecord && videoRec) {
+        // 等自動演示（?autoplay=demo）先就位再開錄，避免錄到前幾幀的空畫面
+        try {
+          videoRec.autoStart();
+        } catch (err) {
+          console.warn('[play] 自動錄影失敗：', err);
+        }
+      }
+      lastTime = 0;
+      rafId = requestAnimationFrame(loop);
+    }
+
+    window.addEventListener('beforeunload', () => {
+      destroyed = true;
+      if (rafId) cancelAnimationFrame(rafId);
+      if (renderer) renderer.destroy();
+      if (audio) audio.destroy();
+      if (mockInput) mockInput.destroy();
+      if (battle && typeof battle.destroy === 'function') battle.destroy();
+      window.removeEventListener('resize', applyScale);
+      window.removeEventListener('keydown', onKey);
+    });
+
+    boot().catch((err) => {
+      console.error('[play] 啟動失敗：', err);
+      setBanner('啟動失敗：' + (err && err.message ? err.message : err));
+    });
+  </script>
+</body>
+</html>
+
+
